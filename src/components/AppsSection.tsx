@@ -11,8 +11,10 @@ export function AppsSection({
   apps,
 }: AppsSectionProps) {
   return (
-    <section id="apps" className="mx-auto max-w-6xl px-8 py-32">
-
+    <section
+      id="apps"
+      className="mx-auto max-w-6xl px-8 py-32"
+    >
       <p className="mb-6 text-sm uppercase tracking-[0.3em] text-neutral-500">
         ECOSYSTEM
       </p>
@@ -22,21 +24,23 @@ export function AppsSection({
       </h2>
 
       <div className="grid gap-6 md:grid-cols-2">
-
         {apps.map((app) => (
           <div
             key={app.name}
             className="
-            rounded-3xl
-            border
-            border-neutral-800
-            bg-neutral-950
-            p-8
-            transition
-            hover:border-neutral-600
-          "
+              group
+              rounded-3xl
+              border
+              border-neutral-800
+              bg-neutral-950
+              p-8
+              transition
+              duration-300
+              hover:-translate-y-1
+              hover:border-neutral-600
+            "
           >
-            <h3 className="text-2xl font-medium">
+            <h3 className="text-2xl font-medium transition group-hover:text-neutral-300">
               {app.name}
             </h3>
 
@@ -45,9 +49,7 @@ export function AppsSection({
             </p>
           </div>
         ))}
-
       </div>
-
     </section>
   );
 }
