@@ -1,21 +1,35 @@
 "use client";
 
+import type { SyntheticEvent } from "react";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export function WaitlistSection() {
   const [email, setEmail] = useState("");
   const [joined, setJoined] = useState(false);
 
-  function handleSubmit(
-    e: React.FormEvent
+  async function handleSubmit(
+    e: SyntheticEvent<HTMLFormElement>
   ) {
     e.preventDefault();
 
+    const { error } =
+      await supabase
+        .from("waitlist")
+        .insert({
+          email,
+          source: "website",
+        });
+
+    if (error) {
+      console.error(error);
+
+      return;
+    }
+
     setJoined(true);
 
-    console.log({
-      email,
-    });
+    setEmail("");
   }
 
   return (
