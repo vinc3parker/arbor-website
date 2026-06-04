@@ -1,7 +1,10 @@
+import Image from "next/image";
+
 type App = {
   name: string;
   description: string;
   href: string;
+  icon: string;
 };
 
 type AppsSectionProps = {
@@ -30,7 +33,7 @@ export function AppsSection({
             key={app.name}
             href={app.href}
             className="
-              group
+              group flex items-center gap-8
               rounded-3xl
               border
               border-neutral-800
@@ -42,13 +45,25 @@ export function AppsSection({
               hover:border-neutral-600
             "
           >
-            <h3 className="text-2xl font-medium transition group-hover:text-neutral-300">
-              {app.name}
-            </h3>
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden">
+              <Image
+                src={app.icon}
+                alt={`${app.name} icon`}
+                width={150}
+                height={150}
+                className="h-20 w-20 object-contain"
+              />
+            </div>
 
-            <p className="mt-4 text-neutral-400">
-              {app.description}
-            </p>
+            <div className="flex-1">
+              <h3 className="text-2xl font-medium transition group-hover:text-neutral-300">
+                {app.name}
+              </h3>
+
+              <p className="mt-3 leading-7 text-neutral-400">
+                {app.description}
+              </p>
+            </div>
           </a>
         ))}
       </div>

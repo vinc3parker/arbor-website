@@ -7,11 +7,21 @@ import { supabase } from "@/lib/supabase";
 export function WaitlistSection() {
   const [email, setEmail] = useState("");
   const [joined, setJoined] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   async function handleSubmit(
     e: SyntheticEvent<HTMLFormElement>
   ) {
     e.preventDefault();
+
+    setErrorMessage("");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email.trim())) {
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
 
     const { error } =
       await supabase
@@ -23,6 +33,10 @@ export function WaitlistSection() {
 
     if (error) {
       console.error(error);
+
+      setErrorMessage(
+        "Something went wrong. Please try again."
+      );
 
       return;
     }
@@ -44,11 +58,11 @@ export function WaitlistSection() {
         </p>
 
         <h2 className="text-5xl font-semibold">
-          Help shape Arbor.
+          Join the Arbor waitlist.
         </h2>
 
-        <p className="mt-6 max-w-2xl text-lg text-neutral-400">
-          Join the first testers.
+        <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-400">
+          Register your interest and join the email list to be the first to hear when new Arbor apps launch, early access opens, and major updates are released.
         </p>
 
         {!joined ? (
@@ -62,6 +76,8 @@ export function WaitlistSection() {
                 setEmail(e.target.value)
               }
               placeholder="Email"
+              type="email"
+              required
               className="
               rounded-2xl
               border
@@ -71,6 +87,11 @@ export function WaitlistSection() {
               py-4
             "
             />
+            {errorMessage && (
+              <p className="px-2 text-sm text-red-400">
+                {errorMessage}
+              </p>
+            )}
 
             <button
               className="
@@ -90,8 +111,8 @@ export function WaitlistSection() {
               You're in.
             </div>
 
-            <p className="mt-3 text-neutral-400">
-              Thanks for joining early access to Arbor.
+            <p className="mt-3 max-w-xl leading-7 text-neutral-400">
+              You're on the list. We'll email you when early access opens, new apps launch, and there is something worth hearing about.
             </p>
           </div>
         )}
