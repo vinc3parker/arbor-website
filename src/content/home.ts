@@ -10,24 +10,49 @@ export const homeCopy = {
       name: "Aegle",
       description:
         "Performance software for hybrid athletes.",
+      href: "/aegle",
     },
-
     {
       name: "Salus",
       description:
-        "Reflection and mental wellbeing.",
+        "Mental wellbeing, reflection, journaling, and personal growth.",
+      href: "/salus",
     },
-
     {
       name: "Thrive",
       description:
-        "Organisation and intentional routines.",
+        "Organisation, routines, scheduling, and staying on top of life.",
+      href: "/thrive",
     },
-
     {
       name: "Nura",
       description:
-        "Finance built around real life.",
+        "Personal finance built around real life, goals, and future planning.",
+      href: "/nura",
+    },
+    {
+      name: "Odyssia",
+      description:
+        "Exploration, places, travel, food, experiences, and living more fully.",
+      href: "/odyssia",
+    },
+    {
+      name: "Circa",
+      description:
+        "Intentional social connection without endless scrolling.",
+      href: "/circa",
+    },
+    {
+      name: "Verra",
+      description:
+        "Work, purpose, careers, and finding better-aligned opportunities.",
+      href: "/verra",
+    },
+    {
+      name: "Mentra",
+      description:
+        "Learning, knowledge tracking, skills, and structured personal development.",
+      href: "/mentra",
     },
   ],
 };

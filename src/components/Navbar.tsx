@@ -4,29 +4,26 @@ type NavItem = {
 };
 
 const items: NavItem[] = [
-  {
+{
     label: "Apps",
-    href: "#aegle",
-  },
-  {
-    label: "About",
-    href: "#apps",
+    href: "/#apps",
   },
   {
     label: "Early Access",
-    href: "#early-access",
+    href: "/#early-access",
   },
 ];
 
 export function Navbar() {
   return (
-    <nav className="fixed left-0 right-0 top-0 z-50 backdrop-blur-md">
-
-      <div className="mx-auto mt-4 flex max-w-6xl items-center justify-between rounded-full border border-neutral-800 bg-black/50 px-8 py-5">
-
-        <div className="text-sm font-medium tracking-[0.3em]">
+    <nav className="fixed left-0 right-0 top-0 z-50 backdrop-blur-md px-4">
+      <div className="mx-auto mt-4 flex max-w-6xl items-center justify-between rounded-full border border-neutral-800 bg-black/50 px-8 py-5 sm:px-8 sm:py-5">
+        <a
+          href="/"
+          className="text-sm font-medium tracking-[0.3em] transition hover:text-white"
+        >
           ARBOR
-        </div>
+        </a>
 
         <div className="flex gap-8 text-sm text-neutral-400">
 

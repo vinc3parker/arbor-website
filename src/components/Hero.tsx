@@ -31,10 +31,10 @@ export function Hero({
             </a>
 
             <a
-            href="#aegle"
+            href="#about"
             className="rounded-full border border-neutral-700 px-8 py-4 transition hover:border-neutral-400"
             >
-            Explore Aegle
+            Arbor's Direction
             </a>
 
         </div>

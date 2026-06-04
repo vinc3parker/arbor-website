@@ -1,6 +1,7 @@
 type App = {
   name: string;
   description: string;
+  href: string;
 };
 
 type AppsSectionProps = {
@@ -25,8 +26,9 @@ export function AppsSection({
 
       <div className="grid gap-6 md:grid-cols-2">
         {apps.map((app) => (
-          <div
+          <a
             key={app.name}
+            href={app.href}
             className="
               group
               rounded-3xl
@@ -47,7 +49,7 @@ export function AppsSection({
             <p className="mt-4 text-neutral-400">
               {app.description}
             </p>
-          </div>
+          </a>
         ))}
       </div>
     </section>
