@@ -85,8 +85,14 @@ export function WaitlistSection() {
             </button>
           </form>
         ) : (
-          <div className="mt-10 text-xl">
-            You're in.
+          <div className="mt-10">
+            <div className="text-2xl font-medium">
+              You're in.
+            </div>
+
+            <p className="mt-3 text-neutral-400">
+              Thanks for joining early access to Arbor.
+            </p>
           </div>
         )}
 
