@@ -8,7 +8,7 @@ export function Hero({
   subtitle,
 }: HeroProps) {
   return (
-    <section className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-8">
+    <section className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-8 sm:pt-32">
 
         <p className="mb-6 text-sm uppercase tracking-[0.4em] text-neutral-500">
         BUILDING ARBOR
