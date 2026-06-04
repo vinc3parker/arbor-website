@@ -8,7 +8,7 @@ export function Hero({
   subtitle,
 }: HeroProps) {
   return (
-    <section className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-8 sm:pt-32">
+    <section className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-8 pt-40 pb-24 sm:pt-32">
 
         <p className="mb-6 text-sm uppercase tracking-[0.4em] text-neutral-500">
         BUILDING ARBOR
@@ -25,14 +25,14 @@ export function Hero({
         <div className="mt-12 flex flex-col gap-4 sm:flex-row">
             <a
                 href="#early-access"
-                className="rounded-full bg-white px-8 py-4 text-black transition hover:scale-[1.03]"
+                className="rounded-full bg-white px-8 py-4 text-center text-black transition hover:scale-[1.03]"
                 >
                 Join Early Access
             </a>
 
             <a
             href="#about"
-            className="rounded-full border border-neutral-700 px-8 py-4 transition hover:border-neutral-400"
+            className="rounded-full border border-neutral-700 px-8 py-4 text-center transition hover:border-neutral-400"
             >
             Arbor's Direction
             </a>
