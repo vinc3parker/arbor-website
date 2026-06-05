@@ -28,8 +28,8 @@ export function AppLanding({ app }: AppLandingProps) {
 
       <section className="relative mx-auto flex min-h-screen max-w-6xl flex-col justify-center overflow-hidden px-8 pt-40 sm:pt-32">
         {app.backgroundScreenshots && app.backgroundScreenshots.length > 0 && (
-          <div className="pointer-events-none absolute inset-y-24 right-0 hidden w-1/2 opacity-50 lg:block">
-            <div className="absolute right-32 top-8 w-56 rotate-[-8deg] overflow-hidden rounded-[2rem] border border-neutral-800 bg-neutral-950 p-2 blur-[0.2px]">
+          <div className="pointer-events-none absolute inset-0 hidden opacity-20 lg:block">
+            <div className="absolute right-20 top-24 w-40 rotate-[-8deg] overflow-hidden rounded-[2rem] border border-neutral-800 bg-neutral-950 p-2">
               <Image
                 src={app.backgroundScreenshots[0]}
                 alt=""
@@ -41,7 +41,7 @@ export function AppLanding({ app }: AppLandingProps) {
             </div>
 
             {app.backgroundScreenshots[1] && (
-              <div className="absolute right-0 top-40 w-56 rotate-[8deg] overflow-hidden rounded-[2rem] border border-neutral-800 bg-neutral-950 p-2 blur-[0.2px]">
+              <div className="absolute right-0 top-56 w-40 rotate-[8deg] overflow-hidden rounded-[2rem] border border-neutral-800 bg-neutral-950 p-2">
                 <Image
                   src={app.backgroundScreenshots[1]}
                   alt=""
@@ -53,7 +53,7 @@ export function AppLanding({ app }: AppLandingProps) {
               </div>
             )}
             {app.backgroundScreenshots[2] && (
-              <div className="absolute right-64 top-[28rem] w-52 rotate-[-2deg] overflow-hidden rounded-[2rem] border border-neutral-800 bg-neutral-950 p-2 blur-[0.2px]">
+              <div className="absolute right-52 top-[20rem] w-36 rotate-[-2deg] overflow-hidden rounded-[2rem] border border-neutral-800 bg-neutral-950 p-2">
                 <Image
                   src={app.backgroundScreenshots[2]}
                   alt=""
@@ -119,7 +119,7 @@ export function AppLanding({ app }: AppLandingProps) {
               >
                 <div className="overflow-hidden rounded-[2rem] border border-neutral-800 bg-neutral-950 md:grid md:grid-cols-[1.1fr_0.9fr]">
 
-                  <div className="relative overflow-hidden bg-black p-6">
+                  <div className="order-2 relative overflow-hidden bg-black p-6 md:order-1">
                     {feature.screenshot ? (
                       <Image
                         src={feature.screenshot}
@@ -135,7 +135,7 @@ export function AppLanding({ app }: AppLandingProps) {
                     )}
                   </div>
 
-                  <div className="flex flex-col justify-center p-10 md:p-14">
+                  <div className="order-1 flex flex-col justify-center p-8 md:order-2 md:p-14">
                     <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-full border border-neutral-800 text-sm text-neutral-500">
                       {String(index + 1).padStart(2, "0")}
                     </div>
@@ -148,7 +148,7 @@ export function AppLanding({ app }: AppLandingProps) {
                       {feature.description}
                     </p>
 
-                    <p className="mt-10 text-sm uppercase tracking-[0.3em] text-neutral-600">
+                    <p className="order-3 mt-6 text-sm uppercase tracking-[0.3em] text-neutral-600 md:mt-10">
                       Swipe to explore →
                     </p>
                   </div>
