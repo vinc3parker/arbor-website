@@ -25,7 +25,7 @@ export function Navbar() {
           className="flex items-center gap-3 transition hover:opacity-90"
         >
           <Image
-            src="/arbor.png"
+            src="/icon.png"
             alt="Arbor"
             width={36}
             height={36}
