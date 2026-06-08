@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { WaitlistSection } from "@/components/WaitlistSection";
+import { AppContentSection } from "@/components/AppContentSection";
 
 type AppLandingProps = {
   app: {
@@ -11,6 +12,8 @@ type AppLandingProps = {
     hero: string;
     intro?: string;
     overviewTitle?: string;
+    detailedDescription?: string;
+    targetAudience?: string;
     features?: {
       title: string;
       description: string;
@@ -32,7 +35,7 @@ export function AppLanding({ app }: AppLandingProps) {
             <div className="absolute right-20 top-24 w-40 rotate-[-8deg] overflow-hidden rounded-[2rem] border border-neutral-800 bg-neutral-950 p-2">
               <Image
                 src={app.backgroundScreenshots[0]}
-                alt=""
+                alt={`${app.name} app preview`}
                 width={600}
                 height={1200}
                 loading="lazy"
@@ -44,7 +47,7 @@ export function AppLanding({ app }: AppLandingProps) {
               <div className="absolute right-0 top-56 w-40 rotate-[8deg] overflow-hidden rounded-[2rem] border border-neutral-800 bg-neutral-950 p-2">
                 <Image
                   src={app.backgroundScreenshots[1]}
-                  alt=""
+                  alt={`${app.name} app interface`}
                   width={600}
                   height={1200}
                   loading="lazy"
@@ -56,7 +59,7 @@ export function AppLanding({ app }: AppLandingProps) {
               <div className="absolute right-52 top-[20rem] w-36 rotate-[-2deg] overflow-hidden rounded-[2rem] border border-neutral-800 bg-neutral-950 p-2">
                 <Image
                   src={app.backgroundScreenshots[2]}
-                  alt=""
+                  alt={`${app.name} dashboard`}
                   width={600}
                   height={1200}
                   loading="lazy"
@@ -158,6 +161,12 @@ export function AppLanding({ app }: AppLandingProps) {
           </div>
         )}
       </section>
+
+      <AppContentSection
+        appName={app.name}
+        detailedDescription={app.detailedDescription}
+        targetAudience={app.targetAudience}
+      />
 
       {app.status && (
         <section className="mx-auto max-w-6xl px-8 py-24">

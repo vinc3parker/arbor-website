@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"
+import { getOrganizationSchema, getWebsiteSchema } from "@/lib/schema";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,9 +15,35 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Arbor — Technology for intentional living",
+  title: "Arbor Apps — Ecosystem for Intentional Living",
   description:
-    "Arbor is building an ecosystem of apps for training, reflection, organisation, exploration, and intentional living.",
+    "Discover Arbor apps for performance training, mental wellbeing, organization, finance, travel, social connection, careers, and learning. Join the ecosystem for intentional living.",
+  keywords: "arbor apps, arbor app, productivity apps, wellness app, training app, intentional living",
+  alternates: {
+    canonical: "https://arborapps.co",
+  },
+  openGraph: {
+    title: "Arbor Apps — Ecosystem for Intentional Living",
+    description:
+      "Performance, wellbeing, organization, finance, travel, social connection, careers, and learning apps designed for people who want more from life.",
+    url: "https://arborapps.co",
+    type: "website",
+    images: [
+      {
+        url: "https://arborapps.co/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Arbor Apps ecosystem",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Arbor Apps — Ecosystem for Intentional Living",
+    description:
+      "Performance, wellbeing, organization, finance, travel, social connection, careers, and learning apps designed for people who want more from life.",
+    images: ["https://arborapps.co/og-image.png"],
+  },
 };
 
 export default function RootLayout({
@@ -29,6 +56,20 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getOrganizationSchema()),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getWebsiteSchema()),
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         {children}
         <Analytics />
