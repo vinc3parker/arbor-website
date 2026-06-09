@@ -44,6 +44,13 @@ export function WaitlistSection() {
     setJoined(true);
 
     setEmail("");
+
+    // Track conversion event in Google Analytics
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "join_waitlist", {
+        email_hash: email.split("")[0], // Only track first char for privacy
+      });
+    }
   }
 
   return (

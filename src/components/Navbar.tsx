@@ -11,6 +11,10 @@ const items: NavItem[] = [
     href: "/#apps",
   },
   {
+    label: "Blog",
+    href: "/blog",
+  },
+  {
     label: "Early Access",
     href: "/#early-access",
   },

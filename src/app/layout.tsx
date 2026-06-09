@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { GoogleAnalyticsComponent } from "@/components/GoogleAnalytics";
 import { getOrganizationSchema, getWebsiteSchema } from "@/lib/schema";
 
 const geistSans = Geist({
@@ -16,6 +17,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
+  verification: {
+    google: "Glp10hFviQoJXfudbRS3Q5ajAmIKUQ_cnbusiGoei-k",
+  },
   title: "Arbor Apps — Ecosystem for Intentional Living",
   description:
     "Discover Arbor apps for performance training, mental wellbeing, organization, finance, travel, social connection, careers, and learning. Join the ecosystem for intentional living.",
@@ -75,6 +79,7 @@ export default function RootLayout({
         {children}
         <Analytics />
         <SpeedInsights />
+        <GoogleAnalyticsComponent />
       </body>
     </html>
   );
