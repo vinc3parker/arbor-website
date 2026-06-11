@@ -44,7 +44,7 @@ We want to know what it actually feels like to use Aegle — not just whether it
 
 Does the onboarding make sense? Is the training data you care about there? Does anything feel clunky or confusing? Is there something obviously missing?
 
-You can leave feedback directly inside TestFlight, or email us at vinc3.parker@gmail.com. We read everything.
+You can leave feedback directly inside TestFlight, email us at vinc3.parker@gmail.com, or join the [Aegle Beta WhatsApp group](https://chat.whatsapp.com/KkBT5ylacnR3qZwkPVAOjI?s=cl&p=i&ilr=2) where we'll share updates and you can drop thoughts as you go. We read everything.
 
 ---
 
