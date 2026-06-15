@@ -16,15 +16,15 @@ export const TIERS = {
   },
   beta_tester: {
     id: "beta_tester" as const,
-    name: "Beta Tester",
+    name: "Founding Access",
     price: "TBC",
-    cadence: "covers running costs",
+    cadence: "during development",
     tagline:
-      "Unlocks the apps that connect to Arbor Core. Priced only to cover server and AI model costs — not for profit.",
+      "Unlocks the apps that connect to Arbor Core. Priced to sustainably run and improve the platform while the ecosystem is being developed.",
     features: [
       "Access to apps that require Arbor Core",
       "Connected AI features across the ecosystem",
-      "Help shape Arbor while it's in beta",
+      "Help shape Arbor while the ecosystem is being built",
     ],
     available: false,
   },

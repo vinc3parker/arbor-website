@@ -58,8 +58,8 @@ export default async function SubscriptionPage() {
           Choose your plan.
         </h1>
         <p className="mt-4 max-w-2xl text-lg leading-8 text-neutral-400">
-          Arbor is free to use. A paid Beta Tester plan is coming soon for the
-          apps that connect to Arbor Core.
+          Arbor is free to use. A paid Founding Access plan is coming soon for
+          the apps that connect to Arbor Core.
         </p>
 
         <div className="mt-12 grid gap-6 md:grid-cols-2">
@@ -103,7 +103,7 @@ export default async function SubscriptionPage() {
             </div>
           </div>
 
-          {/* Beta Tester tier — greyed out / coming soon */}
+          {/* Founding Access tier — greyed out / coming soon */}
           <div className="relative flex flex-col rounded-3xl border border-neutral-900 bg-neutral-950/40 p-8 opacity-60">
             <span className="absolute right-6 top-6 rounded-full border border-neutral-800 bg-black px-3 py-1 text-xs uppercase tracking-[0.2em] text-neutral-500">
               Coming soon
