@@ -5,6 +5,7 @@ type App = {
   description: string;
   href: string;
   icon: string;
+  badge?: string;
 };
 
 type AppsSectionProps = {
@@ -56,8 +57,13 @@ export function AppsSection({
             </div>
 
             <div className="flex-1">
-              <h3 className="text-2xl font-medium transition group-hover:text-neutral-300">
+              <h3 className="flex items-center gap-3 text-2xl font-medium transition group-hover:text-neutral-300">
                 {app.name}
+                {app.badge && (
+                  <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-white">
+                    {app.badge}
+                  </span>
+                )}
               </h3>
 
               <p className="mt-3 leading-7 text-neutral-400">
