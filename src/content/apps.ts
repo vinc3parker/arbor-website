@@ -36,7 +36,11 @@ export const apps = {
         screenshot: "/screens/dashboard.png",
       },
     ],
-    status: "First Arbor release — early access opening soon.",
+    status: "First Arbor release — now in beta on TestFlight.",
+    download: {
+      type: "beta" as const,
+      url: "https://testflight.apple.com/join/U6JcFCB7",
+    },
     backgroundScreenshots: [
       "/screens/program.png",
       "/screens/planning.png",

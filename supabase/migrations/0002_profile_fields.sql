@@ -1,0 +1,2 @@
+-- SUPERSEDED — do not run.
+-- Merged into 0003_arbor_users_profile.sql, which extends public.arbor_users.

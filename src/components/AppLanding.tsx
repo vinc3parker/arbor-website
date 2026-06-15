@@ -21,10 +21,19 @@ type AppLandingProps = {
     }[];
     backgroundScreenshots?: string[];
     status?: string;
+    download?: {
+      type: "beta" | "appstore";
+      url: string;
+    };
   };
 };
 
 export function AppLanding({ app }: AppLandingProps) {
+  const downloadLabel =
+    app.download?.type === "beta"
+      ? "Join the Beta"
+      : "Download on the App Store";
+
   return (
     <main className="min-h-screen bg-black text-white">
       <Navbar />
@@ -83,12 +92,23 @@ export function AppLanding({ app }: AppLandingProps) {
         </p>
 
         <div className="mt-12 flex flex-col gap-4 sm:flex-row">
-          <a
-            href="#early-access"
-            className="rounded-full bg-white px-8 py-4 text-center text-black transition hover:scale-[1.03]"
-          >
-            Join Early Access
-          </a>
+          {app.download ? (
+            <a
+              href={app.download.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full bg-white px-8 py-4 text-center text-black transition hover:scale-[1.03]"
+            >
+              {downloadLabel}
+            </a>
+          ) : (
+            <a
+              href="#early-access"
+              className="rounded-full bg-white px-8 py-4 text-center text-black transition hover:scale-[1.03]"
+            >
+              Join Early Access
+            </a>
+          )}
 
           <a
             href="#overview"
@@ -176,6 +196,17 @@ export function AppLanding({ app }: AppLandingProps) {
             </p>
 
             <p className="mt-6 text-2xl font-medium">{app.status}</p>
+
+            {app.download && (
+              <a
+                href={app.download.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-8 inline-block rounded-full bg-white px-8 py-4 text-center text-black transition hover:scale-[1.03]"
+              >
+                {downloadLabel}
+              </a>
+            )}
           </div>
         </section>
       )}

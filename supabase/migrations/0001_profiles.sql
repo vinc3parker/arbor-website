@@ -1,0 +1,4 @@
+-- SUPERSEDED — do not run.
+-- The shared user profile now lives on public.arbor_users, not a separate
+-- `profiles` table. Run 0003_arbor_users_profile.sql instead, which also
+-- removes this obsolete table if it was ever created.

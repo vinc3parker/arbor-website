@@ -12,6 +12,7 @@ export const homeCopy = {
         "Performance software for hybrid athletes.",
       href: "/aegle",
       icon: "/icons/aegle.png",
+      badge: "Beta",
     },
     {
       name: "Salus",
