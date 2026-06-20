@@ -4,18 +4,22 @@ import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Aegle — Training Software for Hybrid Athletes | Arbor",
+  title: "Aegle — Training App for Hybrid Athletes | Arbor",
   description:
-    "Plan and track gym, running, conditioning, and sport in one connected system. Training software designed for athletes balancing multiple disciplines.",
-  keywords:
-    "training app, athlete training software, hybrid athlete, cross-sport training, workout planner, fitness app",
-  alternates: {
-    canonical: "https://arborapps.co/aegle",
-  },
+    "Plan and track gym, running, conditioning, and sport in one connected system. Aegle is training software built for hybrid athletes, around your goals, level, and events.",
+  keywords: [
+    "hybrid athlete app",
+    "training app",
+    "running and strength training",
+    "workout tracker",
+    "conditioning app",
+    "athletic performance app",
+  ],
+  alternates: { canonical: "https://arborapps.co/aegle" },
   openGraph: {
-    title: "Aegle — Training Software for Hybrid Athletes | Arbor",
+    title: "Aegle — Training App for Hybrid Athletes | Arbor",
     description:
-      "Unified training platform for hybrid athletes. Plan, track, and optimize gym, running, conditioning, and sport.",
+      "Training software for hybrid athletes. Plan gym, run, conditioning, and sport in one connected system built around your goals and events.",
     url: "https://arborapps.co/aegle",
     type: "website",
     images: [
@@ -23,15 +27,15 @@ export const metadata: Metadata = {
         url: "https://arborapps.co/og-aegle.png",
         width: 1200,
         height: 630,
-        alt: "Aegle training software for hybrid athletes",
+        alt: "Aegle training app for hybrid athletes",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Aegle — Training Software for Hybrid Athletes | Arbor",
+    title: "Aegle — Training App for Hybrid Athletes | Arbor",
     description:
-      "Unified training platform for hybrid athletes. Plan, track, and optimize gym, running, conditioning, and sport.",
+      "Training software for hybrid athletes. Plan gym, run, conditioning, and sport in one connected system.",
     images: ["https://arborapps.co/og-aegle.png"],
   },
 };

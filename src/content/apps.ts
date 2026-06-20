@@ -7,9 +7,9 @@ export const apps = {
     intro:
       "Aegle helps you plan and track gym, running, conditioning, and sport in one connected system — built around your goals, level, and upcoming events.",
     detailedDescription:
-      "Aegle is comprehensive training software designed for athletes who don't fit into a single sport category. Whether you're a runner who lifts, a CrossFit athlete preparing for a race, or someone training across multiple disciplines, Aegle understands the complexity of cross-sport training. It connects all your training sessions into one coherent system, eliminating the need to switch between different apps for different types of workouts.",
+      "Aegle is comprehensive training software designed for athletes who don't fit into a single sport category. Whether you're a runner who lifts, a Hrix athlete preparing for a race, or someone training across multiple disciplines, Aegle understands the complexity of cross-sport training. It connects all your training sessions into one coherent system, eliminating the need to switch between different apps for different types of workouts.",
     targetAudience:
-      "Aegle is built for hybrid athletes — people training across more than one discipline. This includes triathletes, competitive runners who strength train, CrossFit athletes, martial artists, and anyone balancing strength, endurance, sport-specific work, and recovery. If you train across multiple domains and want your training to work together as a system, Aegle is for you.",
+      "Aegle is built for hybrid athletes — people training across more than one discipline. This includes triathletes, competitive runners who strength train, Hyrox athletes, martial artists, and anyone balancing strength, endurance, sport-specific work, and recovery. If you train across multiple domains and want your training to work together as a system, Aegle is for you.",
     features: [
       {
         title: "Connected training calendar",

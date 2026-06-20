@@ -27,6 +27,7 @@ export async function generateMetadata({
   }
 
   const url = `https://arborapps.co/blog/${post.slug}`;
+  const image = `https://arborapps.co${post.image}`;
 
   return {
     title: `${post.title} | Arbor Blog`,
@@ -41,7 +42,7 @@ export async function generateMetadata({
       authors: [post.author],
       images: [
         {
-          url: "https://arborapps.co/og-image.png",
+          url: image,
           width: 1200,
           height: 630,
           alt: post.title,
@@ -52,7 +53,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: post.title,
       description: post.summary,
-      images: ["https://arborapps.co/og-image.png"],
+      images: [image],
     },
   };
 }

@@ -132,7 +132,7 @@ Example (Aegle):
 ```
 "Aegle is comprehensive training software designed for athletes 
 who don't fit into a single sport category. Whether you're a 
-runner who lifts, a CrossFit athlete preparing for a race, or 
+runner who lifts, a Hyrox athlete preparing for a race, or 
 someone training across multiple disciplines..."
 ```
 

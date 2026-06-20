@@ -13,6 +13,7 @@ export type PostMeta = {
   tag: string;
   author: string;
   readingTime: string;
+  image: string; // social share image, absolute path under /public
 };
 
 export type Post = PostMeta & {
@@ -50,6 +51,7 @@ function readPost(slug: string): Post | null {
     tag: data.tag ?? "Update",
     author: data.author ?? "Arbor",
     readingTime: formatReadingTime(content),
+    image: data.image ?? "/og-image.png",
     html: marked.parse(content, { async: false }) as string,
   };
 }

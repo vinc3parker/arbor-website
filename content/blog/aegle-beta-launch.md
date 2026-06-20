@@ -4,6 +4,7 @@ date: "2026-06-11"
 summary: "We're opening Aegle up to real humans for the first time. If you track your training and don't mind finding the occasional bug, this is for you."
 tag: "News"
 author: "Vince Parker"
+image: "/og-aegle.png"
 ---
 
 We've been building Aegle for a while now, and today we're opening it up to real humans for the first time. If you're the kind of person who tracks their training, cares about performance, and enjoys being an early adopter (read: willing to tell us when something breaks), this is for you.
