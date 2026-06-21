@@ -50,20 +50,20 @@ Each app page now has unique, keyword-optimized metadata:
 - Title: "Nura — Personal Finance App | Arbor"
 - Keywords: personal finance app, budgeting app, financial planning, money management, expense tracker
 
-**Odyssia** (`/odyssia`)
-- Title: "Odyssia — Travel & Exploration App | Arbor"
+**Wend** (`/wend`)
+- Title: "Wend — Travel & Exploration App | Arbor"
 - Keywords: travel app, travel planning, exploration app, travel recommendations, travel guide
 
-**Circa** (`/circa`)
-- Title: "Circa — Social Connection App | Arbor"
+**Kith** (`/kith`)
+- Title: "Kith — Social Connection App | Arbor"
 - Keywords: social app, social network, messaging app, relationship app, social connection
 
-**Verra** (`/verra`)
-- Title: "Verra — Career & Work Purpose App | Arbor"
+**Telos** (`/telos`)
+- Title: "Telos — Career & Work Purpose App | Arbor"
 - Keywords: career app, job search app, career planning, professional development, career guidance
 
-**Mentra** (`/mentra`)
-- Title: "Mentra — Learning & Knowledge Management App | Arbor"
+**Sage** (`/sage`)
+- Title: "Sage — Learning & Knowledge Management App | Arbor"
 - Keywords: learning app, knowledge management, study app, educational app, skill development
 
 Each page includes:
@@ -179,10 +179,10 @@ alternates: {
 - ✅ `src/app/salus/page.tsx` — Unique metadata + schema
 - ✅ `src/app/thrive/page.tsx` — Unique metadata + schema
 - ✅ `src/app/nura/page.tsx` — Unique metadata + schema
-- ✅ `src/app/odyssia/page.tsx` — Unique metadata + schema
-- ✅ `src/app/circa/page.tsx` — Unique metadata + schema
-- ✅ `src/app/verra/page.tsx` — Unique metadata + schema
-- ✅ `src/app/mentra/page.tsx` — Unique metadata + schema
+- ✅ `src/app/wend/page.tsx` — Unique metadata + schema
+- ✅ `src/app/kith/page.tsx` — Unique metadata + schema
+- ✅ `src/app/telos/page.tsx` — Unique metadata + schema
+- ✅ `src/app/sage/page.tsx` — Unique metadata + schema
 - ✅ `src/content/apps.ts` — Added detailed descriptions
 - ✅ `src/components/AppLanding.tsx` — Updated with new content section + alt text
 - ✅ `src/components/AppsSection.tsx` — Verified alt text

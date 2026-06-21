@@ -36,31 +36,31 @@ export const homeCopy = {
       icon: "/icons/nura.png",
     },
     {
-      name: "Odyssia",
+      name: "Wend",
       description:
         "Exploration, places, travel, food, experiences, and living more fully.",
-      href: "/odyssia",
+      href: "/wend",
       icon: "/icons/coming-soon.png",
     },
     {
-      name: "Circa",
+      name: "Kith",
       description:
         "Intentional social connection without endless scrolling.",
-      href: "/circa",
+      href: "/kith",
       icon: "/icons/coming-soon.png",
     },
     {
-      name: "Verra",
+      name: "Telos",
       description:
         "Work, purpose, careers, and finding better-aligned opportunities.",
-      href: "/verra",
+      href: "/telos",
       icon: "/icons/coming-soon.png",
     },
     {
-      name: "Mentra",
+      name: "Sage",
       description:
         "Learning, knowledge tracking, skills, and structured personal development.",
-      href: "/mentra",
+      href: "/sage",
       icon: "/icons/coming-soon.png",
     },
   ],

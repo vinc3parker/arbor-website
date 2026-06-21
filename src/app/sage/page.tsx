@@ -4,43 +4,43 @@ import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Mentra — Learning & Knowledge Management App | Arbor",
+  title: "Sage — Learning & Knowledge Management App | Arbor",
   description:
     "Build knowledge intentionally. Learn with more direction and less overwhelm. Connect ideas together and make progress toward genuine understanding.",
   keywords:
     "learning app, knowledge management, study app, educational app, skill development, learning platform",
   alternates: {
-    canonical: "https://arborapps.co/mentra",
+    canonical: "https://arborapps.co/sage",
   },
   openGraph: {
-    title: "Mentra — Learning & Knowledge Management App | Arbor",
+    title: "Sage — Learning & Knowledge Management App | Arbor",
     description:
       "Learning and knowledge app for building knowledge intentionally. Connect ideas, track learning, and grow in what you care about.",
-    url: "https://arborapps.co/mentra",
+    url: "https://arborapps.co/sage",
     type: "website",
     images: [
       {
-        url: "https://arborapps.co/og-mentra.png",
+        url: "https://arborapps.co/og-sage.png",
         width: 1200,
         height: 630,
-        alt: "Mentra learning and knowledge management app",
+        alt: "Sage learning and knowledge management app",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mentra — Learning & Knowledge Management App | Arbor",
+    title: "Sage — Learning & Knowledge Management App | Arbor",
     description:
       "Learning and knowledge app for building knowledge intentionally. Connect ideas, track learning, and grow in what you care about.",
-    images: ["https://arborapps.co/og-mentra.png"],
+    images: ["https://arborapps.co/og-sage.png"],
   },
 };
 
 export default function Page() {
   const schemaData = getProductSchema(
-    "Mentra",
+    "Sage",
     "Learning and knowledge management app that helps people learn with more direction and less overwhelm.",
-    "https://arborapps.co/mentra",
+    "https://arborapps.co/sage",
     "EducationalApplication"
   );
 
@@ -52,7 +52,7 @@ export default function Page() {
           __html: JSON.stringify(schemaData),
         }}
       />
-      <AppLanding app={apps.mentra} />
+      <AppLanding app={apps.sage} />
     </>
   );
 }

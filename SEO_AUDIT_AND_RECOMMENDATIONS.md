@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 };
 ```
 
-**Apply to all 8 app pages** (aegle, salus, thrive, nura, odyssia, circa, verra, mentra) with unique, keyword-focused copy.
+**Apply to all 8 app pages** (aegle, salus, thrive, nura, wend, kith, telos, sage) with unique, keyword-focused copy.
 
 ---
 
@@ -322,10 +322,10 @@ export const metadata: Metadata = {
 - Salus: "journaling app", "mental wellbeing app", "reflection app"
 - Thrive: "organization app", "productivity app", "routine planner"
 - Nura: "personal finance app", "budgeting app"
-- Odyssia: "travel planning app", "travel app"
-- Circa: "social app", "connection app"
-- Verra: "career planning app", "job search app"
-- Mentra: "learning app", "knowledge management app"
+- Wend: "travel planning app", "travel app"
+- Kith: "social app", "connection app"
+- Telos: "career planning app", "job search app"
+- Sage: "learning app", "knowledge management app"
 
 ---
 
