@@ -20,6 +20,7 @@ export const homeCopy = {
         "Mental wellbeing, reflection, journaling, and personal growth.",
       href: "/salus",
       icon: "/icons/salus.png",
+      badge: "Beta",
     },
     {
       name: "Thrive",

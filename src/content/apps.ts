@@ -82,8 +82,11 @@ export const apps = {
           "Designed to feel calm, intentional, and supportive rather than addictive or overwhelming.",
       },
     ],
-    status:
-      "Planned as the second Arbor release following Aegle."
+    status: "Second Arbor release — now in beta on TestFlight.",
+    download: {
+      type: "beta" as const,
+      url: "https://testflight.apple.com/join/fk1Pbagw",
+    },
   },
 
   thrive: {
