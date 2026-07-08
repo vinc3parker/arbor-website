@@ -11,7 +11,7 @@ export const homeCopy = {
       description:
         "Adaptive training that understands your goals, whatever they are.",
       href: "/aevo",
-      icon: "/icons/aevo.png",
+      icon: "/icons/aevo-icon.png",
       badge: "Beta",
     },
     {

@@ -85,7 +85,7 @@ export function CameraRig() {
       travel.current += Math.hypot(dx, dy);
       if (isMobile.current) {
         targetOrbit.current = THREE.MathUtils.clamp(
-          targetOrbit.current + dx * ORBIT_SENSITIVITY,
+          targetOrbit.current - dx * ORBIT_SENSITIVITY,
           -ORBIT_LIMIT,
           ORBIT_LIMIT
         );
