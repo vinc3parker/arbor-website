@@ -1,15 +1,15 @@
 export const apps = {
-  aegle: {
-    name: "Aegle",
+  aevo: {
+    name: "Aevo",
     tag: "Performance",
-    hero: "Training software for hybrid athletes.",
-    overviewTitle: "Built for athletes who train across more than one discipline.",
+    hero: "Training that actually understands you.",
+    overviewTitle: "Training built around you, not a template.",
     intro:
-      "Aegle helps you plan and track gym, running, conditioning, and sport in one connected system — built around your goals, level, and upcoming events.",
+      "Aevo pays attention to how you actually train — your goals, your level, your schedule, and the events you're working towards — and builds a plan that fits. Whether you run, lift, play a sport, or do all three, it adapts to you instead of pushing you through someone else's program.",
     detailedDescription:
-      "Aegle is comprehensive training software designed for athletes who don't fit into a single sport category. Whether you're a runner who lifts, a Hrix athlete preparing for a race, or someone training across multiple disciplines, Aegle understands the complexity of cross-sport training. It connects all your training sessions into one coherent system, eliminating the need to switch between different apps for different types of workouts.",
+      "Aevo is training software that adapts to the individual. Most apps hand you a fixed prescription — a generic plan that ignores your history, your goals, and everything else you have going on. Aevo works the other way around: it pays attention to how you actually train and shapes your plan around your ability, your weekly routine, and the goal or event you're working towards. Run, lift, play a sport, or combine all of them — Aevo connects every session into one coherent system instead of scattering your training across separate apps. It was built to handle real complexity — the kind that comes from balancing strength, endurance, and sport at once — which is exactly why it works just as well when your training is simpler. The result is a plan that feels made for you, because it is: one that pushes you in the direction you actually want to go.",
     targetAudience:
-      "Aegle is built for hybrid athletes — people training across more than one discipline. This includes triathletes, competitive runners who strength train, Hyrox athletes, martial artists, and anyone balancing strength, endurance, sport-specific work, and recovery. If you train across multiple domains and want your training to work together as a system, Aegle is for you.",
+      "Aevo is for anyone who wants their training to understand them. That includes runners who also lift, lifters chasing their first race, people training for a sport, and hybrid athletes juggling several disciplines at once — but it's just as much for someone with a single, focused goal who's tired of generic plans. If you want training that adapts to your ability, your schedule, and where you actually want to go, rather than a one-size-fits-all prescription, Aevo is for you.",
     features: [
       {
         title: "Connected training calendar",
@@ -30,9 +30,9 @@ export const apps = {
         screenshot: "/screens/running-builder.png",
       },
       {
-        title: "The Complete Athlete",
+        title: "Training that adapts to you",
         description:
-          "Built for people balancing strength, endurance, sport, recovery, and real life.",
+          "As your ability, schedule, and goals change, your plan adjusts — so it always reflects where you are now and where you're trying to get to.",
         screenshot: "/screens/dashboard.png",
       },
     ],

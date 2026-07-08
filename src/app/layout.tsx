@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { GoogleAnalyticsComponent } from "@/components/GoogleAnalytics";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { getOrganizationSchema, getWebsiteSchema } from "@/lib/schema";
 
 const geistSans = Geist({
@@ -64,18 +64,6 @@ export default function RootLayout({
     >
       <head>
         <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-K74WZKGYCY"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-K74WZKGYCY');`,
-          }}
-        />
-        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(getOrganizationSchema()),
@@ -92,6 +80,7 @@ gtag('config', 'G-K74WZKGYCY');`,
         {children}
         <Analytics />
         <SpeedInsights />
+        <GoogleAnalytics gaId="G-K74WZKGYCY" />
       </body>
     </html>
   );

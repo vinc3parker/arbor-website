@@ -22,10 +22,10 @@ const cards = [
     accent: "#4ade80",
   },
   {
-    file: "og-aegle.png",
+    file: "og-aevo.png",
     kicker: "PERFORMANCE",
-    name: "Aegle",
-    tagline: ["Training app for", "hybrid athletes."],
+    name: "Aevo",
+    tagline: ["Training that", "understands you."],
     accent: "#f97316",
   },
   {

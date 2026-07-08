@@ -11,10 +11,6 @@ type NavItem = {
 
 const items: NavItem[] = [
   {
-    label: "Apps",
-    href: "/#apps",
-  },
-  {
     label: "Blog",
     href: "/blog",
   },
@@ -28,9 +24,9 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed left-0 right-0 top-0 z-50 px-4">
-      <div className="mx-auto mt-4 max-w-6xl rounded-3xl border border-neutral-800 bg-black/50 backdrop-blur-md sm:rounded-full">
-        <div className="flex items-center justify-between px-6 py-4 sm:px-8 sm:py-5">
+    <nav className="site-navbar fixed left-0 right-0 top-0 z-50 border-b border-neutral-800/80 bg-black/60 backdrop-blur-md">
+      <div className="mx-auto max-w-6xl">
+        <div className="flex items-center justify-between px-6 py-4 sm:px-8 sm:py-4">
           <Link
             href="/"
             className="flex items-center gap-3 transition hover:opacity-90"

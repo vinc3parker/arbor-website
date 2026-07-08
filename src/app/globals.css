@@ -129,3 +129,48 @@ body {
   border-radius: 0.75rem;
   margin: 2rem 0;
 }
+
+/* --- Observatory intro: the navbar stays hidden until the portals have
+       fully lit (class toggled from the ArborRoom scroll driver). --- */
+.site-navbar {
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+
+html.arbor-intro .site-navbar {
+  opacity: 0;
+  transform: translateY(-12px);
+  pointer-events: none;
+}
+
+/* --- App "world" living atmosphere: slow-drifting accent auroras behind the
+       immersive app pages. --- */
+@keyframes appAuroraDrift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, 4%, 0) scale(1.18);
+  }
+}
+
+.app-aurora {
+  animation: appAuroraDrift 24s ease-in-out infinite;
+  will-change: transform;
+}
+.app-aurora-2 {
+  animation: appAuroraDrift 30s ease-in-out infinite reverse;
+  will-change: transform;
+}
+.app-aurora-3 {
+  animation: appAuroraDrift 38s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-aurora,
+  .app-aurora-2,
+  .app-aurora-3 {
+    animation: none;
+  }
+}

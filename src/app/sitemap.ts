@@ -21,8 +21,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${BASE}/${slug}`,
     lastModified: now,
     changeFrequency: "monthly",
-    // Aegle is the live product — give it top app priority.
-    priority: slug === "aegle" ? 0.9 : 0.8,
+    // Aevo is the live product — give it top app priority.
+    priority: slug === "aevo" ? 0.9 : 0.8,
   }));
 
   const blogRoutes: MetadataRoute.Sitemap = getAllPosts().map((post) => ({

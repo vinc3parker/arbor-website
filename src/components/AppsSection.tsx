@@ -21,12 +21,17 @@ export function AppsSection({
       className="mx-auto max-w-6xl px-8 py-32"
     >
       <p className="mb-6 text-sm uppercase tracking-[0.3em] text-neutral-500">
-        ECOSYSTEM
+        The apps
       </p>
 
-      <h2 className="mb-12 text-5xl font-semibold">
-        The Arbor Apps
+      <h2 className="mb-6 text-5xl font-semibold">
+        Eight experts, one for each dimension.
       </h2>
+
+      <p className="mb-12 max-w-2xl text-lg leading-8 text-neutral-400">
+        Each app does one part of life properly, the way a specialist would.
+        Some are live today; more are on the way.
+      </p>
 
       <div className="grid gap-6 md:grid-cols-2">
         {apps.map((app) => (

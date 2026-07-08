@@ -4,7 +4,7 @@ date: "2026-06-21"
 summary: "Hyrox sits right between running and strength — which is exactly why it's so hard to plan for. Here's how to structure a Hyrox training plan around a normal week, without burning out."
 tag: "Training"
 author: "Vince Parker"
-image: "/og-aegle.png"
+image: "/og-aevo.png"
 ---
 
 Hyrox has quietly become one of the most interesting things to happen to fitness in years.
@@ -55,9 +55,9 @@ None of this is complicated. But it's almost impossible to manage if your traini
 
 ## Keep the whole plan in one place
 
-This is the exact problem I built [Aegle](/aegle) to solve.
+This is the exact problem I built [Aevo](/aevo) to solve.
 
-Aegle is training software for hybrid athletes — people whose training doesn't fit in a single box. Instead of juggling one app for your runs and another for the gym, it plans gym, running, conditioning, and station work in one connected system, built around your goal and the event you're working towards. For Hyrox specifically, that means your runs and your strength work finally live in the same plan, so you can actually see whether your week is balanced or quietly tipping too far one way.
+Aevo is training software for hybrid athletes — people whose training doesn't fit in a single box. Instead of juggling one app for your runs and another for the gym, it plans gym, running, conditioning, and station work in one connected system, built around your goal and the event you're working towards. For Hyrox specifically, that means your runs and your strength work finally live in the same plan, so you can actually see whether your week is balanced or quietly tipping too far one way.
 
 It's in beta right now, and I'd love more hybrid athletes testing it — especially anyone training for a Hyrox. You can [join the beta here](https://testflight.apple.com/join/U6JcFCB7).
 

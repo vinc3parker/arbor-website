@@ -1,17 +1,17 @@
 export const homeCopy = {
   hero: {
-    title: "Technology for people who want more from life.",
+    title: "Arbor understands the whole you.",
     subtitle:
-      "Training. Reflection. Growth. Exploration. A new ecosystem of apps designed to help people live intentionally.",
+      "Life has eight dimensions. Arbor gives you a specialist app for each — all rooted in one ecosystem that understands you as a complete person, not eight disconnected accounts.",
   },
 
   apps: [
     {
-      name: "Aegle",
+      name: "Aevo",
       description:
-        "Performance software for hybrid athletes.",
-      href: "/aegle",
-      icon: "/icons/aegle.png",
+        "Adaptive training that understands your goals, whatever they are.",
+      href: "/aevo",
+      icon: "/icons/aevo.png",
       badge: "Beta",
     },
     {

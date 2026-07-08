@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Arbor — The Eight Dimensions</title>
+<style>
+  :root{
+    --bg:#07080a;
+    --ink:#f3efe7;
+    --muted:#8b8578;
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box}
+  html{min-height:100%; background:var(--bg)}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    letter-spacing:.01em;
+  }
+
+  /* ---------- hero (pinned) + site ---------- */
+  .hero{position:relative; height:220svh; min-height:1280px; z-index:1}
+  .stage{position:sticky; top:0; height:100svh; overflow:hidden}
+  .site{position:relative; z-index:1; background:#07080a; color:var(--ink); padding:130px 8vw 110px}
+  .site-inner{max-width:1040px; margin:0 auto}
+  .site .eyebrow{font-size:11px; letter-spacing:.34em; text-transform:uppercase; color:#6b665c; margin:0}
+  .site h2{font-size:clamp(30px,4vw,52px); font-weight:600; margin:14px 0 0; letter-spacing:.005em}
+  .site .lead{color:#9a9488; font-size:18px; line-height:1.7; max-width:60ch; margin:22px 0 0}
+  .site .applist{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; margin:56px 0 0}
+  .site .card{border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:22px; background:rgba(255,255,255,.02); transition:border-color .3s}
+  .site .card:hover{border-color:color-mix(in srgb,var(--accent) 55%, transparent)}
+  .site .card .k{font-size:10.5px; letter-spacing:.26em; text-transform:uppercase}
+  .site .card h3{margin:12px 0 0; font-size:20px; font-weight:600}
+  .site .card p{margin:8px 0 0; color:#8b8578; font-size:14px; line-height:1.6}
+  .site .foot{margin-top:90px; padding-top:28px; border-top:1px solid rgba(255,255,255,.07); color:#5a564d; font-size:13px; letter-spacing:.02em}
+
+  /* ---------- Scene / atmosphere ---------- */
+  .scene{
+    position:absolute; inset:0;
+    perspective:820px;
+    perspective-origin:50% 50%;
+    overflow:hidden;
+    cursor:default;
+    touch-action:pan-y;
+  }
+  .scene.grabbing{cursor:grabbing}
+
+  .atmos{position:absolute;inset:0;pointer-events:none;z-index:6}
+  .atmos.dome{
+    background:radial-gradient(120% 80% at 50% -12%, rgba(64,57,45,.55), rgba(9,9,11,0) 62%);
+  }
+  .atmos.warm{
+    background:radial-gradient(58% 46% at 50% 44%, rgba(120,96,60,.10), rgba(0,0,0,0) 72%);
+  }
+  .atmos.vignette{
+    background:radial-gradient(135% 105% at 50% 48%, rgba(0,0,0,0) 52%, rgba(0,0,0,.74) 100%);
+  }
+  .grain{
+    display:none;
+    position:absolute;inset:-50%;pointer-events:none;opacity:.045;z-index:7;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ---------- 3D rig ---------- */
+  .rig{
+    position:absolute; inset:0;
+    transform-style:preserve-3d;
+    transform:translateY(80px);
+    transition:transform 1.1s var(--ease), opacity 1.1s var(--ease), filter 1.1s var(--ease);
+  }
+  .world{
+    position:absolute; left:50%; top:50%; width:0; height:0;
+    transform-style:preserve-3d;
+    will-change:transform;
+  }
+
+  /* receding round floor — sells the room in 3D */
+  .floor{
+    position:absolute; left:50%; top:50%;
+    width:4800px; height:4800px; margin:-2400px 0 0 -2400px;
+    transform:translateY(380px) rotateX(90deg);
+    transform-style:preserve-3d;
+    background:
+      repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,.028) 0 1px, rgba(0,0,0,0) 1px 90px),
+      radial-gradient(circle at 50% 50%, #0c0d10 0%, #070809 60%, #050506 100%);
+    border-radius:50%;
+    box-shadow:0 0 200px rgba(0,0,0,.8) inset;
+    opacity:.9;
+  }
+
+  /* ---------- the wall (portals are holes cut into it) ---------- */
+  .wall-panel{
+    position:absolute;
+    width:336px; height:1180px;
+    margin:-800px 0 0 -168px;      /* base meets the floor */
+    transform-style:preserve-3d;
+    backface-visibility:hidden;
+    background:linear-gradient(180deg, #17161a 0%, #121115 46%, #0c0b0e 100%);
+    box-shadow:
+      inset 1px 0 0 rgba(255,255,255,.035),
+      inset -1px 0 0 rgba(0,0,0,.6),
+      inset 0 70px 110px rgba(0,0,0,.45),
+      inset 0 -40px 120px rgba(0,0,0,.6);
+    opacity:calc(var(--wall,0) * .96);
+    pointer-events:none;
+  }
+
+  /* ---------- windows on the wall ---------- */
+  .window{
+    position:absolute;
+    width:292px; height:760px;
+    margin:-380px 0 0 -146px;          /* centre on origin */
+    transform-style:preserve-3d;
+    backface-visibility:hidden;
+    cursor:pointer;
+    color:var(--accent);
+    opacity:calc(var(--reveal,1) * var(--base,1));
+    transition:opacity .18s linear;
+  }
+  .win-glow{
+    position:absolute; inset:-34% -26%;
+    background:radial-gradient(58% 50% at 50% 44%, color-mix(in srgb, var(--accent) 42%, transparent), transparent 70%);
+    opacity:.06; transition:opacity 1s var(--ease);
+    pointer-events:none;
+  }
+  .win-glass{
+    position:absolute; inset:0;
+    border-radius:150px 150px 14px 14px;      /* archway: rounded top, flat base */
+    overflow:hidden;
+    backface-visibility:hidden;
+    transform:translateZ(0);
+    background:linear-gradient(180deg, color-mix(in srgb, var(--accent) 9%, #0e0f13) 0%, #0b0c10 82%);
+    box-shadow:
+      inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 20%, rgba(210,196,170,.08)),
+      inset 0 26px 60px rgba(0,0,0,.42),
+      inset 0 -34px 70px rgba(0,0,0,.4);
+    transition:box-shadow 1s var(--ease), transform 1s var(--ease);
+  }
+  .win-fill{
+    position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(120% 74% at 50% 40%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 64%),
+      radial-gradient(100% 55% at 50% 92%, rgba(0,0,0,.5), transparent 72%);
+  }
+  .win-frame{
+    position:absolute; inset:-16px;
+    border-radius:164px 164px 18px 18px;
+    box-shadow:
+      inset 0 0 0 2px rgba(210,196,170,.10),          /* stone highlight */
+      inset 0 0 0 12px rgba(0,0,0,.4),                /* recessed reveal */
+      inset 0 0 0 14px color-mix(in srgb, var(--accent) 16%, rgba(210,196,170,.05)),
+      0 0 0 1px rgba(0,0,0,.55);
+    pointer-events:none;
+  }
+  .window.active .win-frame{
+    box-shadow:
+      inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 60%, rgba(255,255,255,.16)),
+      inset 0 0 0 8px rgba(0,0,0,.38),
+      0 0 0 1px rgba(255,255,255,.05);
+  }
+  .win-name{
+    position:absolute; left:0; right:0; bottom:40px; text-align:center;
+    font-size:26px; font-weight:600; letter-spacing:.05em;
+    color:color-mix(in srgb, var(--accent) 62%, #efe9dd);
+    opacity:.9; pointer-events:none;
+  }
+  .win-art{position:absolute; inset:0; display:block; opacity:.66}
+  .win-art svg{width:100%; height:100%; display:block}
+  .win-art svg [stroke]{vector-effect:non-scaling-stroke}
+
+  /* pilaster / light seam beside each window to imply a wall */
+  .win-seam{
+    position:absolute; top:6%; bottom:6%; width:1px;
+    background:linear-gradient(180deg, transparent, rgba(255,255,255,.06), transparent);
+    pointer-events:none;
+  }
+  .win-seam.l{left:-30px}
+  .win-seam.r{right:-30px}
+
+  .win-label{
+    position:absolute; left:50%; top:calc(100% + 18px);
+    transform:translateX(-50%) translateY(8px);
+    width:260px; text-align:center;
+    opacity:0; transition:opacity .7s var(--ease), transform .7s var(--ease);
+    pointer-events:none;
+  }
+  .win-label .name{font-size:22px; font-weight:600; letter-spacing:.02em}
+  .win-label .dim{
+    margin-top:6px; font-size:11px; letter-spacing:.32em; text-transform:uppercase;
+    color:color-mix(in srgb, var(--accent) 72%, #cfc8ba);
+  }
+  .win-label .say{margin-top:10px; font-size:14px; color:var(--muted)}
+
+  /* interaction states */
+  .stage.has-hover .window{opacity:calc(var(--reveal,1) * var(--base,1) * .48)}
+  .stage.has-hover .hint{opacity:0 !important}
+  .stage.has-hover .heading{opacity:0 !important}
+  .window.active{opacity:var(--reveal,1) !important; filter:none !important; z-index:2}
+  .window.active .win-glass{
+    box-shadow:
+      inset 0 0 0 2px color-mix(in srgb, var(--accent) 70%, transparent),
+      inset 0 0 60px 6px color-mix(in srgb, var(--accent) 12%, rgba(0,0,0,.55)),
+      0 0 90px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .window.active .win-glow{opacity:.5}
+  .window.active .win-name{opacity:0}
+  .window.active .win-label{opacity:1; transform:translateX(-50%) translateY(0)}
+
+  /* ---------- short central pedestal (no logo) ---------- */
+  .pedestal{
+    position:absolute; left:0; top:0;
+    transform:translate(-50%,-62%);
+    z-index:5; pointer-events:none;
+    transition:opacity 1s var(--ease);
+  }
+  .floormk{
+    position:absolute; left:50%; top:50%;
+    width:3200px; height:3200px; margin:-1600px 0 0 -1600px;
+    transform:translateY(378px) rotateX(90deg);
+    transform-style:preserve-3d; pointer-events:none;
+  }
+  .floormk svg .fglow{ filter:blur(6px) }
+  .origin-marker{ position:absolute; left:50%; top:50%; width:0; height:0; transform:translateY(320px) translateZ(-300px) }
+  .ped{ position:relative; width:190px; height:70px; }
+  .ped-glow{
+    position:absolute; left:50%; top:-46px; transform:translateX(-50%);
+    width:230px; height:130px; border-radius:50%;
+    background:radial-gradient(circle at 50% 62%, rgba(150,128,86,.18), rgba(0,0,0,0) 66%);
+    filter:blur(7px);
+  }
+  .ped-shadow{
+    position:absolute; left:50%; bottom:-16px; transform:translateX(-50%);
+    width:250px; height:52px; border-radius:50%;
+    background:radial-gradient(closest-side, rgba(0,0,0,.75), rgba(0,0,0,0) 78%);
+    filter:blur(4px);
+  }
+  .ped-side{
+    position:absolute; left:50%; top:22px; transform:translateX(-50%);
+    width:166px; height:38px;
+    border-radius:0 0 83px 83px / 0 0 20px 20px;
+    background:linear-gradient(180deg,#18181b 0%, #0d0d10 62%, #0a0a0c 100%);
+    box-shadow:inset 0 -6px 14px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.04);
+  }
+  .ped-top{
+    position:absolute; left:50%; top:0; transform:translateX(-50%);
+    width:190px; height:44px; border-radius:50%;
+    background:
+      radial-gradient(62% 92% at 50% 34%, rgba(150,132,92,.5), rgba(40,36,30,0) 70%),
+      radial-gradient(52% 82% at 50% 44%, #26241f 0%, #141310 72%);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.06), 0 -2px 12px rgba(150,128,86,.14);
+  }
+
+  /* ---------- text overlay ---------- */
+  .heading{
+    position:absolute; left:0; right:0; top:8%;
+    text-align:center; z-index:8; pointer-events:none;
+    transition:opacity .9s var(--ease), transform .9s var(--ease);
+  }
+  .heading h1{margin:0; font-weight:600; font-size:clamp(26px,3.4vw,46px); letter-spacing:.005em}
+  .heading p{margin:14px 0 0; color:var(--muted); font-size:clamp(13px,1.4vw,17px); font-weight:400; letter-spacing:.02em}
+  .hint{
+    position:absolute; left:0; right:0; bottom:3.4%; text-align:center;
+    font-size:11px; letter-spacing:.28em; text-transform:uppercase; color:#4c483f;
+    z-index:8; pointer-events:none; transition:opacity .8s var(--ease);
+  }
+  .intro{
+    position:absolute; inset:0; z-index:11; pointer-events:none;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    will-change:opacity,transform;
+  }
+  .intro-word{font-size:clamp(52px,10vw,128px); font-weight:600; letter-spacing:.05em; color:var(--ink)}
+  .intro-sub{margin-top:26px; font-size:11px; letter-spacing:.36em; text-transform:uppercase; color:#6b665c; animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(4px);opacity:1}}
+
+  /* status pips (crisp 2D, under each window) */
+  .hud{position:absolute; inset:0; pointer-events:none; z-index:9}
+  .chip{position:absolute; transform:translate(-50%,0); display:flex; gap:5px; transition:opacity .5s var(--ease); will-change:left,top,opacity}
+  .pip{width:6px; height:6px; border-radius:50%; border:1px solid rgba(150,144,128,.45); background:transparent}
+  .pip.on{background:var(--c); border-color:var(--c); box-shadow:0 0 7px color-mix(in srgb,var(--c) 70%, transparent)}
+
+  /* focus detail — fills the floor gap on hover */
+  .detail{
+    position:absolute; left:0; right:0; top:42%; transform:translateY(-50%);
+    text-align:center; z-index:9; pointer-events:none; opacity:0;
+    transition:opacity .45s var(--ease);
+  }
+  .detail.show{opacity:1}
+  .detail .d-name{font-size:clamp(48px,7.6vw,108px); font-weight:600; letter-spacing:.01em; line-height:1; color:var(--ink)}
+  .detail .d-dim{margin-top:16px; font-size:12px; letter-spacing:.4em; text-transform:uppercase; color:color-mix(in srgb,var(--dc) 82%, #cfc8ba)}
+  .detail .d-say{margin-top:16px; font-size:18px; color:#cfc8ba}
+  .detail .d-status{margin-top:22px; display:inline-flex; align-items:center; gap:10px; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:#8b8578}
+  .detail .d-pips{display:inline-flex; gap:6px}
+  .stage.zooming .hud, .stage.zooming .detail{opacity:0}
+
+  /* 2D hit proxies for the 3D windows */
+  .hitlayer{position:absolute; inset:0; z-index:10; pointer-events:none}
+  .hit{position:absolute; pointer-events:auto; cursor:pointer; border-radius:150px 150px 14px 14px; outline:none}
+  .hit:focus-visible{box-shadow:0 0 0 2px rgba(255,255,255,.45)}
+
+  .stage.zooming .heading{opacity:0; transform:translateY(-10px)}
+  .stage.zooming .hint{opacity:0}
+  .stage.zooming .pedestal{opacity:0; transform:translateX(-50%) translateY(20px) scale(.96)}
+  .stage.zooming .rig{filter:blur(8px); opacity:.3; transform:translateY(80px) scale(1.24)}
+
+  /* ---------- portal (travel through the window) ---------- */
+  .portal{
+    position:fixed; z-index:20; overflow:hidden;
+    border-radius:110px 110px 106px 106px;
+    color:var(--accent);
+    box-shadow:0 40px 160px rgba(0,0,0,.7);
+    transition:top 1s var(--ease), left 1s var(--ease), width 1s var(--ease),
+               height 1s var(--ease), border-radius 1s var(--ease);
+    background:linear-gradient(180deg, color-mix(in srgb, var(--accent) 16%, #0a0b0e) 0%, #08090c 82%);
+  }
+  .portal.is-open{top:0!important; left:0!important; width:100vw!important; height:100svh!important; border-radius:0}
+  .portal-art{position:absolute; inset:0; opacity:.5; transition:opacity 1s var(--ease)}
+  .portal-art svg{width:100%; height:100%}
+  .portal.is-open .portal-art{opacity:.15}
+  .portal-wash{position:absolute; inset:0; background:radial-gradient(80% 70% at 50% 40%, color-mix(in srgb,var(--accent) 14%, transparent), transparent 75%); pointer-events:none}
+
+  .landing{
+    position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center;
+    padding:0 8vw; max-width:900px; margin:0 auto; left:0; right:0;
+    opacity:0; transform:translateY(18px);
+    transition:opacity .8s var(--ease) .1s, transform .8s var(--ease) .1s;
+    color:var(--ink);
+  }
+  .portal.show .landing{opacity:1; transform:none}
+  .landing .kicker{font-size:11px; letter-spacing:.34em; text-transform:uppercase; color:color-mix(in srgb,var(--accent) 78%, #d8d2c6)}
+  .landing h2{margin:16px 0 0; font-size:clamp(40px,7vw,84px); font-weight:600; line-height:1; color:var(--ink)}
+  .landing .lede{margin:22px 0 0; font-size:clamp(16px,2vw,22px); color:#cfc8ba; max-width:34ch; line-height:1.5}
+  .landing .enter{
+    margin-top:38px; display:inline-flex; align-items:center; gap:10px; width:max-content;
+    font-size:14px; letter-spacing:.04em; color:var(--accent);
+    padding:13px 22px; border-radius:100px; cursor:pointer;
+    border:1px solid color-mix(in srgb,var(--accent) 45%, transparent);
+    background:color-mix(in srgb,var(--accent) 8%, transparent);
+  }
+  .close{
+    position:absolute; top:26px; right:30px; z-index:3;
+    width:42px; height:42px; border-radius:50%; cursor:pointer;
+    border:1px solid rgba(255,255,255,.16); background:rgba(0,0,0,.25);
+    color:#e9e4da; font-size:18px; line-height:1; display:grid; place-items:center;
+    opacity:0; transition:opacity .6s var(--ease) .4s; backdrop-filter:blur(6px);
+  }
+  .portal.show .close{opacity:1}
+  .close:hover{border-color:rgba(255,255,255,.4)}
+  .portal .backhint{position:absolute; bottom:30px; left:0; right:0; text-align:center; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:#6b665c; opacity:0; transition:opacity .6s .5s}
+
+  @media (max-width: 760px){
+    .hero{height:210svh; min-height:1100px}
+    .site{padding:86px 6vw 84px}
+    .site .lead{font-size:16px}
+    .site .applist{grid-template-columns:1fr; margin-top:38px}
+
+    .scene{perspective:640px}
+    .rig{transform:translateY(120px) scale(.82)}
+    .world{top:52%}
+    .floor{width:3600px; height:3600px; margin:-1800px 0 0 -1800px}
+    .floormk{width:2500px; height:2500px; margin:-1250px 0 0 -1250px}
+
+    .window{width:204px; height:560px; margin:-280px 0 0 -102px}
+    .win-glass{border-radius:110px 110px 12px 12px}
+    .win-frame{inset:-11px; border-radius:122px 122px 15px 15px}
+    .win-name{bottom:32px; font-size:20px}
+    .detail{top:40%; padding:0 22px}
+    .detail .d-name{font-size:clamp(40px,14vw,72px)}
+    .detail .d-say{font-size:15px}
+    .heading{top:7%; padding:0 22px}
+    .heading p{line-height:1.5}
+    .hint{bottom:18px; font-size:10px; letter-spacing:.22em}
+    .intro-word{font-size:clamp(48px,17vw,86px)}
+    .intro-sub{font-size:10px; letter-spacing:.28em}
+    .landing{padding:0 7vw}
+    .landing .lede{max-width:28ch}
+    .close{top:18px; right:18px}
+  }
+  .portal.show .backhint{opacity:1}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition-duration:.001ms!important; animation-duration:.001ms!important}
+  }
+</style>
+</head>
+<body>
+<div class="hero" id="hero">
+<div class="stage" id="stage">
+  <div class="scene" id="scene">
+    <div class="atmos dome"></div>
+    <div class="atmos warm"></div>
+
+    <div class="rig" id="rig">
+      <div class="world" id="world">
+        <div class="floor"></div>
+        <div class="floormk"><svg id="branchsvg" viewBox="0 0 3200 3200" width="3200" height="3200" style="overflow:visible"></svg></div>
+        <!-- windows injected here -->
+      </div>
+    </div>
+
+    <div class="atmos vignette"></div>
+    <div class="grain"></div>
+    <div class="hud" id="hud"></div>
+    <div class="detail" id="detail"></div>
+    <div class="hitlayer" id="hitlayer"></div>
+
+
+    <div class="hint" id="hint">Hover an archway to explore</div>
+  </div>
+  <div class="intro" id="intro">
+    <div class="intro-word">Arbor</div>
+    <div class="intro-sub">Scroll to enter</div>
+  </div>
+</div>
+</div>
+<section class="site" id="site">
+  <div class="site-inner">
+    <p class="eyebrow">The ecosystem</p>
+    <h2>One system for a well-lived life.</h2>
+    <p class="lead">Arbor isn't a collection of apps — it's eight dimensions of one life, built to work together. Explore each of them below.</p>
+    <div class="applist" id="applist"></div>
+    <div class="foot">Arbor — technology for people who want more from life.</div>
+  </div>
+</section>
+
+<script>
+/* ---------------- data ---------------- */
+const APPS = [
+  { key:"nura",  name:"Nura",  dim:"Financial Wellbeing",   say:"Build a steady foundation.",  accent:"#1F6F78" },
+  { key:"wend",  name:"Wend",  dim:"Life Experiences",      say:"Explore what's out there.",   accent:"#F28C28" },
+  { key:"salus", name:"Salus", dim:"Mental Wellbeing",      say:"Tend to your mind.",          accent:"#38C5A2" },
+  { key:"aevo",  name:"Aevo",  dim:"Physical Wellbeing",    say:"Care for your body.",         accent:"#D4FF00" },
+  { key:"telos", name:"Telos", dim:"Purpose & Contribution",say:"Move towards what matters.",  accent:"#C89B3C" },
+  { key:"sage",  name:"Sage",  dim:"Lifelong Growth",       say:"Keep learning, always.",      accent:"#5C6BC0" },
+  { key:"kith",  name:"Kith",  dim:"Meaningful Connection", say:"Stay close to your people.",  accent:"#D96C8A" },
+  { key:"thrive",name:"Thrive",dim:"Intentional Living",    say:"Shape the space you live in.",accent:"#E85D5D" },
+];
+
+const STATUS = { aevo:'beta', salus:'beta', nura:'dev', thrive:'dev', wend:'dev', kith:'dev', sage:'dev', telos:'dev' };
+const TIER = { dev:{n:1,label:'In development'}, beta:{n:2,label:'Beta'}, live:{n:3,label:'Live'} };
+
+/* ---------------- illustrations (single-accent line art) ---------------- */
+const ART = {
+  aevo:`<svg viewBox="0 0 100 200" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <g class="a-fig">
+      <circle cx="50" cy="52" r="7"/>
+      <path d="M50 59 C46 74 58 82 54 98 C51 112 60 120 57 136"/>
+      <path d="M50 70 C40 76 33 70 27 74"/><path d="M50 72 C61 78 68 71 75 76"/>
+      <path d="M57 118 C50 128 44 132 39 146"/><path d="M57 122 C64 132 66 140 70 154"/>
+    </g>
+    <path class="a-arc" d="M18 150 C40 120 60 120 82 150" stroke-dasharray="4 7"/>
+    <g class="a-leaf" stroke-width="1.2"><path d="M74 60 C82 52 90 54 90 44 C82 44 74 50 74 60Z"/><path d="M77 55 L86 48"/></g>
+    <line x1="14" y1="168" x2="86" y2="168"/>
+  </svg>`,
+  salus:`<svg viewBox="0 0 100 200" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+    <line x1="12" y1="104" x2="88" y2="104" opacity=".5"/>
+    <g class="s-breath"><circle cx="50" cy="80" r="10"/><circle cx="50" cy="80" r="20" opacity=".7"/><circle cx="50" cy="80" r="30" opacity=".45"/><circle cx="50" cy="80" r="40" opacity=".25"/></g>
+    <g opacity=".55" class="s-ripple"><path d="M20 128 C34 122 44 132 50 128 C58 132 66 122 80 128"/><path d="M22 142 C36 137 44 146 50 142 C58 146 66 137 78 142"/><path d="M26 156 C38 151 45 159 50 156 C57 159 64 151 74 156"/></g>
+  </svg>`,
+  telos:`<svg viewBox="0 0 100 200" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+    <g class="t-beacon"><circle cx="50" cy="46" r="3.2"/><path d="M50 40 L50 34 M50 52 L50 58 M44 46 L38 46 M56 46 L62 46" opacity=".8"/></g>
+    <path d="M14 150 L40 92 L52 116 L66 78 L88 150"/>
+    <path class="t-path" d="M50 150 C48 132 58 128 52 112 C48 100 56 92 50 78" stroke-dasharray="3 6"/>
+    <line x1="12" y1="150" x2="88" y2="150" opacity=".6"/>
+  </svg>`,
+  nura:`<svg viewBox="0 0 100 200" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="30" y="120" width="40" height="18" rx="2"/><rect x="34" y="100" width="32" height="18" rx="2"/><rect x="38" y="80" width="24" height="18" rx="2"/><rect x="42" y="62" width="16" height="16" rx="2"/>
+    <path d="M18 154 C34 150 40 158 50 154 C60 150 66 158 82 154" opacity=".6"/><line x1="16" y1="140" x2="84" y2="140" opacity=".5"/>
+  </svg>`,
+  thrive:`<svg viewBox="0 0 100 200" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M28 108 L50 84 L72 108 L72 150 L28 150 Z"/><path d="M44 150 L44 122 L56 122 L56 150"/>
+    <line x1="20" y1="108" x2="80" y2="108" opacity=".4"/><circle cx="50" cy="70" r="3" opacity=".7"/><line x1="18" y1="150" x2="82" y2="150" opacity=".6"/>
+  </svg>`,
+  wend:`<svg viewBox="0 0 100 200" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="50" cy="70" r="12"/><line x1="20" y1="98" x2="80" y2="98" opacity=".5"/>
+    <path d="M50 150 C40 138 62 130 52 118 C46 110 56 104 50 96"/><circle cx="52" cy="118" r="1.6" opacity=".8"/><circle cx="46" cy="134" r="1.6" opacity=".8"/>
+  </svg>`,
+  kith:`<svg viewBox="0 0 100 200" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="50" cy="70" r="8"/><circle cx="28" cy="104" r="6"/><circle cx="72" cy="104" r="6"/><circle cx="40" cy="140" r="6"/><circle cx="66" cy="138" r="6"/>
+    <path d="M46 76 L31 99 M55 76 L68 99 M31 110 L38 135 M68 109 L64 133 M45 138 L61 137" opacity=".55"/>
+  </svg>`,
+  sage:`<svg viewBox="0 0 100 200" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M50 152 L50 108"/><path d="M50 118 C40 110 34 98 30 86 M50 108 C60 100 66 90 70 78 M50 128 C43 122 38 116 34 108 M50 122 C57 116 62 110 66 102"/>
+    <circle cx="30" cy="86" r="3"/><circle cx="70" cy="78" r="3"/><circle cx="34" cy="108" r="2.4"/><circle cx="66" cy="102" r="2.4"/><circle cx="50" cy="104" r="3.2"/>
+    <line x1="20" y1="152" x2="80" y2="152" opacity=".6"/>
+  </svg>`,
+};
+
+/* ---------------- build the room ---------------- */
+const world = document.getElementById("world");
+const scene = document.getElementById("scene");
+const stage = document.getElementById("stage");
+const rig   = document.getElementById("rig");
+const N = APPS.length;
+const isSmallScreen = window.matchMedia('(max-width: 760px)').matches;
+const STEP = isSmallScreen ? 12 : 10; // gap between adjacent archways
+const GAP  = isSmallScreen ? 45 : 39; // empty gap in the front-centre
+const RADIUS = isSmallScreen ? 1750 : 2100; // px — wall distance
+const HALF = N/2;
+const angleFor = (i)=> i<HALF ? -(GAP/2) - (HALF-1-i)*STEP : (GAP/2) + (i-HALF)*STEP;
+
+const hud = document.getElementById("hud");
+const detail = document.getElementById("detail");
+const hitlayer = document.getElementById("hitlayer");
+const bsvg = document.getElementById("branchsvg");
+const items = [];
+let activeItem = null;
+let hoverClearTimer = null;
+
+APPS.forEach((app,i)=>{
+  const angle = angleFor(i);
+  const st = STATUS[app.key] || 'dev';
+  const tier = TIER[st];
+  const el = document.createElement("div");
+  el.className = "window tier-"+st;
+  el.style.setProperty("--accent", app.accent);
+  el.style.setProperty("--base", st==="dev"?"0.58":st==="beta"?"0.92":"1");
+  const base = `rotateY(${angle}deg) translateZ(${-RADIUS}px)`;
+  el.style.transform = base;
+  el.innerHTML = `
+    <div class="win-glow"></div>
+    <div class="win-glass"><div class="win-fill"></div><div class="win-art">${ART[app.key]||""}</div><div class="win-name">${app.name}</div></div>
+    <div class="win-frame"></div>`;
+  // crisp 2D status pips — always visible under the window
+  // 2D hit proxy — 3D-transformed windows don't hit-test reliably
+  const hit = document.createElement("div");
+  hit.className = "hit";
+  hit.tabIndex = 0;
+  hit.setAttribute("role", "button");
+  hit.setAttribute("aria-label", `Open ${app.name}`);
+  hitlayer.appendChild(hit);
+  const wall = document.createElement("div");
+  wall.className = "wall-panel";
+  wall.style.transform = `rotateY(${angle}deg) translateZ(${-RADIUS-50}px)`;
+  world.insertBefore(wall, world.firstChild);
+  const item = { el, hit, app, tier, angle, i, base, wall };
+  items.push(item);
+  const activate = ()=>{
+    if(down) return;
+    clearTimeout(hoverClearTimer);
+    if(activeItem && activeItem !== item){
+      activeItem.el.classList.remove("active");
+      if(activeItem.fglow) activeItem.fglow.style.opacity = ((activeItem.rev||1)*0.6).toFixed(2);
+    }
+    stage.classList.add("has-hover");
+    el.classList.add("active");
+    showDetail(item);
+  };
+  const deactivate = ()=>{
+    clearTimeout(hoverClearTimer);
+    hoverClearTimer = setTimeout(()=>{
+      stage.classList.remove("has-hover");
+      el.classList.remove("active");
+      hideDetail();
+    }, 160);
+  };
+  hit.addEventListener("pointerenter", activate);
+  hit.addEventListener("pointerleave", deactivate);
+  hit.addEventListener("focus", activate);
+  hit.addEventListener("blur", deactivate);
+  hit.addEventListener("touchstart", ()=>{ activate(); }, {passive:true});
+  hit.addEventListener("keydown", (e)=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openApp(app, el); } });
+  hit.addEventListener("click",()=>{ if(moved) return; openApp(app, el); });
+  world.appendChild(el);
+});
+
+// ---- roots growing from the EDGE of the floor circle ----
+const CIRCLE = { x:1600, y:1300, r:165 };
+(function buildBranches(){
+  const GROW = { dev:0.56, beta:0.82, live:1 };
+  const OP   = { dev:0.7,  beta:0.85, live:1 };
+  const frag = [];
+  frag.push(`<circle cx="${CIRCLE.x}" cy="${CIRCLE.y}" r="${CIRCLE.r}" fill="none" stroke="rgba(190,168,120,.4)" stroke-width="3"/>`);
+  // inlaid architectural floor rings + ticks
+  frag.push(`<circle cx="${CIRCLE.x}" cy="${CIRCLE.y}" r="250" fill="none" stroke="rgba(180,162,120,.14)" stroke-width="2"/>`);
+  frag.push(`<circle cx="${CIRCLE.x}" cy="${CIRCLE.y}" r="360" fill="none" stroke="rgba(180,162,120,.09)" stroke-width="2"/>`);
+  frag.push(`<circle cx="${CIRCLE.x}" cy="${CIRCLE.y}" r="470" fill="none" stroke="rgba(180,162,120,.06)" stroke-width="2"/>`);
+  for(let a=0;a<360;a+=15){ const rad=a*Math.PI/180, c=Math.cos(rad), s2=Math.sin(rad);
+    frag.push(`<line x1="${(CIRCLE.x+c*250).toFixed(0)}" y1="${(CIRCLE.y+s2*250).toFixed(0)}" x2="${(CIRCLE.x+c*268).toFixed(0)}" y2="${(CIRCLE.y+s2*268).toFixed(0)}" stroke="rgba(180,162,120,.14)" stroke-width="2"/>`); }
+  function quadPath(ax,ay,bx,by,bend,w,acc,op,dash,cls,i){
+    const mx=(ax+bx)/2,my=(ay+by)/2,dx=bx-ax,dy=by-ay,len=Math.hypot(dx,dy)||1;
+    const nx=-dy/len,ny=dx/len,cx=mx+nx*bend,cy=my+ny*bend;
+    return `<path class="${cls}" data-i="${i}" d="M${ax.toFixed(0)} ${ay.toFixed(0)} Q ${cx.toFixed(0)} ${cy.toFixed(0)} ${bx.toFixed(0)} ${by.toFixed(0)}" stroke="${acc}" stroke-width="${w}" fill="none" stroke-linecap="round" opacity="${op}" ${dash?`stroke-dasharray="${dash}"`:''} style="color:${acc}"/>`;
+  }
+  for(const it of items){
+    const th=it.angle*Math.PI/180;
+    const ex=1600 - RADIUS*Math.sin(th);
+    const ey=1600 - RADIUS*Math.cos(th);
+    const dx=ex-CIRCLE.x, dy=ey-CIRCLE.y, dl=Math.hypot(dx,dy)||1;   // start on the circle edge
+    const sxp=CIRCLE.x + dx/dl*CIRCLE.r, syp=CIRCLE.y + dy/dl*CIRCLE.r;
+    const st=STATUS[it.app.key]||'dev';
+    const acc=it.app.accent;
+    const bend=64*((it.i%2)?1:-1);
+    frag.push(quadPath(sxp,syp,ex,ey,bend,5,acc,0.24,'2 20','br-faint',it.i));
+    const g=GROW[st];
+    const gx=sxp+(ex-sxp)*g, gy=syp+(ey-syp)*g;
+    frag.push(quadPath(sxp,syp,gx,gy,bend*g,8,acc,OP[st],0,'br-grown',it.i));
+    const tip=Math.atan2(gy-syp,gx-sxp);
+    const bx=gx-Math.cos(tip)*120, by=gy-Math.sin(tip)*120;
+    for(const sgn of [-1,1]) frag.push(`<path class="br-twig" data-i="${it.i}" d="M${bx.toFixed(0)} ${by.toFixed(0)} L ${(bx+Math.cos(tip+sgn*0.5)*90).toFixed(0)} ${(by+Math.sin(tip+sgn*0.5)*90).toFixed(0)}" stroke="${acc}" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="${(OP[st]*0.8).toFixed(2)}" style="color:${acc}"/>`);
+    frag.push(`<circle class="br-node" data-i="${it.i}" cx="${gx.toFixed(0)}" cy="${gy.toFixed(0)}" r="${st==='live'?14:(st==='beta'?11:8)}" fill="${acc}" opacity="${OP[st]}"/>`);
+    frag.push(`<circle class="br-end" data-i="${it.i}" cx="${ex.toFixed(0)}" cy="${ey.toFixed(0)}" r="7" fill="none" stroke="${acc}" stroke-width="2" opacity="0.18"/>`);
+    it.__nodeop = OP[st]; it.__twigop = OP[st]*0.8;
+  }
+  // glow spilling from each archway onto the floor
+  const defs=[], glows=[];
+  for(const it of items){
+    const th=it.angle*Math.PI/180;
+    const ex=1600 - RADIUS*Math.sin(th), ey=1600 - RADIUS*Math.cos(th);
+    const acc=it.app.accent;
+    const ang=Math.atan2(CIRCLE.y-ey, CIRCLE.x-ex)*180/Math.PI;
+    const gx=ex+(CIRCLE.x-ex)*0.34, gy=ey+(CIRCLE.y-ey)*0.34;   // pool spills toward the centre
+    defs.push(`<radialGradient id="fg${it.i}" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${acc}" stop-opacity="0.72"/><stop offset="46%" stop-color="${acc}" stop-opacity="0.2"/><stop offset="100%" stop-color="${acc}" stop-opacity="0"/></radialGradient>`);
+    glows.push(`<ellipse class="fglow" data-i="${it.i}" cx="${gx.toFixed(0)}" cy="${gy.toFixed(0)}" rx="620" ry="230" fill="url(#fg${it.i})" opacity="0" transform="rotate(${ang.toFixed(1)} ${gx.toFixed(0)} ${gy.toFixed(0)})"/>`);
+  }
+  frag.unshift(glows.join(''));
+  frag.unshift(`<defs>${defs.join('')}</defs>`);
+  bsvg.innerHTML=frag.join('');
+  for(const it of items){ it.fglow = bsvg.querySelector(`.fglow[data-i="${it.i}"]`); }
+  for(const it of items){
+    it.grown = bsvg.querySelector(`.br-grown[data-i="${it.i}"]`);
+    it.faint = bsvg.querySelector(`.br-faint[data-i="${it.i}"]`);
+    it.twigs = Array.from(bsvg.querySelectorAll(`.br-twig[data-i="${it.i}"]`));
+    it.node  = bsvg.querySelector(`.br-node[data-i="${it.i}"]`);
+    it.endm  = bsvg.querySelector(`.br-end[data-i="${it.i}"]`);
+    if(it.grown){ it.grownLen = it.grown.getTotalLength(); it.grown.style.strokeDasharray = it.grownLen; it.grown.style.strokeDashoffset = it.grownLen; }
+  }
+})();
+
+function showDetail(item){
+  const {app, tier} = item;
+  detail.style.setProperty("--dc", app.accent);
+  const pips = [1,2,3].map(k=>`<span class="pip ${k<=tier.n?'on':''}" style="--c:${app.accent}"></span>`).join('');
+  detail.innerHTML = `
+    <div class="d-name">${app.name}</div>
+    <div class="d-dim">${app.dim}</div>
+    <div class="d-say">${app.say}</div>
+    <div class="d-status"><span class="d-pips">${pips}</span>${tier.label}</div>`;
+  detail.classList.add("show");
+  activeItem = item;
+  if(item.fglow) item.fglow.style.opacity = (item.rev||1).toFixed(2);
+}
+function hideDetail(){
+  detail.classList.remove("show");
+  if(activeItem && activeItem.fglow) activeItem.fglow.style.opacity = ((activeItem.rev||1)*0.6).toFixed(2);
+  activeItem = null;
+}
+
+/* ---------------- look-around controls ---------------- */
+let down=false, moved=false;
+
+window.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeApp(); });
+
+// ---- scroll-driven reveal timeline ----
+const ss=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
+const intro    = document.getElementById('intro');
+const hintEl   = document.getElementById('hint');
+const floorEl  = document.querySelector('.floor');
+const floormkEl= document.querySelector('.floormk');
+const hero = document.getElementById('hero');
+// portals reveal centre-out, quick and tightly staggered
+[...items].sort((a,b)=>Math.abs(a.angle)-Math.abs(b.angle)).forEach((it,order)=>{ it.t0 = 0.16 + (order/items.length)*0.64; });
+let SP=0;
+let rafPending = false;
+function onScroll(){
+  const viewportH = window.visualViewport?.height || window.innerHeight;
+  const dist=hero.offsetHeight-viewportH;
+  const raw=dist>0?Math.min(1,Math.max(0,-hero.getBoundingClientRect().top/dist)):0;
+  SP=raw;
+  requestRender();
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll);
+window.visualViewport?.addEventListener('resize', onScroll);
+onScroll();
+// build the rest-of-site app cards
+document.getElementById('applist').innerHTML = APPS.map(a=>`<div class="card" style="--accent:${a.accent}"><div class="k" style="color:${a.accent}">${a.dim}</div><h3>${a.name}</h3><p>${a.say}</p></div>`).join('');
+
+// static camera — set once (no look-around)
+world.style.transform = `rotateX(${isSmallScreen ? -10 : -14}deg)`;
+
+function updateHits(){
+  const hr = hero.getBoundingClientRect();
+  const viewportH = window.visualViewport?.height || window.innerHeight;
+  const pinned = hr.top <= 1 && hr.bottom >= viewportH - 1;
+  const zooming = stage.classList.contains("zooming");
+  for(const it of items){
+    const revOk = (it.rev||0) >= 0.85;
+    if(zooming || !pinned || !revOk){ it.hit.style.display="none"; continue; }
+    const r = it.el.querySelector(".win-glass").getBoundingClientRect();
+    if(r.width < 10){ it.hit.style.display="none"; continue; }
+    it.hit.style.display="block";
+    it.hit.style.left=r.left+"px"; it.hit.style.top=r.top+"px";
+    it.hit.style.width=r.width+"px"; it.hit.style.height=r.height+"px";
+    it.hit.style.borderRadius=getComputedStyle(it.el.querySelector(".win-glass")).borderRadius;
+  }
+}
+function render(){
+  rafPending = false;
+  const introFade = ss(0.0,0.06,SP);
+  intro.style.opacity = (1-introFade).toFixed(3);
+  intro.style.transform = `translateY(${(-introFade*30).toFixed(1)}px) scale(${(1-introFade*0.06).toFixed(3)})`;
+  const floorRev = ss(0.03,0.12,SP);
+  const wallRev  = ss(0.07,0.20,SP);
+  floorEl.style.opacity = (0.9*floorRev).toFixed(3);
+  floormkEl.style.opacity = floorRev.toFixed(3);
+  hintEl.style.opacity = ss(0.84,0.96,SP).toFixed(3);
+  for(const it of items){
+    if(it.wall) it.wall.style.setProperty('--wall', wallRev.toFixed(3));
+    const rev = ss(it.t0, it.t0+0.12, SP);
+    it.rev = rev;
+    it.el.style.setProperty('--reveal', rev.toFixed(3));
+    if(it.fglow && activeItem!==it) it.fglow.style.opacity = (rev*0.6).toFixed(2);
+    it.el.style.transform = it.base + ` translateY(${((1-rev)*300).toFixed(1)}px)`;
+    if(it.grown) it.grown.style.strokeDashoffset = (it.grownLen*(1-rev)).toFixed(1);
+    if(it.faint) it.faint.style.opacity = (0.24*rev).toFixed(2);
+    it.twigs.forEach(t=>t.style.opacity=(it.__twigop*rev).toFixed(2));
+    if(it.node) it.node.style.opacity=(it.__nodeop*rev).toFixed(2);
+    if(it.endm) it.endm.style.opacity=(0.18*rev).toFixed(2);
+  }
+  updateHits();
+}
+function requestRender(){ if(!rafPending){ rafPending=true; requestAnimationFrame(render); } }
+render();
+
+/* ---------------- cinematic travel-through transition ---------------- */
+let portal=null, savedRect=null;
+function openApp(app, el){
+  if(portal) return;
+  clearTimeout(hoverClearTimer);
+  stage.classList.remove("has-hover");
+  if(activeItem) activeItem.el.classList.remove("active");
+  el.classList.remove("active");
+  const glass = el.querySelector(".win-glass");
+  const r = glass.getBoundingClientRect();
+  savedRect = r;
+
+  portal = document.createElement("div");
+  portal.className = "portal";
+  portal.style.setProperty("--accent", app.accent);
+  portal.style.top=r.top+"px"; portal.style.left=r.left+"px";
+  portal.style.width=r.width+"px"; portal.style.height=r.height+"px";
+  portal.innerHTML = `
+    <div class="portal-wash"></div>
+    <div class="portal-art">${ART[app.key]||""}</div>
+    <button class="close" aria-label="Return to the observatory">&#10005;</button>
+    <div class="landing">
+      <div class="kicker">${app.dim}</div>
+      <h2>${app.name}</h2>
+      <p class="lede">${app.say}</p>
+      <span class="enter">Enter ${app.name} &nbsp;&rarr;</span>
+    </div>
+    <div class="backhint">Esc to return to the observatory</div>`;
+  document.body.appendChild(portal);
+
+  stage.classList.add("zooming");
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ portal.classList.add("is-open"); }));
+  setTimeout(()=>portal && portal.classList.add("show"), 720);
+
+  portal.querySelector(".close").addEventListener("click", closeApp);
+  portal.querySelector(".enter").addEventListener("click", ()=>{ window.location.href=`/${app.key}`; });
+}
+function closeApp(){
+  if(!portal) return;
+  const p=portal;
+  p.classList.remove("show"); p.classList.remove("is-open");
+  if(savedRect){
+    p.style.top=savedRect.top+"px"; p.style.left=savedRect.left+"px";
+    p.style.width=savedRect.width+"px"; p.style.height=savedRect.height+"px";
+    p.style.borderRadius="150px 150px 14px 14px";
+  }
+  stage.classList.remove("zooming");
+  setTimeout(()=>p.remove(), 1000);
+  portal=null;
+}
+</script>
+
+<style>
+  @keyframes breathe{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.06);opacity:.9}}
+  @keyframes ripple{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+  @keyframes beacon{0%,100%{opacity:.6}50%{opacity:1}}
+  @keyframes sway{0%,100%{transform:rotate(-1.2deg)}50%{transform:rotate(1.2deg)}}
+  @keyframes dash{to{stroke-dashoffset:-22}}
+  .s-breath{transform-origin:50px 80px}
+  .a-fig{transform-origin:50px 100px}
+  .a-leaf{transform-origin:74px 60px}
+  .t-beacon{transform-origin:50px 46px}
+  .window.active .s-breath{animation:breathe 5.5s var(--ease) infinite}
+  .window.active .s-ripple{animation:ripple 4s ease-in-out infinite}
+  .window.active .a-fig{animation:sway 6s ease-in-out infinite}
+  .window.active .a-leaf{animation:sway 4.5s ease-in-out infinite}
+  .window.active .a-arc{animation:dash 3s linear infinite}
+  .window.active .t-beacon{animation:beacon 2.6s ease-in-out infinite}
+  .window.active .t-path{stroke-dashoffset:60; animation:dash 4s linear infinite}
+
+  /* status / upgrade tier cue */
+  .win-tier{ position:absolute; left:50%; top:-26px; transform:translateX(-50%); display:flex; gap:6px; z-index:3; }
+  .win-tier .dot{ width:7px; height:7px; border-radius:50%;
+    border:1px solid color-mix(in srgb,var(--accent) 55%, #6b6659); background:transparent;
+    transition:background .4s var(--ease), box-shadow .4s var(--ease); }
+  .win-tier .dot.on{ background:var(--accent); border-color:var(--accent);
+    box-shadow:0 0 8px color-mix(in srgb,var(--accent) 70%, transparent); }
+  .tier-text{ margin-top:12px; font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:#9a9488; display:inline-flex; align-items:center; gap:7px; justify-content:center; }
+  .tier-text .dot{ width:6px; height:6px; border-radius:50%; background:var(--accent);
+    box-shadow:0 0 8px color-mix(in srgb,var(--accent) 70%, transparent); }
+
+  /* in-development windows sit 'unlit' until you look at them — the upgrade story */
+  .window.tier-dev .win-glass{ filter:saturate(.5) brightness(.88); }
+
+  /* stronger hover glow */
+  .window.active .win-glow{ opacity:1; filter:blur(28px); }
+  .window.active .win-glass{
+    filter:none;
+    box-shadow:
+      inset 0 0 0 2px color-mix(in srgb, var(--accent) 82%, transparent),
+      inset 0 40px 100px rgba(0,0,0,.32),
+      0 0 64px color-mix(in srgb, var(--accent) 32%, transparent),
+      0 40px 170px color-mix(in srgb, var(--accent) 42%, rgba(0,0,0,.6));
+  }
+</style>
+</body>
+</html>
