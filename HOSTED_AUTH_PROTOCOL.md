@@ -119,6 +119,9 @@ real values. Both are served from this site:
   (`src/app/.well-known/assetlinks.json/route.ts`).
 - Each app must declare the associated domain: iOS `applinks:arborapps.co`,
   Android an intent-filter for `https://arborapps.co/app/<appId>/callback`.
-- Set `ARBOR_CORE_URL` (website env) to the deployed Arbor Core URL, and
-  `NEXT_PUBLIC_SITE_URL` to the public site origin.
+- Set `ARBOR_CORE_URL` (website env) to the deployed Arbor Core URL
+  (`https://arbor-core-production.up.railway.app`), and `NEXT_PUBLIC_SITE_URL`
+  to the public site origin. Set on the host's **Production** env and redeploy —
+  if unset it falls back to `localhost:4000` and fails with "Couldn't reach
+  Arbor". Full env table: `arbor-core/docs/environments.md`.
 ```

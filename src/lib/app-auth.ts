@@ -47,6 +47,41 @@ export function buildCallbackUrl(
   return url.toString();
 }
 
+// Custom URL scheme each app registers with the OS. The hosted flow's warm path
+// relies on this: the callback page bounces the in-app auth session to
+// `<scheme>://auth-callback?code=…&state=…`, which iOS ASWebAuthenticationSession
+// / Android Custom Tabs capture to hand control back to the app. (Universal
+// Links don't fire from inside that in-app browser, so we can't use the https
+// callback for the return.) Derived server-side from the registered app id —
+// never from caller input — so it can't be turned into an open redirector.
+const APP_SCHEMES: Partial<Record<AppId, string>> = {
+  aevo: "aevo",
+};
+
+export function appScheme(app: AppId): string | null {
+  return APP_SCHEMES[app] ?? null;
+}
+
+/**
+ * The custom-scheme deep link the app's auth session watches for. Only handoff
+ * values travel here (`code`, `state`, `error`) — never real tokens. Returns
+ * null for apps without a registered scheme; those fall back to the https
+ * callback page.
+ */
+export function buildAppReturnUrl(
+  app: AppId,
+  params: { code?: string | null; state?: string | null; error?: string | null }
+): string | null {
+  const scheme = appScheme(app);
+  if (!scheme) return null;
+  const qs = new URLSearchParams();
+  if (params.code) qs.set("code", params.code);
+  if (params.state) qs.set("state", params.state);
+  if (params.error) qs.set("error", params.error);
+  const query = qs.toString();
+  return `${scheme}://auth-callback${query ? `?${query}` : ""}`;
+}
+
 // `state` is opaque and echoed back untouched; we only guard against abuse
 // (absurd lengths / control chars) rather than imposing a format.
 export function sanitizeState(raw: string | undefined | null): string | null {

@@ -16,10 +16,13 @@ export const metadata = {
 export default async function AppAuthPage({
   searchParams,
 }: {
-  searchParams: Promise<{ app?: string; state?: string }>;
+  searchParams: Promise<{ app?: string; state?: string; intent?: string }>;
 }) {
-  const { app, state: rawState } = await searchParams;
+  const { app, state: rawState, intent: rawIntent } = await searchParams;
   const state = sanitizeState(rawState);
+  // Frames the copy only; the real sign-in-vs-create branch is decided by the
+  // email check, so an existing email can never be turned into a duplicate.
+  const intent = rawIntent === "signup" ? "signup" : undefined;
 
   const shell = (children: React.ReactNode) => (
     <main className="min-h-screen bg-black text-white">
@@ -59,6 +62,11 @@ export default async function AppAuthPage({
   }
 
   return shell(
-    <AppAuthForm app={app} appName={appDisplayName(app)} state={state} />
+    <AppAuthForm
+      app={app}
+      appName={appDisplayName(app)}
+      state={state}
+      intent={intent}
+    />
   );
 }

@@ -16,10 +16,12 @@ export function AppAuthForm({
   app,
   appName,
   state,
+  intent,
 }: {
   app: string;
   appName: string;
   state: string | null;
+  intent?: "signup";
 }) {
   // Step 1 — email. The answer decides sign-in vs create-account.
   const [check, checkFormAction, checking] = useActionState<CheckState, FormData>(
@@ -37,9 +39,14 @@ export function AppAuthForm({
           <p className="mb-3 text-sm uppercase tracking-[0.3em] text-neutral-500">
             {appName.toUpperCase()}
           </p>
-          <h1 className="text-3xl font-semibold">Sign in to continue.</h1>
+          <h1 className="text-3xl font-semibold">
+            {intent === "signup"
+              ? "Create your Arbor account."
+              : "Sign in or create your account."}
+          </h1>
           <p className="mt-3 text-sm leading-7 text-neutral-400">
-            Use your Arbor account to sign in to {appName}. One account works
+            Enter your email to continue to {appName}. We&apos;ll sign you in, or
+            help you create an account if you&apos;re new. One Arbor account works
             across every Arbor app.
           </p>
 

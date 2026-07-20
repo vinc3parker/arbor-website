@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import type { AppId } from "@/lib/app-auth";
-import { appCallbackPath } from "@/lib/app-auth";
+import { appCallbackPath, buildAppReturnUrl } from "@/lib/app-auth";
+import { ReturnToApp } from "./ReturnToApp";
 
 export type CallbackSearchParams = {
   code?: string | string[];
@@ -42,9 +43,20 @@ export function AppCallbackFallback({
   const callbackHref = buildFallbackHref(app, searchParams);
   const error = firstParam(searchParams.error);
 
+  // Custom-scheme deep link that hands control back to the app. Preferred over
+  // the https callback because Universal Links don't fire inside the in-app auth
+  // session. Only present on success (no error) and for apps with a scheme.
+  const returnUrl = error
+    ? null
+    : buildAppReturnUrl(app, {
+        code: firstParam(searchParams.code),
+        state: firstParam(searchParams.state),
+      });
+
   return (
     <main className="min-h-screen bg-black text-white">
       <Navbar />
+      {returnUrl && <ReturnToApp returnUrl={returnUrl} />}
       <section className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-8 py-32">
         <div className="w-full max-w-md rounded-3xl border border-neutral-800 bg-neutral-950 p-8 text-center md:p-10">
           <p className="mb-3 text-sm uppercase tracking-[0.3em] text-neutral-500">
@@ -56,10 +68,10 @@ export function AppCallbackFallback({
           <p className="mt-3 text-sm leading-7 text-neutral-400">
             {error
               ? `The sign-in flow returned an error. Reopen ${name} and try again.`
-              : `You're signed in. If ${name} is installed, this link should open the app automatically. If nothing happened, use the button below to try the callback again.`}
+              : `You're signed in. ${name} should reopen automatically. If nothing happened, use the button below.`}
           </p>
           <a
-            href={callbackHref}
+            href={returnUrl ?? callbackHref}
             className="mt-6 inline-block rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
           >
             Open {name}
