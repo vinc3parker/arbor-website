@@ -8,37 +8,39 @@ import { heroState, titleOpacity } from './scroll/heroState';
 import type { ArborApp } from './data/apps';
 import { CAMERA_POS, CAMERA_FOV } from './room/constants';
 
-const SECTION_HEIGHT_VH = 520;
 const NAVIGATE_AFTER_MS = 1150;
-/** Once the scroll gets this far, the intro hard-snaps to the finished state
- *  and commits — everything is built well before this (portals finish ~0.74). */
-const SNAP_TO_END_AT = 0.9;
+/** How long the auto-build plays once the visitor clicks to enter. The whole
+ *  sequence (light → wall → portals) finishes around progress 0.9, so we tween
+ *  progress 0 → 1 across this window and then lock. */
+const ENTER_DURATION_MS = 4600;
+
+const smoothstep = (t: number) => {
+  const c = Math.min(Math.max(t, 0), 1);
+  return c * c * (3 - 2 * c);
+};
 
 /**
- * The observatory hero. A tall scroll section pins the 3D room: the page
- * opens on "Arbor" in the dark, scrolling wakes the architecture, then the
- * portals light one at a time, centre-out. Hovering a lit portal raises its
+ * The observatory hero. The page opens on "Arbor" in the dark; clicking to
+ * enter plays an auto-build — the architecture wakes, the wall assembles, then
+ * the portals light one at a time, centre-out. Hovering a lit portal raises its
  * app card; clicking dollies the camera through the veil into the app page.
  */
 export function ArborRoom() {
   const router = useRouter();
-  const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const hintRef = useRef<HTMLDivElement>(null);
-  // Latches once the intro reaches the end; from then on the room stays fully
-  // built and the tall scroll region collapses to the top of the page.
+  // Latches once the auto-build finishes; from then on the room stays fully
+  // built and every portal is live.
   const lockedRef = useRef(false);
-  // True only when the lock fired live mid-scroll (vs. arriving pre-completed),
-  // so we know whether we need to absorb scroll momentum.
-  const wasLiveLockRef = useRef(false);
+  // Set the moment the visitor clicks to enter; the rAF loop tweens progress
+  // from here.
+  const enteringRef = useRef(false);
+  const enterStartRef = useRef(0);
 
   const [hovered, setHovered] = useState<ArborApp | null>(null);
   const [transitionApp, setTransitionApp] = useState<ArborApp | null>(null);
   const [locked, setLocked] = useState(false);
-  // Brief phase right after a live lock: the observatory is pinned as a fixed
-  // full-viewport layer while the tall section collapses and scroll resets
-  // underneath, so the content below is never flashed on screen.
-  const [settling, setSettling] = useState(false);
+  const [entering, setEntering] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -49,29 +51,19 @@ export function ArborRoom() {
     return () => mq.removeEventListener('change', sync);
   }, []);
 
-  // Arrive already-completed when returning from an app page (Esc → ?entered=1,
-  // or the session flag): the observatory shows fully built and locked, with no
-  // replay of the intro and nothing to scroll back into.
-  useLayoutEffect(() => {
-    // Only the explicit ?entered=1 signal (set when returning from an app via
-    // Esc) starts pre-completed. A plain refresh of "/" always replays the
-    // intro from the top.
-    let entered = false;
-    try {
-      entered =
-        new URLSearchParams(window.location.search).get('entered') === '1';
-    } catch {
-      entered = false;
-    }
-    if (entered) {
-      lockedRef.current = true;
-      setLocked(true);
-    }
-  }, []);
+  // Kick off the auto-build. Ignored once it's already running or committed.
+  const startEnter = () => {
+    if (enteringRef.current || lockedRef.current) return;
+    enteringRef.current = true;
+    enterStartRef.current = 0;
+    setEntering(true);
+    navigator.vibrate?.([14, 40, 22]);
+  };
 
-  // Scroll → progress, polled on rAF (scroll events are unreliable on some
-  // browsers). Written straight to the mutable store (read by the scene
-  // per-frame) and to overlay styles — no React re-renders while scrolling.
+  // Drive progress every frame. Before the click it holds at 0 (the dark title
+  // screen); after the click it tweens 0 → 1 across ENTER_DURATION_MS, then
+  // locks. Written straight to the mutable store (read by the scene per-frame)
+  // and to overlay styles — no React re-renders while it plays.
   useEffect(() => {
     // Debug/testing hook: ?arbor-progress=0.7 pins the intro at that point.
     const pinned = parseFloat(
@@ -79,35 +71,48 @@ export function ArborRoom() {
     );
     if (!Number.isNaN(pinned)) heroState.progress = pinned;
 
+    // Returning from an app page (Esc → ?entered=1): start fully built and
+    // locked, with no replay of the intro. lockedRef is picked up on the first
+    // frame below, which also syncs the React `locked` state.
+    try {
+      if (new URLSearchParams(window.location.search).get('entered') === '1') {
+        lockedRef.current = true;
+      }
+    } catch {
+      /* no-op */
+    }
+
+    let syncedLock = false;
     let raf = 0;
-    const tick = () => {
+    const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
-      const section = sectionRef.current;
-      if (!section) return;
 
       let p: number;
       if (lockedRef.current) {
-        // Intro committed: hold the fully-built end state.
+        // Intro committed: hold the fully-built end state. Sync the React lock
+        // once so the click surface goes inert and the intro class clears.
         p = 1;
+        if (!syncedLock) {
+          syncedLock = true;
+          setLocked(true);
+          setEntering(false);
+        }
       } else if (!Number.isNaN(pinned)) {
         p = pinned;
-      } else {
-        const rect = section.getBoundingClientRect();
-        const scrollable = rect.height - window.innerHeight;
-        p = Math.min(Math.max(-rect.top / scrollable, 0), 1);
-
-        // Near the end, hard-snap to the finished state and LOCK. The intro
-        // then collapses to the top of the page — fully built, portals live —
-        // and there's no scrolling back into the half-built animation, so
-        // nobody gets stranded mid-build wondering what to do.
-        if (p >= SNAP_TO_END_AT) {
+      } else if (enteringRef.current) {
+        if (!enterStartRef.current) enterStartRef.current = now;
+        const raw = (now - enterStartRef.current) / ENTER_DURATION_MS;
+        p = smoothstep(raw);
+        if (raw >= 1) {
           lockedRef.current = true;
-          wasLiveLockRef.current = true;
+          syncedLock = true;
           setLocked(true);
-          setSettling(true);
-          navigator.vibrate?.([14, 40, 22]);
+          setEntering(false);
           p = 1;
         }
+      } else {
+        // Waiting on the dark title screen.
+        p = 0;
       }
 
       heroState.progress = p;
@@ -128,50 +133,30 @@ export function ArborRoom() {
       document.documentElement.classList.toggle('arbor-intro', p < 0.9);
     };
     document.documentElement.classList.add('arbor-intro');
-    tick();
+    raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
       document.documentElement.classList.remove('arbor-intro');
     };
   }, []);
 
-  // Arriving already-completed (Esc): nothing to hide, just make sure we're at
-  // the top.
-  useLayoutEffect(() => {
-    if (locked && !wasLiveLockRef.current) window.scrollTo(0, 0);
-  }, [locked]);
-
-  // The settling phase after a LIVE lock. The observatory is a fixed
-  // full-viewport layer (see the container below), so while it covers the
-  // screen we freeze scrolling, reset to the top, and hold there long enough
-  // for any momentum to die — the page underneath collapses unseen. Then we
-  // drop back to the normal top-of-page layout with no visible movement.
-  useLayoutEffect(() => {
-    if (!settling) return;
-
-    const prevRestore = history.scrollRestoration;
-    history.scrollRestoration = 'manual';
+  // Freeze page scroll from the click until the build commits, so nobody
+  // scrolls off the animation while it plays. The section is a plain single
+  // viewport, so once locked normal scrolling resumes into the content below.
+  useEffect(() => {
+    if (!entering) return;
+    const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     window.scrollTo(0, 0);
-
-    let n = 0;
-    let raf = requestAnimationFrame(function pin() {
-      window.scrollTo(0, 0);
-      if (n++ < 40) raf = requestAnimationFrame(pin);
-    });
-    const done = window.setTimeout(() => {
-      document.body.style.overflow = '';
-      history.scrollRestoration = prevRestore;
-      setSettling(false);
-    }, 650);
-
     return () => {
-      cancelAnimationFrame(raf);
-      window.clearTimeout(done);
-      document.body.style.overflow = '';
-      history.scrollRestoration = prevRestore;
+      document.body.style.overflow = prev;
     };
-  }, [settling]);
+  }, [entering]);
+
+  // Arriving already-completed (Esc): make sure we're at the top.
+  useLayoutEffect(() => {
+    if (locked) window.scrollTo(0, 0);
+  }, [locked]);
 
   // Wire the three.js side of hover / select to React.
   useEffect(() => {
@@ -195,35 +180,27 @@ export function ArborRoom() {
     heroState.hovered = hovered;
   }, [hovered]);
 
+  // The click-to-enter surface is live only on the dark title screen — before
+  // the build starts and before it commits. Once the auto-build is running or
+  // done, it's inert so portal hover/click (via the canvas) takes over.
+  const catcherActive = !entering && !locked;
+
   return (
-    <section
-      ref={sectionRef}
-      style={{
-        // Collapses to a single viewport once the intro commits, so the built
-        // scene becomes the top of the page with no scroll-back into the intro.
-        height: locked ? '100vh' : `${SECTION_HEIGHT_VH}vh`,
-        position: 'relative',
-      }}
-    >
+    <section style={{ height: '100vh', position: 'relative' }}>
       <div
         style={{
-          // During the settling phase the observatory is pinned as a fixed
-          // full-viewport cover, so the collapsing section and scroll reset
-          // underneath are never seen; otherwise it's the normal sticky pin.
-          position: settling ? 'fixed' : 'sticky',
+          position: 'sticky',
           top: 0,
           left: 0,
           right: 0,
           height: '100vh',
           overflow: 'hidden',
           background: '#050608',
-          zIndex: settling ? 50 : undefined,
         }}
       >
         <Canvas
           shadows="percentage"
-          // Let vertical gestures scroll the page/drive the build; horizontal
-          // gestures are captured by the CameraRig to orbit on mobile.
+          // Horizontal gestures are captured by the CameraRig to orbit on mobile.
           style={{ touchAction: 'pan-y' }}
           camera={{
             position: CAMERA_POS,
@@ -234,6 +211,25 @@ export function ArborRoom() {
         >
           <ObservatoryScene />
         </Canvas>
+
+        {/* ---- Click-to-enter surface ---- */}
+        {catcherActive && (
+          <button
+            type="button"
+            onClick={startEnter}
+            aria-label="Enter Arbor"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 20,
+              cursor: 'pointer',
+              background: 'transparent',
+              border: 'none',
+              padding: 0,
+              margin: 0,
+            }}
+          />
+        )}
 
         {/* ---- Title ---- */}
         <div
@@ -275,7 +271,7 @@ export function ArborRoom() {
           </p>
         </div>
 
-        {/* ---- Scroll hint ---- */}
+        {/* ---- Enter hint ---- */}
         <div
           ref={hintRef}
           style={{
@@ -291,7 +287,7 @@ export function ArborRoom() {
             color: 'rgba(232,230,225,0.6)',
           }}
         >
-          Scroll to enter
+          {isMobile ? 'Tap to enter' : 'Click to enter'}
         </div>
 
         {/* ---- Hover label: centred, boxless, in the app's accent colour.
