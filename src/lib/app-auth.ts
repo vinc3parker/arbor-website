@@ -56,6 +56,13 @@ export function buildCallbackUrl(
 // never from caller input — so it can't be turned into an open redirector.
 const APP_SCHEMES: Partial<Record<AppId, string>> = {
   aevo: "aevo",
+  thrive: "thrive",
+  salus: "salus",
+  nura: "nura",
+  wend: "wend",
+  sage: "sage",
+  telos: "telos",
+  kith: "kith",
 };
 
 export function appScheme(app: AppId): string | null {
