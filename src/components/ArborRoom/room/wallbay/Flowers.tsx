@@ -1,7 +1,7 @@
 'use client';
 
 import * as THREE from 'three';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { buildArchFlowers } from './flowerGeometry';
 import type { RevealRef } from '../../scroll/reveals';
@@ -44,8 +44,10 @@ export function Flowers({ color, status, seed, revealRef }: FlowersProps) {
       }),
     [base]
   );
+  const materialRef = useRef<THREE.MeshStandardMaterial | null>(null);
 
   useEffect(() => {
+    materialRef.current = material;
     return () => material.dispose();
   }, [material]);
 
@@ -57,7 +59,10 @@ export function Flowers({ color, status, seed, revealRef }: FlowersProps) {
     geometry.setDrawRange(0, Math.floor((total * grown) / 3) * 3);
 
     const breathe = 0.85 + 0.15 * Math.sin(clock.getElapsedTime() * 0.7 + seed);
-    material.emissiveIntensity = (0.5 + 1.6 * glow) * breathe * (0.4 + 0.6 * arch);
+    if (materialRef.current) {
+      materialRef.current.emissiveIntensity =
+        (0.5 + 1.6 * glow) * breathe * (0.4 + 0.6 * arch);
+    }
   });
 
   return <mesh geometry={geometry} material={material} castShadow />;

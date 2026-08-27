@@ -115,11 +115,11 @@ export function WaitlistSection() {
         ) : (
           <div className="mt-10">
             <div className="text-2xl font-medium">
-              You're in.
+              You&apos;re in.
             </div>
 
             <p className="mt-3 max-w-xl leading-7 text-neutral-400">
-              You're on the list. We'll email you when early access opens, new apps launch, and there is something worth hearing about.
+              You&apos;re on the list. We&apos;ll email you when early access opens, new apps launch, and there is something worth hearing about.
             </p>
           </div>
         )}

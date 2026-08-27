@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 import { Footer } from "@/components/Footer";
@@ -149,7 +150,7 @@ export function AppLanding({ app }: AppLandingProps) {
             <div className="mx-auto w-full max-w-6xl">
               {/* Back to the observatory — part of the page, at the top of the
                   hero, below the nav bar (also Esc / pinch-in). */}
-              <a
+              <Link
                 href="/?entered=1"
                 className="mb-10 inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-[0.7rem] uppercase tracking-[0.25em] text-white/75 backdrop-blur transition hover:border-white/50 hover:text-white"
                 aria-label="Back to the observatory"
@@ -158,7 +159,7 @@ export function AppLanding({ app }: AppLandingProps) {
                   ⎋
                 </span>
                 Back to the observatory
-              </a>
+              </Link>
 
               <p
                 className="mb-6 flex items-center gap-3 text-sm uppercase tracking-[0.4em]"

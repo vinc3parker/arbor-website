@@ -1,7 +1,7 @@
 'use client';
 
 import * as THREE from 'three';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { heroState, lightRamp } from '../scroll/heroState';
 
@@ -108,12 +108,20 @@ export function StarrySky() {
       }),
     []
   );
+  const materialRef = useRef<THREE.ShaderMaterial | null>(null);
+
+  useEffect(() => {
+    materialRef.current = material;
+    return () => material.dispose();
+  }, [material]);
 
   useFrame(({ clock }) => {
-    material.uniforms.uTime.value = clock.getElapsedTime();
+    const mat = materialRef.current;
+    if (!mat) return;
+    mat.uniforms.uTime.value = clock.getElapsedTime();
     // Comes up a touch ahead of the room lights so the sky is already there
     // as the architecture resolves out of the dark.
-    material.uniforms.uWake.value = Math.min(
+    mat.uniforms.uWake.value = Math.min(
       1,
       0.15 + lightRamp(heroState.progress) * 1.1
     );

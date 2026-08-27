@@ -1,7 +1,7 @@
 'use client';
 
 import * as THREE from 'three';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { buildGlyphs } from './glyphGeometry';
 import type { RevealRef } from '../../scroll/reveals';
@@ -48,8 +48,12 @@ export function Glyphs({ color, status, seed, revealRef }: GlyphsProps) {
       }),
     [base]
   );
+  const dotMatRef = useRef<THREE.MeshBasicMaterial | null>(null);
+  const lineMatRef = useRef<THREE.LineBasicMaterial | null>(null);
 
   useEffect(() => {
+    dotMatRef.current = dotMat;
+    lineMatRef.current = lineMat;
     return () => {
       dotMat.dispose();
       lineMat.dispose();
@@ -61,9 +65,11 @@ export function Glyphs({ color, status, seed, revealRef }: GlyphsProps) {
     const breathe = 0.9 + 0.1 * Math.sin(clock.getElapsedTime() * 0.8 + seed);
     // Off when unlit; kindles with the portal, strongest on mature apps.
     const intensity = wake * wake * (0.5 + 1.3 * glow) * breathe;
-    dotMat.color.copy(base).multiplyScalar(intensity * 1.25);
-    lineMat.color.copy(base).multiplyScalar(intensity);
-    lineMat.opacity = Math.min(1, 0.35 + wake);
+    dotMatRef.current?.color.copy(base).multiplyScalar(intensity * 1.25);
+    lineMatRef.current?.color.copy(base).multiplyScalar(intensity);
+    if (lineMatRef.current) {
+      lineMatRef.current.opacity = Math.min(1, 0.35 + wake);
+    }
   });
 
   return (

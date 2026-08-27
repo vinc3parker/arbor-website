@@ -1,7 +1,7 @@
 'use client';
 
 import * as THREE from 'three';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { makeParabolicArchShape } from './archShape';
 import { heroState, portalGlow } from '../../scroll/heroState';
@@ -170,15 +170,22 @@ export function PortalSurface({
       toneMapped: false,
     });
   }, [color, seed]);
+  const materialRef = useRef<THREE.ShaderMaterial | null>(null);
+
+  useEffect(() => {
+    materialRef.current = material;
+    return () => material.dispose();
+  }, [material]);
 
   useFrame(({ clock }) => {
-    material.uniforms.uTime.value = clock.getElapsedTime();
+    const mat = materialRef.current;
+    if (!mat) return;
+    mat.uniforms.uTime.value = clock.getElapsedTime();
     // Glow trails the roots: dark until they start climbing, then fades in.
-    material.uniforms.uReveal.value = portalGlow(revealRef.value);
+    mat.uniforms.uReveal.value = portalGlow(revealRef.value);
     // Ease the hover lift in/out so it never snaps.
     const target = appId && heroState.hovered?.id === appId ? 1 : 0;
-    material.uniforms.uHover.value +=
-      (target - material.uniforms.uHover.value) * 0.12;
+    mat.uniforms.uHover.value += (target - mat.uniforms.uHover.value) * 0.12;
   });
 
   return <mesh geometry={geometry} material={material} position={position} />;

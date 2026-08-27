@@ -84,6 +84,13 @@ export default async function ProfilePage() {
               firstName={profile.first_name ?? ""}
               lastName={profile.last_name ?? ""}
               dateOfBirth={profile.date_of_birth ?? ""}
+              gender={profile.gender ?? ""}
+              addressLine1={profile.address_line1 ?? ""}
+              addressLine2={profile.address_line2 ?? ""}
+              city={profile.city ?? ""}
+              region={profile.region ?? ""}
+              postalCode={profile.postal_code ?? ""}
+              country={profile.country ?? ""}
             />
           </div>
 

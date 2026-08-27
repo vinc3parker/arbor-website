@@ -1,9 +1,13 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { GENDER_OPTIONS } from "@/lib/arbor-profile-fields";
 import { login, signup, type AuthState } from "./actions";
 
 const initialState: AuthState = {};
+const inputClass =
+  "rounded-2xl border border-neutral-800 bg-black px-5 py-3.5 outline-none transition focus:border-neutral-600";
+const labelClass = "text-xs uppercase tracking-[0.2em] text-neutral-500";
 
 export function LoginForm({ redirectTo }: { redirectTo: string }) {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -16,6 +20,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
     mode === "signup" &&
     confirmPassword.length > 0 &&
     password !== confirmPassword;
+  const today = new Date().toISOString().split("T")[0];
 
   function toggleMode() {
     setMode(mode === "login" ? "signup" : "login");
@@ -24,7 +29,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
   }
 
   return (
-    <div className="w-full max-w-md">
+    <div className={`w-full ${mode === "signup" ? "max-w-2xl" : "max-w-md"}`}>
       <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-8 md:p-10">
         <p className="mb-3 text-sm uppercase tracking-[0.3em] text-neutral-500">
           {mode === "login" ? "WELCOME BACK" : "CREATE ACCOUNT"}
@@ -44,23 +49,166 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
           <input type="hidden" name="redirect" value={redirectTo} />
 
           <label className="flex flex-col gap-2">
-            <span className="text-xs uppercase tracking-[0.2em] text-neutral-500">
-              Email
-            </span>
+            <span className={labelClass}>Email</span>
             <input
               name="email"
               type="email"
               required
               autoComplete="email"
               placeholder="you@example.com"
-              className="rounded-2xl border border-neutral-800 bg-black px-5 py-3.5 outline-none transition focus:border-neutral-600"
+              className={inputClass}
             />
           </label>
 
+          {mode === "signup" && (
+            <>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="flex flex-col gap-2">
+                  <span className={labelClass}>First name</span>
+                  <input
+                    name="first_name"
+                    type="text"
+                    required
+                    maxLength={80}
+                    autoComplete="given-name"
+                    placeholder="First name"
+                    className={inputClass}
+                  />
+                </label>
+
+                <label className="flex flex-col gap-2">
+                  <span className={labelClass}>Last name</span>
+                  <input
+                    name="last_name"
+                    type="text"
+                    required
+                    maxLength={80}
+                    autoComplete="family-name"
+                    placeholder="Last name"
+                    className={inputClass}
+                  />
+                </label>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="flex flex-col gap-2">
+                  <span className={labelClass}>Date of birth</span>
+                  <input
+                    name="date_of_birth"
+                    type="date"
+                    required
+                    max={today}
+                    autoComplete="bday"
+                    className={`${inputClass} [color-scheme:dark]`}
+                  />
+                </label>
+
+                <label className="flex flex-col gap-2">
+                  <span className={labelClass}>Gender</span>
+                  <select
+                    name="gender"
+                    required
+                    defaultValue=""
+                    autoComplete="sex"
+                    className={inputClass}
+                  >
+                    <option value="" disabled>
+                      Select gender
+                    </option>
+                    {GENDER_OPTIONS.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <label className="flex flex-col gap-2">
+                <span className={labelClass}>Address line 1</span>
+                <input
+                  name="address_line1"
+                  type="text"
+                  required
+                  maxLength={160}
+                  autoComplete="address-line1"
+                  placeholder="Street address"
+                  className={inputClass}
+                />
+              </label>
+
+              <label className="flex flex-col gap-2">
+                <span className={labelClass}>Address line 2</span>
+                <input
+                  name="address_line2"
+                  type="text"
+                  maxLength={160}
+                  autoComplete="address-line2"
+                  placeholder="Apartment, suite, unit"
+                  className={inputClass}
+                />
+              </label>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="flex flex-col gap-2">
+                  <span className={labelClass}>City</span>
+                  <input
+                    name="city"
+                    type="text"
+                    required
+                    maxLength={100}
+                    autoComplete="address-level2"
+                    placeholder="City"
+                    className={inputClass}
+                  />
+                </label>
+
+                <label className="flex flex-col gap-2">
+                  <span className={labelClass}>Region / county</span>
+                  <input
+                    name="region"
+                    type="text"
+                    required
+                    maxLength={100}
+                    autoComplete="address-level1"
+                    placeholder="Region or county"
+                    className={inputClass}
+                  />
+                </label>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="flex flex-col gap-2">
+                  <span className={labelClass}>Postcode</span>
+                  <input
+                    name="postal_code"
+                    type="text"
+                    required
+                    maxLength={32}
+                    autoComplete="postal-code"
+                    placeholder="Postcode"
+                    className={inputClass}
+                  />
+                </label>
+
+                <label className="flex flex-col gap-2">
+                  <span className={labelClass}>Country</span>
+                  <input
+                    name="country"
+                    type="text"
+                    required
+                    maxLength={80}
+                    autoComplete="country-name"
+                    placeholder="Country"
+                    className={inputClass}
+                  />
+                </label>
+              </div>
+            </>
+          )}
+
           <label className="flex flex-col gap-2">
-            <span className="text-xs uppercase tracking-[0.2em] text-neutral-500">
-              Password
-            </span>
+            <span className={labelClass}>Password</span>
             <input
               name="password"
               type="password"
@@ -74,15 +222,13 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
               placeholder={
                 mode === "signup" ? "At least 8 characters" : "Your password"
               }
-              className="rounded-2xl border border-neutral-800 bg-black px-5 py-3.5 outline-none transition focus:border-neutral-600"
+              className={inputClass}
             />
           </label>
 
           {mode === "signup" && (
             <label className="flex flex-col gap-2">
-              <span className="text-xs uppercase tracking-[0.2em] text-neutral-500">
-                Confirm password
-              </span>
+              <span className={labelClass}>Confirm password</span>
               <input
                 name="confirm_password"
                 type="password"

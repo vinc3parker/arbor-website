@@ -59,7 +59,7 @@ export function AppContentSection({
               className="mb-4 text-xs uppercase tracking-[0.3em]"
               style={eyebrow}
             >
-              Who it's for
+              Who it&apos;s for
             </p>
             <h2 className="mb-6 text-3xl font-semibold">
               Who is {appName} for?

@@ -1,5 +1,10 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
+import {
+  clearPendingSignupProfile,
+  readPendingSignupProfile,
+} from "@/lib/pending-signup-profile";
+import { upsertProfile } from "@/lib/profile";
 import { createClient } from "@/lib/supabase-server";
 
 // Handles the email confirmation link Supabase sends on signup.
@@ -13,6 +18,26 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
     const { error } = await supabase.auth.verifyOtp({ type, token_hash });
     if (!error) {
+      const pendingProfile = await readPendingSignupProfile();
+      if (pendingProfile) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (
+          user?.id &&
+          user.email?.toLowerCase() === pendingProfile.email.toLowerCase()
+        ) {
+          const { error: profileError } = await upsertProfile(
+            supabase,
+            user.id,
+            user.email,
+            pendingProfile.profile
+          );
+          if (!profileError) {
+            await clearPendingSignupProfile();
+          }
+        }
+      }
       return NextResponse.redirect(new URL(next, request.url));
     }
   }
