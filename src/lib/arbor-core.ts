@@ -214,3 +214,29 @@ export function recordConsentBatch(
     }));
   return authedPost("/api/consent/batch", accessToken, { decisions: clean });
 }
+
+// ── Entitlement (subscription) ───────────────────────────────────────────────
+
+export interface Entitlement {
+  status: "active" | "trialing" | "past_due" | "canceled" | "none";
+  plan: string | null;
+  currentPeriodEnd: number | null;
+}
+
+/** Start the one-month, one-per-user free trial. */
+export function startTrial(accessToken: string): Promise<{ entitlement: Entitlement }> {
+  return authedPost("/api/me/trial", accessToken, {});
+}
+
+/** Redeem a comp code for free access. */
+export function redeemCode(
+  accessToken: string,
+  code: string
+): Promise<{ entitlement: Entitlement }> {
+  return authedPost("/api/me/redeem", accessToken, { code });
+}
+
+/** The signed-in user's current entitlement. */
+export function fetchEntitlement(accessToken: string): Promise<{ entitlement: Entitlement }> {
+  return authedGet("/api/me/entitlement", accessToken);
+}
