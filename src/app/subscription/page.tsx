@@ -52,8 +52,9 @@ export default async function SubscriptionPage({
   const beta = TIERS.beta_tester;
   const isFree = tier === "free";
   const isBeta = tier === "beta_tester";
-  // Founding Access goes live the moment a Stripe price is configured.
-  const billingEnabled = Boolean(process.env.STRIPE_PRICE_FOUNDING_ACCESS);
+  // The paid plan is offered when it is marked available in TIERS. (Stripe lives
+  // in Core now; if Core has no price configured, checkout returns a clear error.)
+  const billingEnabled = beta.available;
 
   // Everything the form needs comes from Core (it owns billing + entitlement):
   // status, which tier the row is, and whether the trial was already used.
