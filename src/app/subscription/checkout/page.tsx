@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { createClient } from "@/lib/supabase-server";
-import { fetchEntitlement } from "@/lib/arbor-core";
+import { ArborCoreError, createCheckout, fetchEntitlement } from "@/lib/arbor-core";
 import { isRegisteredApp, sanitizeState } from "@/lib/app-auth";
 import { EmbeddedCheckoutForm } from "./EmbeddedCheckoutForm";
 
@@ -26,44 +26,84 @@ export default async function CheckoutPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?redirect=/subscription/checkout");
 
-  const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-  if (!publishableKey) redirect("/subscription?billing=unavailable");
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const token = session?.access_token ?? null;
+  if (!token) redirect("/login?redirect=/subscription/checkout");
 
-  // Already entitled? No need to pay. (redirect() must run outside the try.)
-  let entitled = false;
+  // Already on a paid subscription? Nothing to buy. (redirect outside try/catch.)
+  let alreadyPaid = false;
   try {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (session?.access_token) {
-      const view = await fetchEntitlement(session.access_token);
-      entitled = view.entitlement.status !== "none";
-    }
+    const view = await fetchEntitlement(token);
+    const st = view.entitlement.status;
+    alreadyPaid = view.source === "stripe" && (st === "active" || st === "trialing");
   } catch {
-    // Core unreachable — let them proceed to checkout.
+    // ignore — let them proceed to checkout
   }
-  if (entitled) redirect("/subscription");
+  if (alreadyPaid) redirect("/subscription?billing=active");
 
   const sp = await searchParams;
   const appRaw = typeof sp.app === "string" ? sp.app : undefined;
   const app = appRaw && isRegisteredApp(appRaw) ? appRaw : undefined;
   const state = sanitizeState(typeof sp.state === "string" ? sp.state : undefined) ?? undefined;
 
+  const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+  // Create the Checkout Session server-side so failures are visible, not blank.
+  let clientSecret: string | null = null;
+  let errorMsg: string | null = null;
+  if (!publishableKey) {
+    errorMsg =
+      "Payments aren’t set up on the website yet — NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is missing.";
+  } else {
+    try {
+      const result = await createCheckout(token, { app, state });
+      clientSecret = result.clientSecret;
+    } catch (err) {
+      errorMsg =
+        err instanceof ArborCoreError
+          ? `Couldn’t start checkout: ${err.message}`
+          : "Couldn’t reach the billing service. Please try again.";
+    }
+  }
+
   return (
     <main className="min-h-screen bg-black text-white">
       <Navbar />
-      <section className="mx-auto max-w-3xl px-8 pb-24 pt-40">
-        <p className="mb-6 text-sm uppercase tracking-[0.3em] text-neutral-500">
+      <section className="mx-auto max-w-2xl px-6 pb-24 pt-40 sm:px-8">
+        <p className="mb-4 text-sm uppercase tracking-[0.3em] text-neutral-500">
           FOUNDING ACCESS
         </p>
-        <h1 className="text-4xl font-semibold md:text-5xl">
+        <h1 className="text-3xl font-semibold md:text-4xl">
           Complete your subscription
         </h1>
-        <p className="mt-4 text-neutral-400">
-          Payment is handled securely by Stripe.
-        </p>
+        <p className="mt-4 text-neutral-400">Payment is handled securely by Stripe.</p>
 
-        <EmbeddedCheckoutForm publishableKey={publishableKey} app={app} state={state} />
+        {clientSecret && publishableKey ? (
+          <EmbeddedCheckoutForm publishableKey={publishableKey} clientSecret={clientSecret} />
+        ) : (
+          <div className="mt-8 rounded-2xl border border-red-800 bg-red-950/50 p-6">
+            <p className="text-sm font-semibold text-red-200">
+              We couldn’t open the payment form
+            </p>
+            <p className="mt-2 text-sm leading-6 text-red-200/90">{errorMsg}</p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link
+                href="/subscription/checkout"
+                className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-neutral-200"
+              >
+                Try again
+              </Link>
+              <Link
+                href="/subscription"
+                className="rounded-full border border-neutral-600 px-5 py-2.5 text-sm font-medium text-white transition hover:border-neutral-400"
+              >
+                Back to plans
+              </Link>
+            </div>
+          </div>
+        )}
 
         <p className="mt-10 text-sm text-neutral-600">
           <Link href="/subscription" className="transition hover:text-neutral-400">

@@ -1,36 +1,29 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
-import { createCheckoutClientSecret } from "../actions";
 
 /**
- * Stripe's embedded Checkout, mounted inline (no redirect). The card fields are
- * Stripe-hosted iframes, so card data goes straight to Stripe, never our server.
- * The client secret is fetched via a server action that holds the user's token.
+ * Stripe's embedded Checkout, mounted inline. The clientSecret is created on the
+ * server (page) and passed in, so any Core/Stripe failure is handled there with a
+ * visible message rather than a blank form.
  */
 export function EmbeddedCheckoutForm({
   publishableKey,
-  app,
-  state,
+  clientSecret,
 }: {
   publishableKey: string;
-  app?: string;
-  state?: string;
+  clientSecret: string;
 }) {
   const stripePromise = useMemo(() => loadStripe(publishableKey), [publishableKey]);
-  const fetchClientSecret = useCallback(
-    () => createCheckoutClientSecret(app, state),
-    [app, state]
-  );
 
   return (
-    <div className="mt-8">
-      <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret }}>
+    <div className="mt-10 rounded-3xl border border-neutral-800 bg-neutral-950 p-4 shadow-xl shadow-black/30 sm:p-8">
+      <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret }}>
         <EmbeddedCheckout />
       </EmbeddedCheckoutProvider>
     </div>

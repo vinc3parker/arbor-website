@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
-import { ArborCoreError, startTrial, redeemCode, createCheckout } from "@/lib/arbor-core";
+import { ArborCoreError, startTrial, redeemCode } from "@/lib/arbor-core";
 
 // The signed-in user's Core access token, from the website's Supabase session.
 async function accessToken(): Promise<string | null> {
@@ -44,18 +44,3 @@ export async function redeemCodeAction(formData: FormData): Promise<void> {
   redirect(dest);
 }
 
-
-/**
- * Server action used by the embedded Checkout form. Runs on the server so the
- * user's Core access token never reaches the browser. Returns the Checkout
- * Session client secret for Stripe.js to mount.
- */
-export async function createCheckoutClientSecret(
-  app?: string,
-  state?: string
-): Promise<string> {
-  const token = await accessToken();
-  if (!token) throw new Error("Not signed in");
-  const { clientSecret } = await createCheckout(token, { app, state });
-  return clientSecret;
-}
