@@ -3,7 +3,7 @@ export type SubscriptionTier = "free" | "beta_tester";
 export const TIERS = {
   free: {
     id: "free" as const,
-    name: "Free",
+    name: "Account",
     price: "£0",
     cadence: "forever",
     tagline:

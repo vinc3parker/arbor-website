@@ -5,7 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { createClient } from "@/lib/supabase-server";
 import { TIERS } from "@/lib/subscription";
-import { startTrialAction, redeemCodeAction } from "./actions";
+import { startTrialAction } from "./actions";
 import { fetchEntitlement } from "@/lib/arbor-core";
 
 export const metadata = {
@@ -85,11 +85,10 @@ export default async function SubscriptionPage({
   const isTrial = entitled && source === "trial";
   const isComp = entitled && source === "comp";
   const canTrial = !entitled && !trialUsed;
-  const canRedeem = !entitled;
 
   // ── Current-plan presentation ──────────────────────────────────────────────
-  let planName: string = free.name;
-  let chipLabel = "Free";
+  let planName: string = "Arbor account";
+  let chipLabel = "No subscription";
   let chipClass = "border-neutral-700 bg-neutral-900 text-neutral-300";
   let detail: string = free.tagline;
 
@@ -227,54 +226,24 @@ export default async function SubscriptionPage({
           {primary && <div className="mt-6">{primary}</div>}
         </div>
 
-        {/* Free-tier actions: start a trial or redeem a code */}
-        {(canTrial || canRedeem) && (
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            {canTrial && (
-              <form
-                action={startTrialAction}
-                className="rounded-3xl border border-neutral-800 bg-neutral-950 p-6"
-              >
-                <h3 className="text-lg font-semibold">Try it free for 30 days</h3>
-                <p className="mt-2 text-sm leading-6 text-neutral-400">
-                  A month of full access to the apps — no card required. One trial
-                  per account.
-                </p>
-                <button
-                  type="submit"
-                  className="mt-5 w-full rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
-                >
-                  Start free trial
-                </button>
-              </form>
-            )}
-
-            {canRedeem && (
-              <form
-                action={redeemCodeAction}
-                className="rounded-3xl border border-neutral-800 bg-neutral-950 p-6"
-              >
-                <h3 className="text-lg font-semibold">Have a code?</h3>
-                <p className="mt-2 text-sm leading-6 text-neutral-400">
-                  Enter an access code to unlock the apps.
-                </p>
-                <div className="mt-5 flex gap-3">
-                  <input
-                    name="code"
-                    required
-                    placeholder="Enter code"
-                    className="w-full rounded-full border border-neutral-700 bg-black px-4 py-3 text-sm text-white placeholder-neutral-600 outline-none focus:border-neutral-400"
-                  />
-                  <button
-                    type="submit"
-                    className="shrink-0 rounded-full border border-neutral-600 px-5 py-3 text-sm font-medium text-white transition hover:border-neutral-400"
-                  >
-                    Redeem
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
+        {/* Free-tier action: start a trial (code redemption lives on checkout) */}
+        {canTrial && (
+          <form
+            action={startTrialAction}
+            className="mt-6 rounded-3xl border border-neutral-800 bg-neutral-950 p-6"
+          >
+            <h3 className="text-lg font-semibold">Try it free for 30 days</h3>
+            <p className="mt-2 text-sm leading-6 text-neutral-400">
+              A month of full access to the apps — no card required. One trial per
+              account.
+            </p>
+            <button
+              type="submit"
+              className="mt-5 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
+            >
+              Start free trial
+            </button>
+          </form>
         )}
 
         {/* What Founding Access includes */}
@@ -302,7 +271,7 @@ export default async function SubscriptionPage({
 
           {!entitled && (
             <p className="mt-6 border-t border-neutral-900 pt-5 text-sm leading-6 text-neutral-500">
-              Your free account keeps your profile and data safe on Arbor Core.
+              Your account keeps your profile and data safe on Arbor Core.
               Founding Access is what unlocks the apps.
             </p>
           )}

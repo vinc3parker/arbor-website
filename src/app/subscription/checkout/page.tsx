@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase-server";
 import { ArborCoreError, createCheckout, fetchEntitlement } from "@/lib/arbor-core";
 import { isRegisteredApp, sanitizeState } from "@/lib/app-auth";
 import { EmbeddedCheckoutForm } from "./EmbeddedCheckoutForm";
+import { redeemCodeAction } from "../actions";
 
 export const metadata = {
   title: "Checkout — Arbor",
@@ -104,6 +105,28 @@ export default async function CheckoutPage({
             </div>
           </div>
         )}
+
+        {/* Redeem an access code instead of paying */}
+        <div className="mt-6 rounded-3xl border border-neutral-800 bg-neutral-950 p-6">
+          <h2 className="text-lg font-semibold">Have an access code?</h2>
+          <p className="mt-2 text-sm leading-6 text-neutral-400">
+            Redeem it to unlock the apps instead of paying.
+          </p>
+          <form action={redeemCodeAction} className="mt-5 flex gap-3">
+            <input
+              name="code"
+              required
+              placeholder="Enter code"
+              className="w-full rounded-full border border-neutral-700 bg-black px-4 py-3 text-sm text-white placeholder-neutral-600 outline-none focus:border-neutral-400"
+            />
+            <button
+              type="submit"
+              className="shrink-0 rounded-full border border-neutral-600 px-5 py-3 text-sm font-medium text-white transition hover:border-neutral-400"
+            >
+              Redeem
+            </button>
+          </form>
+        </div>
 
         <p className="mt-10 text-sm text-neutral-600">
           <Link href="/subscription" className="transition hover:text-neutral-400">
