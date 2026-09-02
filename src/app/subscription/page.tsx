@@ -5,7 +5,6 @@ import { Footer } from "@/components/Footer";
 import { createClient } from "@/lib/supabase-server";
 import { TIERS } from "@/lib/subscription";
 import { getProfile } from "@/lib/profile";
-import { supabaseAdmin } from "@/lib/supabase-admin";
 import { startTrialAction, redeemCodeAction } from "./actions";
 import { fetchEntitlement } from "@/lib/arbor-core";
 
@@ -56,30 +55,26 @@ export default async function SubscriptionPage({
   // Founding Access goes live the moment a Stripe price is configured.
   const billingEnabled = Boolean(process.env.STRIPE_PRICE_FOUNDING_ACCESS);
 
-  // Authoritative entitlement from Core (it applies trial/comp expiry for us).
+  // Everything the form needs comes from Core (it owns billing + entitlement):
+  // status, which tier the row is, and whether the trial was already used.
   let entStatus = "none";
+  let source: "stripe" | "trial" | "comp" | null = null;
+  let trialUsed = false;
   try {
     const {
       data: { session },
     } = await supabase.auth.getSession();
     if (session?.access_token) {
-      const { entitlement } = await fetchEntitlement(session.access_token);
-      entStatus = entitlement.status;
+      const view = await fetchEntitlement(session.access_token);
+      entStatus = view.entitlement.status;
+      source = view.source;
+      trialUsed = view.trialUsed;
     }
   } catch {
     // Core unreachable — fall back to "not entitled".
   }
   const entitled = entStatus !== "none";
-
-  // Trial usage + source come from the source-of-truth row (no time math needed).
-  const { data: sub } = await supabaseAdmin
-    .from("subscriptions")
-    .select("source, trial_started_at")
-    .eq("user_id", user.id)
-    .maybeSingle();
-  const source = (sub?.source ?? null) as "stripe" | "trial" | "comp" | null;
-  const isStripeEntitled = entitled && (source === "stripe" || source == null);
-  const trialUsed = Boolean(sub?.trial_started_at);
+  const isStripeEntitled = entitled && source === "stripe";
   const canTrial = !entitled && !trialUsed;
   const canRedeem = !entitled;
 
@@ -213,7 +208,7 @@ export default async function SubscriptionPage({
                   </Link>
                 ) : (
                   <Link
-                    href="/billing/checkout"
+                    href="/subscription/checkout"
                     className="block w-full rounded-full bg-white px-6 py-3.5 text-center text-sm font-medium text-black transition hover:bg-neutral-200"
                   >
                     Subscribe

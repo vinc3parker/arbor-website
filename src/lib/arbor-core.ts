@@ -236,7 +236,31 @@ export function redeemCode(
   return authedPost("/api/me/redeem", accessToken, { code });
 }
 
-/** The signed-in user's current entitlement. */
-export function fetchEntitlement(accessToken: string): Promise<{ entitlement: Entitlement }> {
+export interface EntitlementView {
+  entitlement: Entitlement;
+  /** 'stripe' | 'trial' | 'comp' | null — lets the form show Manage vs Subscribe. */
+  source: "stripe" | "trial" | "comp" | null;
+  /** Whether the user has ever started their one-time trial. */
+  trialUsed: boolean;
+}
+
+/** The signed-in user's entitlement plus the extras a billing form needs. */
+export function fetchEntitlement(accessToken: string): Promise<EntitlementView> {
   return authedGet("/api/me/entitlement", accessToken);
+}
+
+/** Ask Core to create an embedded Stripe Checkout session; returns its client secret. */
+export function createCheckout(
+  accessToken: string,
+  opts: { app?: string; state?: string } = {}
+): Promise<{ clientSecret: string }> {
+  return authedPost("/api/billing/checkout", accessToken, opts);
+}
+
+/** Ask Core to create a Stripe Billing Portal session; returns the URL. */
+export function createPortal(
+  accessToken: string,
+  opts: { app?: string; state?: string } = {}
+): Promise<{ url: string }> {
+  return authedPost("/api/billing/portal", accessToken, opts);
 }
