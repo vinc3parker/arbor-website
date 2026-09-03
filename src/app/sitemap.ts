@@ -4,7 +4,9 @@ import { getAllPosts } from "@/lib/blog";
 
 const BASE = "https://arborapps.co";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const revalidate = 60;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -37,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: slug === "aevo" ? 0.9 : 0.8,
   }));
 
-  const blogRoutes: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
+  const blogRoutes: MetadataRoute.Sitemap = (await getAllPosts()).map((post) => ({
     url: `${BASE}/blog/${post.slug}`,
     lastModified: new Date(post.date),
     changeFrequency: "monthly",

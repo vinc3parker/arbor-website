@@ -35,14 +35,15 @@ export function AboutSection() {
             Arbor is built the other way around. A life has eight dimensions —
             your finances, body, mind, growth, purpose, relationships,
             experiences, and how you live day to day — and Arbor gives you a
-            specialist app for each one.
+            guide for each one: a specialist app that gets to know you and helps
+            you move that part of your life forward.
           </p>
           <p>
             Underneath them is a single ecosystem that shares one understanding
-            of you, so the parts work together instead of pulling in different
-            directions. Each app is an expert in its domain; together they know
-            you as a whole person. Not eight apps to juggle — one that
-            understands the complete picture.
+            of you, so your guides work together instead of pulling in different
+            directions. Each is an expert in its domain; together they know you
+            as a whole person. Not eight apps to juggle — one that understands
+            the complete picture.
           </p>
         </div>
       </div>

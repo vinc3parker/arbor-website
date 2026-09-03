@@ -2,6 +2,11 @@ export const apps = {
   aevo: {
     name: "Aevo",
     tag: "Performance",
+    guide: {
+      role: "Your training coach",
+      blurb:
+        "Aevo learns how you actually train and builds a plan around your goals, your schedule, and your body — adapting as you do.",
+    },
     hero: "Training that actually understands you.",
     overviewTitle: "Training built around you, not a template.",
     intro:
@@ -51,6 +56,11 @@ export const apps = {
   salus: {
     name: "Salus",
     tag: "Mental wellbeing",
+    guide: {
+      role: "Your reflection companion",
+      blurb:
+        "Salus gives you a calm space to journal, notice patterns, and understand yourself, without turning growth into another thing to optimise.",
+    },
     hero: "Reflection and growth for everyday life.",
     overviewTitle:
       "A calmer way to reflect, understand yourself, and keep moving forward.",
@@ -92,6 +102,11 @@ export const apps = {
   thrive: {
     name: "Thrive",
     tag: "Organisation",
+    guide: {
+      role: "Your day-to-day planner",
+      blurb:
+        "Thrive turns intention into routines, plans, and a day that actually holds together.",
+    },
     hero:
       "Build routines and stay ahead of life.",
     overviewTitle:
@@ -109,6 +124,11 @@ export const apps = {
   nura: {
     name: "Nura",
     tag: "Finance",
+    guide: {
+      role: "Your finance advisor",
+      blurb:
+        "Nura makes sense of your money and helps you plan with confidence — without the stress or the judgment.",
+    },
     hero:
       "Money built around real life.",
     overviewTitle:
@@ -126,6 +146,11 @@ export const apps = {
   wend: {
     name: "Wend",
     tag: "Explore",
+    guide: {
+      role: "Your travel guide",
+      blurb:
+        "Wend finds the places, experiences, and moments that genuinely feel like you.",
+    },
     hero:
       "Discover places and experiences.",
     overviewTitle:
@@ -143,6 +168,11 @@ export const apps = {
   kith: {
     name: "Kith",
     tag: "Connection",
+    guide: {
+      role: "Your confidant",
+      blurb:
+        "Kith helps you stay close to the people who matter, on your terms rather than an algorithm's.",
+    },
     hero:
       "Intentional social connection.",
     overviewTitle:
@@ -160,6 +190,11 @@ export const apps = {
   telos: {
     name: "Telos",
     tag: "Purpose",
+    guide: {
+      role: "Your career mentor",
+      blurb:
+        "Telos helps you think clearly about work, strengths, and purpose, and find a path that fits who you are.",
+    },
     hero:
       "Find work that fits who you are.",
     overviewTitle:
@@ -177,6 +212,11 @@ export const apps = {
   sage: {
     name: "Sage",
     tag: "Learning",
+    guide: {
+      role: "Your personal tutor",
+      blurb:
+        "Sage helps you build knowledge that actually sticks — connecting ideas and tracking real progress.",
+    },
     hero:
       "Build knowledge intentionally.",
     overviewTitle:

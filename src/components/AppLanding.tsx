@@ -41,6 +41,10 @@ type AppLandingProps = {
     name: string;
     tag: string;
     hero: string;
+    guide?: {
+      role: string;
+      blurb: string;
+    };
     intro?: string;
     overviewTitle?: string;
     detailedDescription?: string;
@@ -185,6 +189,26 @@ export function AppLanding({ app }: AppLandingProps) {
               <p className="mt-10 max-w-2xl text-xl leading-8 text-white/85 [text-shadow:0_1px_18px_rgba(0,0,0,0.5)]">
                 {app.hero}
               </p>
+
+              {app.guide && (
+                <div
+                  className="mt-10 max-w-2xl rounded-2xl border px-6 py-5 backdrop-blur"
+                  style={{
+                    borderColor: `rgba(${rgb},0.28)`,
+                    background: `rgba(${rgb},0.06)`,
+                  }}
+                >
+                  <p
+                    className="text-sm uppercase tracking-[0.3em]"
+                    style={eyebrow}
+                  >
+                    {app.guide.role}
+                  </p>
+                  <p className="mt-3 text-lg leading-8 text-white/80">
+                    {app.guide.blurb}
+                  </p>
+                </div>
+              )}
 
               <div className="mt-12 flex flex-col gap-4 sm:flex-row">
                 <a

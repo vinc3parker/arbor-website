@@ -8,11 +8,14 @@ import { getBlogPostingSchema } from "@/lib/schema";
 
 type Params = { slug: string };
 
-export function generateStaticParams(): Params[] {
-  return getPostSlugs().map((slug) => ({ slug }));
+export async function generateStaticParams(): Promise<Params[]> {
+  return (await getPostSlugs()).map((slug) => ({ slug }));
 }
 
-export const dynamicParams = false;
+// Allow posts created after build to render on demand, and re-read at most
+// once a minute so edits appear without a redeploy.
+export const dynamicParams = true;
+export const revalidate = 60;
 
 export async function generateMetadata({
   params,
@@ -20,7 +23,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     return { title: "Post not found | Arbor" };
@@ -64,7 +67,7 @@ export default async function BlogPostPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     notFound();

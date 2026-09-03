@@ -2,6 +2,7 @@ import Image from "next/image";
 
 type App = {
   name: string;
+  guide?: string;
   description: string;
   href: string;
   icon: string;
@@ -21,16 +22,17 @@ export function AppsSection({
       className="mx-auto max-w-6xl px-8 py-32"
     >
       <p className="mb-6 text-sm uppercase tracking-[0.3em] text-neutral-500">
-        The apps
+        The guides
       </p>
 
       <h2 className="mb-6 text-5xl font-semibold">
-        Eight experts, one for each dimension.
+        Eight guides, one for each part of life.
       </h2>
 
       <p className="mb-12 max-w-2xl text-lg leading-8 text-neutral-400">
-        Each app does one part of life properly, the way a specialist would.
-        Some are live today; more are on the way.
+        Every Arbor app is a guide — an expert in one part of your life that
+        gets to know you and helps you move it forward. Some are here today;
+        more are on the way.
       </p>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -62,6 +64,12 @@ export function AppsSection({
             </div>
 
             <div className="flex-1">
+              {app.guide && (
+                <p className="mb-2 text-xs uppercase tracking-[0.25em] text-neutral-500">
+                  {app.guide}
+                </p>
+              )}
+
               <h3 className="flex items-center gap-3 text-2xl font-medium transition group-hover:text-neutral-300">
                 {app.name}
                 {app.badge && (

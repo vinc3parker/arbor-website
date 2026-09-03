@@ -37,8 +37,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BlogIndexPage() {
-  const posts = getAllPosts();
+// Re-read from the database at most once a minute so admin edits appear
+// without a redeploy.
+export const revalidate = 60;
+
+export default async function BlogIndexPage() {
+  const posts = await getAllPosts();
 
   return (
     <main className="min-h-screen bg-black text-white">
