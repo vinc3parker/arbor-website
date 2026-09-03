@@ -25,7 +25,11 @@ const smoothstep = (t: number) => {
  * the portals light one at a time, centre-out. Hovering a lit portal raises its
  * app card; clicking dollies the camera through the veil into the app page.
  */
-export function ArborRoom() {
+export function ArborRoom({
+  statuses,
+}: {
+  statuses?: Record<string, ArborApp['status']>;
+}) {
   const router = useRouter();
   const titleRef = useRef<HTMLDivElement>(null);
   const hintRef = useRef<HTMLDivElement>(null);
@@ -209,7 +213,7 @@ export function ArborRoom() {
             far: 200,
           }}
         >
-          <ObservatoryScene />
+          <ObservatoryScene statuses={statuses} />
         </Canvas>
 
         {/* ---- Click-to-enter surface ---- */}

@@ -9,6 +9,7 @@ import { AppContentSection } from "@/components/AppContentSection";
 import { AppWorld } from "@/components/AppWorld";
 import { AppAtmosphere } from "@/components/AppAtmosphere";
 import { arborApps } from "@/components/ArborRoom/data/apps";
+import { getAppStates } from "@/lib/app-states";
 
 /** Each app's portal colour, so the page arrives in the same hue. */
 function accentFor(name: string): string {
@@ -63,11 +64,25 @@ type AppLandingProps = {
   };
 };
 
-export function AppLanding({ app }: AppLandingProps) {
+export async function AppLanding({ app }: AppLandingProps) {
+  // Live state (development / beta / live + download link) comes from the admin-
+  // managed `app_states` table; static content is the fallback if the DB is down.
+  const state = (await getAppStates())[app.name.toLowerCase()];
+  const download =
+    state !== undefined
+      ? state.status !== "development" && state.downloadUrl
+        ? {
+            type: (state.status === "live" ? "appstore" : "beta") as
+              | "appstore"
+              | "beta",
+            url: state.downloadUrl,
+          }
+        : undefined
+      : app.download;
+  const statusNote = state?.statusNote ?? app.status;
+
   const downloadLabel =
-    app.download?.type === "beta"
-      ? "Join the Beta"
-      : "Download on the App Store";
+    download?.type === "beta" ? "Join the Beta" : "Download on the App Store";
 
   const accent = accentFor(app.name);
   const rgb = rgbStr(accent);
@@ -212,13 +227,13 @@ export function AppLanding({ app }: AppLandingProps) {
 
               <div className="mt-12 flex flex-col gap-4 sm:flex-row">
                 <a
-                  href={app.download ? app.download.url : "#early-access"}
-                  target={app.download ? "_blank" : undefined}
-                  rel={app.download ? "noopener noreferrer" : undefined}
+                  href={download ? download.url : "#early-access"}
+                  target={download ? "_blank" : undefined}
+                  rel={download ? "noopener noreferrer" : undefined}
                   className="rounded-full px-8 py-4 text-center font-medium transition hover:scale-[1.03]"
                   style={primaryBtn}
                 >
-                  {app.download ? downloadLabel : "Join Early Access"}
+                  {download ? downloadLabel : "Join Early Access"}
                 </a>
               </div>
             </div>
@@ -322,7 +337,7 @@ export function AppLanding({ app }: AppLandingProps) {
             rgb={rgb}
           />
 
-          {app.status && (
+          {statusNote && (
             <section className="mx-auto max-w-6xl px-8 py-24">
               <div className="rounded-3xl p-10" style={glass}>
                 <p
@@ -332,11 +347,11 @@ export function AppLanding({ app }: AppLandingProps) {
                   Status
                 </p>
 
-                <p className="mt-6 text-2xl font-medium">{app.status}</p>
+                <p className="mt-6 text-2xl font-medium">{statusNote}</p>
 
-                {app.download && (
+                {download && (
                   <a
-                    href={app.download.url}
+                    href={download.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-8 inline-block rounded-full px-8 py-4 text-center font-medium transition hover:scale-[1.03]"

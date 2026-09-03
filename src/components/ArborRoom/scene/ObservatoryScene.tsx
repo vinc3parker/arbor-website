@@ -9,7 +9,7 @@ import { BrickWall } from '../room/BrickWall';
 import { buildUniforms } from '../room/buildReveal';
 import { StarrySky } from './StarrySky';
 import { RootRun } from '../room/RootRun';
-import { arborApps } from '../data/apps';
+import { arborApps, type ArborApp } from '../data/apps';
 import { revealRefs, revealRank } from '../scroll/reveals';
 import { heroState, portalReveal, buildLevel } from '../scroll/heroState';
 import { DAIS_HEIGHT } from '../room/constants';
@@ -116,7 +116,15 @@ function RevealDriver() {
   return null;
 }
 
-export function ObservatoryScene() {
+export function ObservatoryScene({
+  statuses,
+}: {
+  statuses?: Record<string, ArborApp['status']>;
+}) {
+  // Admin-managed status overrides how grown each portal's plant looks.
+  const withStatus = (app: ArborApp): ArborApp =>
+    statuses?.[app.id] ? { ...app, status: statuses[app.id] } : app;
+
   return (
     <>
       <color attach="background" args={["#050608"]} />
@@ -131,11 +139,11 @@ export function ObservatoryScene() {
 
       <BrickWall />
       {arborApps.map((app) => (
-        <WallBay key={app.id} app={app} />
+        <WallBay key={app.id} app={withStatus(app)} />
       ))}
 
       {arborApps.map((app) => (
-        <RootRun key={app.id} app={app} revealRef={revealRefs.get(app.id)!} />
+        <RootRun key={app.id} app={withStatus(app)} revealRef={revealRefs.get(app.id)!} />
       ))}
 
       <Floor />
