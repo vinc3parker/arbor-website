@@ -121,6 +121,24 @@ async function authedPost<T>(
   return handle<T>(res);
 }
 
+async function authedDelete<T>(path: string, accessToken: string): Promise<T> {
+  let res: Response;
+  try {
+    res = await fetch(`${ARBOR_CORE_URL}${path}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    });
+  } catch {
+    throw new ArborCoreError(
+      "NETWORK",
+      "Couldn't reach Arbor. Please try again.",
+      502
+    );
+  }
+  return handle<T>(res);
+}
+
 /** Does an Arbor account already exist for this email? */
 export function checkEmail(email: string): Promise<{ exists: boolean }> {
   return post("/api/auth/check-email", { email });
@@ -153,6 +171,10 @@ export async function authorize(session: Session): Promise<{ code: string }> {
     refreshToken: session.refreshToken,
     expiresAt: session.expiresAt,
   });
+}
+
+export function deleteAccount(accessToken: string): Promise<{ deleted: boolean }> {
+  return authedDelete("/api/account", accessToken);
 }
 
 // ── Consent ────────────────────────────────────────────────────────────────

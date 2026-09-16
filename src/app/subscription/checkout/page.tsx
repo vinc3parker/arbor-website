@@ -16,6 +16,14 @@ export const dynamic = "force-dynamic";
 
 type SearchParams = { [k: string]: string | string[] | undefined };
 
+function suffix(app?: string, state?: string): string {
+  const params = new URLSearchParams();
+  if (app) params.set("app", app);
+  if (state) params.set("state", state);
+  const query = params.toString();
+  return query ? `?${query}` : "";
+}
+
 export default async function CheckoutPage({
   searchParams,
 }: {
@@ -25,13 +33,19 @@ export default async function CheckoutPage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login?redirect=/subscription/checkout");
+  const sp = await searchParams;
+  const appRaw = typeof sp.app === "string" ? sp.app : undefined;
+  const app = appRaw && isRegisteredApp(appRaw) ? appRaw : undefined;
+  const state = sanitizeState(typeof sp.state === "string" ? sp.state : undefined) ?? undefined;
+  const returnSuffix = suffix(app, state);
+
+  if (!user) redirect(`/login?redirect=${encodeURIComponent(`/subscription/checkout${returnSuffix}`)}`);
 
   const {
     data: { session },
   } = await supabase.auth.getSession();
   const token = session?.access_token ?? null;
-  if (!token) redirect("/login?redirect=/subscription/checkout");
+  if (!token) redirect(`/login?redirect=${encodeURIComponent(`/subscription/checkout${returnSuffix}`)}`);
 
   // Already on a paid subscription? Nothing to buy. (redirect outside try/catch.)
   let alreadyPaid = false;
@@ -42,12 +56,13 @@ export default async function CheckoutPage({
   } catch {
     // ignore — let them proceed to checkout
   }
-  if (alreadyPaid) redirect("/subscription?billing=active");
-
-  const sp = await searchParams;
-  const appRaw = typeof sp.app === "string" ? sp.app : undefined;
-  const app = appRaw && isRegisteredApp(appRaw) ? appRaw : undefined;
-  const state = sanitizeState(typeof sp.state === "string" ? sp.state : undefined) ?? undefined;
+  if (alreadyPaid) {
+    const params = new URLSearchParams();
+    params.set("billing", "active");
+    if (app) params.set("app", app);
+    if (state) params.set("state", state);
+    redirect(`/subscription?${params.toString()}`);
+  }
 
   const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
@@ -91,13 +106,13 @@ export default async function CheckoutPage({
             <p className="mt-2 text-sm leading-6 text-red-200/90">{errorMsg}</p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link
-                href="/subscription/checkout"
+                href={`/subscription/checkout${returnSuffix}`}
                 className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-neutral-200"
               >
                 Try again
               </Link>
               <Link
-                href="/subscription"
+                href={`/subscription${returnSuffix}`}
                 className="rounded-full border border-neutral-600 px-5 py-2.5 text-sm font-medium text-white transition hover:border-neutral-400"
               >
                 Back to plans
@@ -129,7 +144,7 @@ export default async function CheckoutPage({
         </div>
 
         <p className="mt-10 text-sm text-neutral-600">
-          <Link href="/subscription" className="transition hover:text-neutral-400">
+          <Link href={`/subscription${returnSuffix}`} className="transition hover:text-neutral-400">
             ← Back to plans
           </Link>
         </p>

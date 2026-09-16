@@ -58,9 +58,9 @@ export const PRIVACY_POLICY: LegalDoc = {
   title: "Privacy Policy",
   effectiveDate: LEGAL_META.effectiveDate,
   intro: [
-    "This Privacy Policy explains how Arbor (“Arbor”, “we”, “us”) collects, uses, and protects your information when you use Thrive, our personal productivity and habit app, together with related services (the “Service”).",
+    "This Privacy Policy explains how Arbor (“Arbor”, “we”, “us”) collects, uses, and protects your information when you use an Arbor app — including Thrive, our personal productivity and habit app, and Nura, our personal finance app — together with related services (the “Service”).",
     "Arbor is a UK-based company and is the controller of your personal information under UK data protection law (the UK GDPR and the Data Protection Act 2018).",
-    "Thrive is designed to be private by default: most of the content you create lives on your device, not on our servers. This policy describes what we do collect, why, and the choices you have.",
+    "This policy covers what every Arbor app has in common: your account, and how we handle data across the platform. Data practices that are specific to one app — for example, Thrive keeping most of what you create on your device rather than our servers, or Nura connecting to your bank — are covered in that app’s own supplementary policy, linked from within the app.",
   ],
   sections: [
     {
@@ -193,7 +193,7 @@ export const TERMS_OF_SERVICE: LegalDoc = {
   title: "Terms of Service",
   effectiveDate: LEGAL_META.effectiveDate,
   intro: [
-    "These Terms of Service (“Terms”) are a legal agreement between you and Arbor (“Arbor”, “we”, “us”), a company based in the United Kingdom, governing your use of Thrive and related services (the “Service”). By creating an account or using the Service, you agree to these Terms. If you do not agree, do not use the Service.",
+    "These Terms of Service (“Terms”) are a legal agreement between you and Arbor (“Arbor”, “we”, “us”), a company based in the United Kingdom, governing your use of the Arbor apps (including Thrive and Nura) and related services (the “Service”). By creating an account or using the Service, you agree to these Terms. If you do not agree, do not use the Service.",
   ],
   sections: [
     {
@@ -209,9 +209,9 @@ export const TERMS_OF_SERVICE: LegalDoc = {
       ],
     },
     {
-      heading: "3. Licence to use Thrive",
+      heading: "3. Licence to use the Service",
       body: [
-        "Subject to these Terms, we grant you a personal, limited, non-exclusive, non-transferable, and revocable licence to use the Thrive app for your own personal, non-commercial purposes.",
+        "Subject to these Terms, we grant you a personal, limited, non-exclusive, non-transferable, and revocable licence to use the Arbor apps you have access to (such as Thrive or Nura) for your own personal, non-commercial purposes.",
       ],
     },
     {

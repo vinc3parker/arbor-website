@@ -138,14 +138,22 @@ export default async function ProfilePage() {
               </div>
             </dl>
 
-            <form action="/auth/signout" method="post" className="mt-6">
-              <button
-                type="submit"
-                className="rounded-full border border-neutral-800 px-6 py-3 text-sm text-neutral-300 transition hover:border-neutral-600 hover:text-white"
+            <div className="mt-6 flex flex-wrap gap-3">
+              <form action="/auth/signout" method="post">
+                <button
+                  type="submit"
+                  className="rounded-full border border-neutral-800 px-6 py-3 text-sm text-neutral-300 transition hover:border-neutral-600 hover:text-white"
+                >
+                  Sign out
+                </button>
+              </form>
+              <Link
+                href="/account/delete"
+                className="rounded-full border border-red-900/70 px-6 py-3 text-sm text-red-300 transition hover:border-red-600 hover:text-red-200"
               >
-                Sign out
-              </button>
-            </form>
+                Delete account
+              </Link>
+            </div>
           </div>
         </div>
       </section>

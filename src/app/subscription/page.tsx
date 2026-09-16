@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase-server";
 import { TIERS } from "@/lib/subscription";
 import { startTrialAction } from "./actions";
 import { fetchEntitlement } from "@/lib/arbor-core";
+import { isRegisteredApp, sanitizeState } from "@/lib/app-auth";
 
 export const metadata = {
   title: "Subscription — Arbor",
@@ -41,6 +42,18 @@ function formatDate(unixSeconds: number): string {
     month: "long",
     year: "numeric",
   });
+}
+
+function first(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function appSuffix(app: string | null, state: string | null): string {
+  const params = new URLSearchParams();
+  if (app) params.set("app", app);
+  if (state) params.set("state", state);
+  const query = params.toString();
+  return query ? `?${query}` : "";
 }
 
 export default async function SubscriptionPage({
@@ -86,6 +99,12 @@ export default async function SubscriptionPage({
   const isComp = entitled && source === "comp";
   const canTrial = !entitled && !trialUsed;
 
+  const sp = (await searchParams) ?? {};
+  const rawApp = first(sp.app);
+  const app = rawApp && isRegisteredApp(rawApp) ? rawApp : null;
+  const state = sanitizeState(first(sp.state));
+  const returnSuffix = appSuffix(app, state);
+
   // ── Current-plan presentation ──────────────────────────────────────────────
   let planName: string = "Arbor account";
   let chipLabel = "No subscription";
@@ -129,7 +148,7 @@ export default async function SubscriptionPage({
   if (isStripeEntitled) {
     primary = (
       <Link
-        href="/billing/portal"
+        href={`/billing/portal${returnSuffix}`}
         className="inline-block rounded-full border border-neutral-600 px-6 py-3 text-sm font-medium text-white transition hover:border-neutral-400"
       >
         Manage billing
@@ -140,7 +159,7 @@ export default async function SubscriptionPage({
   } else if (beta.available) {
     primary = (
       <Link
-        href="/subscription/checkout"
+        href={`/subscription/checkout${returnSuffix}`}
         className="inline-block rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
       >
         {isTrial ? "Subscribe to keep access" : `Subscribe — ${beta.price}/mo`}
@@ -159,7 +178,6 @@ export default async function SubscriptionPage({
     );
   }
 
-  const sp = (await searchParams) ?? {};
   const notice =
     sp.billing === "active"
       ? { kind: "ok", text: "You’re already subscribed — thanks!" }

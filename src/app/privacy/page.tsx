@@ -5,7 +5,7 @@ import { PRIVACY_POLICY } from "@/content/legal";
 export const metadata: Metadata = {
   title: "Privacy Policy — Arbor",
   description:
-    "How Arbor collects, uses, and protects your information across your Arbor account and the Arbor family of apps, including Thrive.",
+    "How Arbor collects, uses, and protects your information across your Arbor account and the Arbor family of apps, including Thrive and Nura.",
   alternates: {
     canonical: "https://arborapps.co/privacy",
   },

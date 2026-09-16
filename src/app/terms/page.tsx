@@ -5,7 +5,7 @@ import { TERMS_OF_SERVICE } from "@/content/legal";
 export const metadata: Metadata = {
   title: "Terms of Service — Arbor",
   description:
-    "The Terms of Service for your Arbor account and the Arbor family of apps, including Thrive.",
+    "The Terms of Service for your Arbor account and the Arbor family of apps, including Thrive and Nura.",
   alternates: {
     canonical: "https://arborapps.co/terms",
   },
