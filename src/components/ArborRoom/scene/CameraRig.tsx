@@ -14,6 +14,7 @@ const ORBIT_LIMIT = (56 * Math.PI) / 180;
 const SETTLE_RATE = 2.4;
 const TRANSITION_SECONDS = 1.15;
 const TAP_SLOP = 9;
+const DESKTOP_REFERENCE_ASPECT = 16 / 9;
 
 const smooth = (t: number) => {
   const c = Math.min(Math.max(t, 0), 1);
@@ -160,10 +161,25 @@ export function CameraRig() {
     } else {
       yaw.current +=
         (targetYaw.current - yaw.current) * (1 - Math.exp(-dt * SETTLE_RATE));
-      dolly.current.set(0, baseY, baseZ);
+      // Keep the eight arches spanning wide desktop screens. A fixed vertical
+      // FOV reveals progressively more horizontal wall as aspect ratio grows,
+      // so move toward the wall above 16:9 to preserve the intended framing.
+      const aspect = camera instanceof THREE.PerspectiveCamera
+        ? camera.aspect
+        : DESKTOP_REFERENCE_ASPECT;
+      const fullWidthScale =
+        DESKTOP_REFERENCE_ASPECT / Math.max(aspect, DESKTOP_REFERENCE_ASPECT);
+      // Apply only part of the mathematically exact correction. Keeping 45%
+      // of the original distance leaves breathing room beside the edge arches
+      // instead of cropping their stone frames.
+      const distanceScale = THREE.MathUtils.lerp(1, fullWidthScale, 0.55);
+      const framedZ =
+        (baseZ + WALL_APOTHEM) * distanceScale - WALL_APOTHEM;
+      const wideLookLift = (1 - distanceScale) * 5;
+      dolly.current.set(0, baseY, framedZ);
       look.current.set(
         Math.sin(yaw.current) * 20,
-        4.1,
+        4.1 + wideLookLift,
         -Math.cos(yaw.current) * 20
       );
     }

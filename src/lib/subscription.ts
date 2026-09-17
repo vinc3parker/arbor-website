@@ -18,7 +18,7 @@ export const TIERS = {
   beta_tester: {
     id: "beta_tester" as const,
     name: "Founding Access",
-    price: "£2.50",
+    price: "£4",
     cadence: "per month",
     tagline:
       "Unlocks the Arbor apps and helps sustainably run and grow the ecosystem — with founding-member status while Arbor is being built.",

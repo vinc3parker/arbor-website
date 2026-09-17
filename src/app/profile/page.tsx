@@ -5,9 +5,7 @@ import { Footer } from "@/components/Footer";
 import { createClient } from "@/lib/supabase-server";
 import {
   getProfile,
-  calculateAge,
   displayNameFor,
-  fullNameFor,
 } from "@/lib/profile";
 import { TIERS } from "@/lib/subscription";
 import { ProfileForm } from "./ProfileForm";
@@ -30,8 +28,6 @@ export default async function ProfilePage() {
   const profile = await getProfile(supabase, user.id);
   const plan = TIERS[profile.subscription_tier];
   const name = displayNameFor(profile, user.email);
-  const fullName = fullNameFor(profile);
-  const age = calculateAge(profile.date_of_birth);
 
   const memberSince = user.created_at
     ? new Date(user.created_at).toLocaleDateString("en-GB", {
@@ -63,11 +59,6 @@ export default async function ProfilePage() {
           </div>
           <div>
             <h1 className="text-3xl font-semibold">Hi, {name}</h1>
-            <p className="mt-1 text-sm text-neutral-500">
-              {fullName ? `${fullName} · ` : ""}
-              {user.email}
-              {age !== null ? ` · ${age} years old` : ""}
-            </p>
           </div>
         </div>
 

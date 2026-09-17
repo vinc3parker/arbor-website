@@ -5,7 +5,6 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { createClient } from "@/lib/supabase-server";
 import { TIERS } from "@/lib/subscription";
-import { startTrialAction } from "./actions";
 import { fetchEntitlement } from "@/lib/arbor-core";
 import { isRegisteredApp, sanitizeState } from "@/lib/app-auth";
 
@@ -73,10 +72,9 @@ export default async function SubscriptionPage({
   const free = TIERS.free;
   const beta = TIERS.beta_tester;
 
-  // Entitlement comes from Core (owns billing): status, tier source, trial usage.
+  // Entitlement comes from Core (owns billing).
   let entStatus = "none";
   let source: "stripe" | "trial" | "comp" | null = null;
-  let trialUsed = false;
   let periodEnd: number | null = null;
   try {
     const {
@@ -86,7 +84,6 @@ export default async function SubscriptionPage({
       const view = await fetchEntitlement(session.access_token);
       entStatus = view.entitlement.status;
       source = view.source;
-      trialUsed = view.trialUsed;
       periodEnd = view.entitlement.currentPeriodEnd;
     }
   } catch {
@@ -97,7 +94,6 @@ export default async function SubscriptionPage({
   const isStripeEntitled = entitled && source === "stripe";
   const isTrial = entitled && source === "trial";
   const isComp = entitled && source === "comp";
-  const canTrial = !entitled && !trialUsed;
 
   const sp = (await searchParams) ?? {};
   const rawApp = first(sp.app);
@@ -128,11 +124,11 @@ export default async function SubscriptionPage({
     }
   } else if (isTrial) {
     planName = beta.name;
-    chipLabel = "Free trial";
+    chipLabel = "Temporary access";
     chipClass = "border-sky-800 bg-sky-950/40 text-sky-300";
     detail = periodEnd
-      ? `Your free trial ends on ${formatDate(periodEnd)}. Subscribe any time to keep access.`
-      : "Your free trial is active.";
+      ? `Your access ends on ${formatDate(periodEnd)}. Subscribe any time to keep access.`
+      : "Your temporary access is active.";
   } else if (isComp) {
     planName = beta.name;
     chipLabel = "Complimentary";
@@ -185,17 +181,9 @@ export default async function SubscriptionPage({
         ? { kind: "err", text: "Payments aren’t available right now. Please try again shortly." }
         : sp.billing
           ? { kind: "err", text: "Something went wrong starting checkout. Please try again." }
-          : sp.trial === "started"
-            ? { kind: "ok", text: "Your 30-day free trial is active. Enjoy!" }
-            : sp.code === "redeemed"
+          : sp.code === "redeemed"
               ? { kind: "ok", text: "Code redeemed — your access is now active." }
-              : sp.trial_error === "TRIAL_ALREADY_USED"
-                ? { kind: "err", text: "You have already used your free trial." }
-                : sp.trial_error === "ALREADY_ENTITLED"
-                  ? { kind: "err", text: "You already have an active subscription." }
-                  : sp.trial_error
-                    ? { kind: "err", text: "Couldn’t start your trial. Please try again." }
-                    : sp.code_error === "CODE_EXHAUSTED"
+              : sp.code_error === "CODE_EXHAUSTED"
                       ? { kind: "err", text: "That code has already been fully redeemed." }
                       : sp.code_error === "CODE_EXPIRED"
                         ? { kind: "err", text: "That code has expired." }
@@ -243,26 +231,6 @@ export default async function SubscriptionPage({
 
           {primary && <div className="mt-6">{primary}</div>}
         </div>
-
-        {/* Free-tier action: start a trial (code redemption lives on checkout) */}
-        {canTrial && (
-          <form
-            action={startTrialAction}
-            className="mt-6 rounded-3xl border border-neutral-800 bg-neutral-950 p-6"
-          >
-            <h3 className="text-lg font-semibold">Try it free for 30 days</h3>
-            <p className="mt-2 text-sm leading-6 text-neutral-400">
-              A month of full access to the apps — no card required. One trial per
-              account.
-            </p>
-            <button
-              type="submit"
-              className="mt-5 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
-            >
-              Start free trial
-            </button>
-          </form>
-        )}
 
         {/* What Founding Access includes */}
         <div className="mt-10 rounded-3xl border border-neutral-900 bg-neutral-950/50 p-8">

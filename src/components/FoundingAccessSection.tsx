@@ -102,14 +102,6 @@ export function FoundingAccessSection() {
           </Link>
         </div>
       </div>
-
-      <p className="mt-8 text-sm text-neutral-500">
-        Prefer to try first? You can start a one-month free trial from your{" "}
-        <Link href="/subscription" className="underline transition hover:text-neutral-300">
-          subscription page
-        </Link>
-        .
-      </p>
     </section>
   );
 }
