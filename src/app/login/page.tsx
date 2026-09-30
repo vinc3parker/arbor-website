@@ -31,14 +31,14 @@ export default async function LoginPage({
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-bg text-fg">
       <Navbar />
 
-      <section className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-8 py-32">
+      <section className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-4 py-28 sm:px-8">
         <LoginForm redirectTo={redirectTo} />
 
-        <p className="mt-8 text-center text-sm text-neutral-600">
-          <Link href="/" className="transition hover:text-neutral-400">
+        <p className="mt-6 text-center text-sm text-fg-3">
+          <Link href="/" className="transition hover:text-fg">
             ← Back to home
           </Link>
         </p>

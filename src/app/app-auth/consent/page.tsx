@@ -39,18 +39,18 @@ export default async function ConsentPage() {
   const optional = optionalOffers(status);
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-bg text-fg">
       <Navbar />
       <section className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-8 py-32">
         <div className="w-full max-w-md">
-          <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-8 md:p-10">
-            <p className="mb-3 text-sm uppercase tracking-[0.3em] text-neutral-500">
-              {appName.toUpperCase()}
+          <div className="ui-surface p-8 md:p-10">
+            <p className="ui-kicker">
+              {appName}
             </p>
-            <h1 className="text-3xl font-semibold">
+            <h1 className="ui-title">
               Before you continue.
             </h1>
-            <p className="mt-3 text-sm leading-7 text-neutral-400">
+            <p className="mt-3 text-sm leading-7 text-fg-2">
               A few permissions so {appName} can work the way it should. You can
               change these later in your Arbor profile.
             </p>
@@ -62,8 +62,8 @@ export default async function ConsentPage() {
             />
           </div>
 
-          <p className="mt-8 text-center text-sm text-neutral-600">
-            <Link href="/" className="transition hover:text-neutral-400">
+          <p className="mt-8 text-center text-sm text-fg-3">
+            <Link href="/" className="transition hover:text-fg">
               ← Back to home
             </Link>
           </p>

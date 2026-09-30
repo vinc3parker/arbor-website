@@ -76,39 +76,39 @@ export default async function BlogPostPage({
   const schema = getBlogPostingSchema(post);
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-bg text-fg">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
       <Navbar />
 
-      <article className="mx-auto max-w-3xl px-8 pt-40 pb-32 sm:pt-44">
+      <article className="site-container max-w-3xl pt-40 pb-32 sm:pt-44">
         <Link
           href="/blog"
-          className="text-sm text-neutral-500 transition hover:text-white"
+          className="text-sm text-fg-3 transition hover:text-fg"
         >
           ← Back to blog
         </Link>
 
-        <div className="mt-10 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-neutral-500">
-          <span className="rounded-full border border-neutral-800 px-3 py-1">
+        <div className="mt-10 flex items-center gap-3 type-caption text-fg-2">
+          <span className="rounded-full border border-line px-3 py-1">
             {post.tag}
           </span>
           <span>{post.readingTime}</span>
         </div>
 
-        <h1 className="mt-6 text-4xl font-semibold leading-tight md:text-5xl">
+        <h1 className="type-h1 mt-6">
           {post.title}
         </h1>
 
-        <div className="mt-6 flex items-center gap-3 text-sm text-neutral-500">
+        <div className="mt-6 flex items-center gap-3 type-caption text-fg-2">
           <span>{post.author}</span>
           <span aria-hidden>·</span>
           <time dateTime={post.date}>{formatDate(post.date)}</time>
         </div>
 
-        <hr className="mt-10 border-neutral-900" />
+        <hr className="mt-10 border-line" />
 
         <div
           className="article mt-10"

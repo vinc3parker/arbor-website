@@ -22,7 +22,7 @@ export function EmbeddedCheckoutForm({
   const stripePromise = useMemo(() => loadStripe(publishableKey), [publishableKey]);
 
   return (
-    <div className="mt-10 rounded-3xl border border-neutral-800 bg-neutral-950 p-4 shadow-xl shadow-black/30 sm:p-8">
+    <div className="mt-10 ui-surface p-4 sm:p-8">
       <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret }}>
         <EmbeddedCheckout />
       </EmbeddedCheckoutProvider>

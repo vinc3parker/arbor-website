@@ -108,7 +108,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 }
 
 export function formatDate(iso: string): string {
-  return new Date(iso + "T00:00:00").toLocaleDateString("en-US", {
+  return new Date(iso + "T00:00:00").toLocaleDateString("en-GB", {
     year: "numeric",
     month: "long",
     day: "numeric",

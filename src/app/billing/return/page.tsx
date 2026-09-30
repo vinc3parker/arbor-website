@@ -39,10 +39,10 @@ export default async function BillingReturnPage({
   const heading = status === "managed" ? "Billing updated" : "You're all set";
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-black px-6 text-center text-white">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-bg px-6 text-center text-fg">
       <div className="max-w-md">
-        <h1 className="text-3xl font-semibold">{heading}</h1>
-        <p className="mt-4 leading-7 text-neutral-400">
+        <h1 className="ui-title">{heading}</h1>
+        <p className="mt-4 leading-7 text-fg-2">
           {appName
             ? `Your subscription is up to date. Head back to ${appName} — it will pick up the change automatically.`
             : "Your subscription is up to date."}
@@ -54,7 +54,7 @@ export default async function BillingReturnPage({
           <div className="mt-8">
             <Link
               href="/subscription"
-              className="inline-block rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
+              className="ui-primary"
             >
               Back to subscription
             </Link>

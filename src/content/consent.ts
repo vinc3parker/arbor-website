@@ -43,7 +43,7 @@ export const CONSENT_COPY: Record<string, ConsentCopy> = {
   },
   marketing: {
     title: "Product & occasional updates",
-    body: "Optional. Get occasional emails about new features and Arbor apps. You can turn this off any time in your profile.",
+    body: "Optional. Get occasional emails about new features and Arbor apps. You can turn this off any time in your account.",
   },
 
   // ── Salus ──────────────────────────────────────────────────────────────────

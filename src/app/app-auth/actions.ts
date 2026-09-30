@@ -114,7 +114,7 @@ export async function authenticate(
       if (profileError) {
         return {
           error:
-            "Your account was created, but we couldn't save your profile. Please sign in and try again from your profile page.",
+            "Your account was created, but we couldn't save your details. Nothing is lost. Sign in and add them from your account page.",
         };
       }
     }

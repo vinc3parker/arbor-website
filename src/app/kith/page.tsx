@@ -4,18 +4,18 @@ import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Kith — Social Connection App | Arbor",
+  title: "Kith: your connector | Arbor",
   description:
-    "Intentional social connection without endless scrolling. Stay connected and build stronger relationships with the people who matter.",
+    "Stay close to your people and meet new ones you will click with. Built on Arbor, so it understands the whole of you, not just your contacts.",
   keywords:
     "social app, social network, messaging app, relationship app, social connection, communication app",
   alternates: {
     canonical: "https://arborapps.co/kith",
   },
   openGraph: {
-    title: "Kith — Social Connection App | Arbor",
+    title: "Kith: your connector | Arbor",
     description:
-      "Social connection app that brings relationships back to what matters. Connect intentionally without endless feeds or algorithms.",
+      "Stay close to your people and meet new ones you will click with. Built on Arbor, so it understands the whole of you, not just your contacts.",
     url: "https://arborapps.co/kith",
     type: "website",
     images: [
@@ -23,15 +23,15 @@ export const metadata: Metadata = {
         url: "https://arborapps.co/og-kith.png",
         width: 1200,
         height: 630,
-        alt: "Kith social connection app",
+        alt: "Kith, your connector, by Arbor",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kith — Social Connection App | Arbor",
+    title: "Kith: your connector | Arbor",
     description:
-      "Social connection app that brings relationships back to what matters. Connect intentionally without endless feeds or algorithms.",
+      "Stay close to your people and meet new ones you will click with. Built on Arbor, so it understands the whole of you, not just your contacts.",
     images: ["https://arborapps.co/og-kith.png"],
   },
 };
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Kith",
-    "Social connection app built around relationships that deserve more than feeds and algorithms.",
+    "Stay close to your people and meet new ones you will click with. Built on Arbor, so it understands the whole of you, not just your contacts.",
     "https://arborapps.co/kith",
     "SocialApplication"
   );

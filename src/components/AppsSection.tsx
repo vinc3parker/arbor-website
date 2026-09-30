@@ -17,74 +17,60 @@ export function AppsSection({
   apps,
 }: AppsSectionProps) {
   return (
-    <section
-      id="apps"
-      className="mx-auto max-w-6xl px-8 py-32"
-    >
-      <p className="mb-6 text-sm uppercase tracking-[0.3em] text-neutral-500">
-        The guides
-      </p>
+    // A full-width band sets the guides apart from the statements above.
+    <section id="apps" className="border-y border-line bg-surface">
+      <div className="site-container py-24">
+        <p className="ui-kicker">
+          The guides
+        </p>
 
-      <h2 className="mb-6 text-5xl font-semibold">
-        Eight guides, one for each part of life.
-      </h2>
+        <h2 className="type-h1 mb-4 max-w-4xl">
+          A team of guides, one understanding of you.
+        </h2>
 
-      <p className="mb-12 max-w-2xl text-lg leading-8 text-neutral-400">
-        Every Arbor app is a guide — an expert in one part of your life that
-        gets to know you and helps you move it forward. Some are here today;
-        more are on the way.
-      </p>
+        <p className="mb-10 max-w-2xl type-body text-fg-2">
+          Each app is an expert in its own part of life. Arbor learns from each
+          app, so every guide knows the whole of you.
+        </p>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {apps.map((app) => (
-          <a
-            key={app.name}
-            href={app.href}
-            className="
-              group flex items-center gap-8
-              rounded-3xl
-              border
-              border-neutral-800
-              bg-neutral-950
-              p-8
-              transition
-              duration-300
-              hover:-translate-y-1
-              hover:border-neutral-600
-            "
-          >
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden">
+        <div className="grid gap-6 md:grid-cols-2">
+          {apps.map((app) => (
+            <a
+              key={app.name}
+              href={app.href}
+              className="group flex items-center gap-5 rounded-2xl border border-line bg-bg p-5 transition duration-300 hover:border-fg-3"
+            >
               <Image
                 src={app.icon}
-                alt={`${app.name} icon`}
-                width={150}
-                height={150}
-                className="h-20 w-20 object-contain"
+                alt=""
+                width={512}
+                height={512}
+                className="h-16 w-16 shrink-0 rounded-2xl"
               />
-            </div>
 
-            <div className="flex-1">
-              {app.guide && (
-                <p className="mb-2 text-xs uppercase tracking-[0.25em] text-neutral-500">
-                  {app.guide}
-                </p>
-              )}
-
-              <h3 className="flex items-center gap-3 text-2xl font-medium transition group-hover:text-neutral-300">
-                {app.name}
-                {app.badge && (
-                  <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-white">
-                    {app.badge}
-                  </span>
+              <div className="flex-1">
+                {app.guide && (
+                  <p className="mb-1 type-caption text-fg-2">
+                    {app.guide}
+                  </p>
                 )}
-              </h3>
 
-              <p className="mt-3 leading-7 text-neutral-400">
-                {app.description}
-              </p>
-            </div>
-          </a>
-        ))}
+                <h3 className="flex items-center gap-3 text-[1.375rem] font-semibold leading-tight">
+                  {app.name}
+                  {app.badge && (
+                    <span className="ui-status">
+                      {app.badge}
+                    </span>
+                  )}
+                </h3>
+
+                <p className="mt-2 text-base leading-6 text-fg-2">
+                  {app.description}
+                </p>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
     </section>
   );

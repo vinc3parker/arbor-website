@@ -1,36 +1,238 @@
 @import "tailwindcss";
 
+/*
+ * Arbor brand tokens — see "Arbor Brand Guidelines" Part 5 (colour, type) and
+ * 7.3 (radius). Arbor pages sit on Warm Paper with Ink text; `.theme-dark`
+ * switches a subtree to the guide's dark mode (5.11), used by the app pages.
+ *
+ * Radius maps straight onto Tailwind's scale: rounded-lg = R1 8px (inputs,
+ * chips), rounded-xl = R2 12px (buttons, rows), rounded-2xl = R3 16px (cards),
+ * rounded-3xl = R4 24px (hero cards), rounded-full = pill (badges, toggles).
+ */
+@theme inline {
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #0a0a0a;
+  --color-paper: #f6f5f2;
+  --color-grey: #d8d8d2;
+  --color-moss: #8a8f7a;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+}
+
+:root,
+.theme-light {
+  --bg: #f6f5f2; /* Warm Paper — replaces white */
+  --surface: #edece6; /* cards on Paper */
+  --raised: #e4e3dc;
+  --line: #d8d8d2; /* Arbor Grey */
+  --fg: #0a0a0a; /* Ink */
+  --fg-2: #4d4d47;
+  --fg-3: #65655e;
+  --accent: #8a8f7a; /* Moss: large text and graphics only on Paper (3.1:1) */
+  --success: #1f7a4d;
+  --warning: #a15c07;
+  --danger: #b3261e;
+  --info: #2b5fab;
+  color-scheme: light;
+}
+
+.theme-dark {
+  --bg: #0a0a0a; /* Ink */
+  --surface: #161616;
+  --raised: #2a2a2a;
+  --line: #3f3f46;
+  --fg: #f6f5f2; /* Paper, 16.6:1 */
+  --fg-2: #a1a1aa; /* 7.1:1 */
+  --fg-3: #a1a1aa; /* #71717A is large-only, so small text stays secondary */
+  --accent: #a3a895; /* Moss, dark */
+  --success: #5cc08a;
+  --warning: #f0a64a;
+  --danger: #f2b8b5;
+  --info: #8ab4f8;
+  color-scheme: dark;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: var(--color-moss);
+  color: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+/* --- Marketing type scale (5.15). Sentence case at every level. --- */
+.type-display {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+.type-h1 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.type-h2 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.type-body {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.type-label {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.type-caption {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* --- Layout: 1200px max, 24px side margins (6.10). --- */
+.site-container {
+  width: min(100% - 3rem, 75rem);
+  margin-inline: auto;
+}
+
+.page-shell {
+  width: min(100% - 3rem, 64rem);
+  margin-inline: auto;
+  padding-block: 8rem 6rem;
+}
+
+.page-shell-narrow { width: min(100% - 3rem, 42rem); }
+
+/* --- Shared UI --- */
+.ui-kicker {
+  margin: 0 0 0.75rem;
+  color: var(--fg-2);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.ui-title {
+  margin: 0;
+  color: var(--fg);
+  font-size: clamp(2rem, 5vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.ui-copy { color: var(--fg-2); line-height: 1.5; }
+
+.ui-surface {
+  border: 1px solid var(--line);
+  border-radius: 1rem; /* R3 */
+  background: var(--surface);
+}
+
+.ui-field {
+  min-height: 48px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem; /* R1 */
+  background: var(--bg);
+  color: var(--fg);
+  padding: 0.75rem 0.875rem;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.ui-field::placeholder { color: var(--fg-3); }
+
+.ui-field:focus {
+  border-color: var(--fg);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg) 12%, transparent);
+}
+
+.ui-label { color: var(--fg-2); font-size: 0.9375rem; font-weight: 500; }
+
+.ui-primary,
+.ui-secondary,
+.ui-danger {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem; /* R2 */
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: center;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, opacity 160ms ease;
+}
+
+/* Arbor's own buttons are Ink on Paper (Paper on Ink in dark mode). */
+.ui-primary { background: var(--fg); color: var(--bg); }
+.ui-primary:hover { opacity: 0.88; }
+.ui-secondary { border: 1px solid var(--line); color: var(--fg); }
+.ui-secondary:hover { border-color: var(--fg-3); background: var(--raised); }
+.ui-danger { background: var(--danger); color: var(--bg); }
+.ui-danger:hover { opacity: 0.88; }
+.ui-primary:disabled,
+.ui-secondary:disabled,
+.ui-danger:disabled { cursor: wait; opacity: 0.55; }
+
+.ui-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--fg);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 /* Rendered markdown article styling (blog posts) */
 .article {
-  color: #d4d4d4; /* neutral-300 */
-  font-size: 1.125rem;
-  line-height: 1.85;
+  color: var(--fg);
+  font-size: 1.25rem;
+  line-height: 1.7;
 }
 
 .article > * + * {
@@ -38,37 +240,37 @@ body {
 }
 
 .article h2 {
-  color: #ffffff;
-  font-size: 1.875rem;
+  color: var(--fg);
+  font-size: 2rem;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.25;
   margin-top: 3rem;
   margin-bottom: 0.5rem;
 }
 
 .article h3 {
-  color: #ffffff;
-  font-size: 1.375rem;
+  color: var(--fg);
+  font-size: 1.5rem;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.3;
   margin-top: 2.25rem;
   margin-bottom: 0.25rem;
 }
 
 .article a {
-  color: #ffffff;
+  color: var(--fg);
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: #525252; /* neutral-600 */
+  text-decoration-color: var(--accent);
   transition: text-decoration-color 0.2s;
 }
 
 .article a:hover {
-  text-decoration-color: #ffffff;
+  text-decoration-color: var(--fg);
 }
 
 .article strong {
-  color: #ffffff;
+  color: var(--fg);
   font-weight: 600;
 }
 
@@ -90,25 +292,24 @@ body {
 }
 
 .article blockquote {
-  border-left: 2px solid #404040; /* neutral-700 */
+  border-left: 2px solid var(--accent);
   padding-left: 1.25rem;
-  color: #a3a3a3; /* neutral-400 */
-  font-style: italic;
+  color: var(--fg-2);
 }
 
 .article code {
-  background: #171717;
-  border: 1px solid #262626;
-  border-radius: 0.375rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
   padding: 0.15rem 0.4rem;
-  font-family: var(--font-mono), monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.9em;
 }
 
 .article pre {
-  background: #0a0a0a;
-  border: 1px solid #262626;
-  border-radius: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
   padding: 1.25rem;
   overflow-x: auto;
 }
@@ -121,12 +322,12 @@ body {
 
 .article hr {
   border: 0;
-  border-top: 1px solid #262626;
+  border-top: 1px solid var(--line);
   margin: 3rem 0;
 }
 
 .article img {
-  border-radius: 0.75rem;
+  border-radius: 1rem;
   margin: 2rem 0;
 }
 
@@ -142,35 +343,94 @@ html.arbor-intro .site-navbar {
   pointer-events: none;
 }
 
-/* --- App "world" living atmosphere: slow-drifting accent auroras behind the
-       immersive app pages. --- */
-@keyframes appAuroraDrift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(6%, 4%, 0) scale(1.18);
-  }
+/* --- Breathing halos (6.1, 6.7): two soft rings around a centre. One per
+       view. 3.8s breath, sinusoidal in-out; still under reduced motion. --- */
+/* Scale per 6.7; the fill also fills out on the in-breath and settles on the
+   out-breath, so it reads as a breath rather than two rings moving. */
+@keyframes haloOuter {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.55; }
+  50% { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+}
+@keyframes haloInner {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
+  50% { transform: translate(-50%, -50%) scale(1.12); opacity: 1; }
 }
 
-.app-aurora {
-  animation: appAuroraDrift 24s ease-in-out infinite;
-  will-change: transform;
+.halo-outer,
+.halo-inner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  animation-duration: 3.8s;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
 }
-.app-aurora-2 {
-  animation: appAuroraDrift 30s ease-in-out infinite reverse;
-  will-change: transform;
-}
-.app-aurora-3 {
-  animation: appAuroraDrift 38s ease-in-out infinite;
-  will-change: transform;
-}
+.halo-outer { animation-name: haloOuter; }
+.halo-inner { animation-name: haloInner; }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-aurora,
-  .app-aurora-2,
-  .app-aurora-3 {
+  .halo-outer,
+  .halo-inner {
     animation: none;
+  }
+}
+
+/* --- Scroll reveals on the home page. One calm entrance, no bounce (6.7).
+       Everything is visible by default; only motion-OK browsers animate. --- */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal .reveal-item {
+    opacity: 0;
+    translate: 0 16px;
+    transition: opacity 900ms ease, translate 900ms cubic-bezier(0.37, 0, 0.63, 1);
+  }
+  .reveal[data-visible] .reveal-item {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  /* Hidden (not just undrawn) until revealed: round caps would otherwise show
+     as stray dots at each branch's start. */
+  .reveal .tree-branch {
+    opacity: 0;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition:
+      stroke-dashoffset 1400ms cubic-bezier(0.37, 0, 0.63, 1),
+      opacity 200ms ease;
+  }
+  .reveal[data-visible] .tree-branch {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+
+  .reveal .tree-node {
+    opacity: 0;
+    transition: opacity 800ms ease;
+  }
+  .reveal[data-visible] .tree-node {
+    opacity: 1;
+  }
+}
+
+/* --- "Why Arbor" chips: each floats in its own place, and (with a mouse)
+       eases out of the pointer's way. Calm, never bouncy. */
+@keyframes chipFloat {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(5px, -6px) rotate(0.6deg); }
+  50% { transform: translate(-2px, -10px) rotate(-0.4deg); }
+  75% { transform: translate(-5px, -4px) rotate(0.3deg); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chip-float {
+    animation-name: chipFloat;
+    animation-iteration-count: infinite;
+    animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+  }
+  .chip-parallax {
+    transform: translate(var(--nx, 0px), var(--ny, 0px));
+    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 }

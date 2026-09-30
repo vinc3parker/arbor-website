@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { rememberEntered } from "@/lib/intro";
 
 type NavItem = {
   label: string;
@@ -14,35 +16,54 @@ const items: NavItem[] = [
     label: "Blog",
     href: "/blog",
   },
-  {
-    label: "Early Access",
-    href: "/#early-access",
-  },
 ];
 
-export function Navbar() {
+/**
+ * `tone` sets the bar's surface: Paper with the full-colour logo, or Ink with
+ * the Reverse logo (brand guide 5.4). Dark on the observatory and app pages.
+ */
+export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Anyone on another page is already inside the site, so the logo takes
+  // them home without the observatory's click to enter.
+  useEffect(() => {
+    if (pathname !== "/") rememberEntered();
+  }, [pathname]);
 
   return (
-    <nav className="site-navbar fixed left-0 right-0 top-0 z-50 border-b border-neutral-800/80 bg-black/60 backdrop-blur-md">
-      <div className="mx-auto max-w-6xl">
-        <div className="flex items-center justify-between px-6 py-4 sm:px-8 sm:py-4">
+    <nav className={`site-navbar fixed left-0 right-0 top-0 z-50 border-b border-line bg-bg/90 text-fg backdrop-blur-xl ${
+        tone === "dark" ? "theme-dark" : "theme-light"
+      }`}>
+      <div className="site-container">
+        <div className="flex h-16 items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-3 transition hover:opacity-90"
+            className="flex items-center py-2 transition hover:opacity-80"
             onClick={() => setOpen(false)}
           >
-            <Image src="/icon.png" alt="Arbor" width={36} height={36} priority />
-            <span className="text-sm font-medium tracking-[0.3em]">ARBOR</span>
+            <Image
+              src={
+                tone === "dark"
+                  ? "/brand/arbor_logo_reverse.png"
+                  : "/brand/arbor_logo_full.png"
+              }
+              alt="Arbor"
+              width={942}
+              height={227}
+              priority
+              className="h-auto w-[120px]"
+            />
           </Link>
 
           {/* Desktop links */}
-          <div className="hidden items-center gap-8 text-sm text-neutral-400 md:flex">
+          <div className="hidden items-center gap-8 type-label text-fg-2 md:flex">
             {items.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className="transition hover:text-white"
+                className="transition hover:text-fg"
               >
                 {item.label}
               </Link>
@@ -50,7 +71,7 @@ export function Navbar() {
 
             <Link
               href="/login"
-              className="rounded-full border border-neutral-700 px-5 py-2 text-white transition hover:border-neutral-500"
+              className="transition hover:text-fg"
             >
               Account
             </Link>
@@ -62,7 +83,7 @@ export function Navbar() {
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-800 text-neutral-300 transition hover:text-white md:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-line text-fg transition hover:border-fg-3 md:hidden"
           >
             <svg
               viewBox="0 0 24 24"
@@ -84,13 +105,13 @@ export function Navbar() {
 
         {/* Mobile menu panel */}
         {open && (
-          <div className="flex flex-col gap-1 border-t border-neutral-800 px-4 py-4 text-sm md:hidden">
+          <div className="flex flex-col gap-1 border-t border-line bg-bg py-4 type-label md:hidden">
             {items.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="rounded-2xl px-4 py-3 text-neutral-300 transition hover:bg-neutral-900 hover:text-white"
+                className="rounded-xl px-4 py-3 text-fg-2 transition hover:bg-surface hover:text-fg"
               >
                 {item.label}
               </Link>
@@ -99,7 +120,7 @@ export function Navbar() {
             <Link
               href="/login"
               onClick={() => setOpen(false)}
-              className="mt-1 rounded-full border border-neutral-700 px-4 py-3 text-center text-white transition hover:border-neutral-500"
+              className="rounded-xl px-4 py-3 text-fg-2 transition hover:bg-surface hover:text-fg"
             >
               Account
             </Link>

@@ -10,8 +10,8 @@ import {
 import { GENDER_OPTIONS } from "@/lib/arbor-profile-fields";
 
 const inputClass =
-  "rounded-2xl border border-neutral-800 bg-black px-5 py-3.5 outline-none transition focus:border-neutral-600";
-const labelClass = "text-xs uppercase tracking-[0.2em] text-neutral-500";
+  "ui-field";
+const labelClass = "ui-label";
 
 export function AppAuthForm({
   app,
@@ -36,16 +36,16 @@ export function AppAuthForm({
   if (!known) {
     return (
       <div className="w-full max-w-md">
-        <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-8 md:p-10">
-          <p className="mb-3 text-sm uppercase tracking-[0.3em] text-neutral-500">
-            {appName.toUpperCase()}
+        <div className="ui-surface p-8 md:p-10">
+          <p className="ui-kicker">
+            {appName}
           </p>
-          <h1 className="text-3xl font-semibold">
+          <h1 className="ui-title">
             {intent === "signup"
               ? "Create your Arbor account."
               : "Sign in or create your account."}
           </h1>
-          <p className="mt-3 text-sm leading-7 text-neutral-400">
+          <p className="mt-3 text-sm leading-7 text-fg-2">
             Enter your email to continue to {appName}. We&apos;ll sign you in, or
             help you create an account if you&apos;re new. One Arbor account works
             across every Arbor app.
@@ -66,13 +66,13 @@ export function AppAuthForm({
             </label>
 
             {check.error && (
-              <p className="px-1 text-sm text-red-400">{check.error}</p>
+              <p className="px-1 text-sm text-danger">{check.error}</p>
             )}
 
             <button
               type="submit"
               disabled={checking}
-              className="mt-2 rounded-full bg-white px-8 py-4 font-medium text-black transition hover:bg-neutral-200 disabled:opacity-60"
+              className="mt-2 ui-primary"
             >
               {checking ? "Please wait…" : "Continue"}
             </button>
@@ -119,21 +119,21 @@ function PasswordStep({
 
   return (
     <div className={`w-full ${mode === "signup" ? "max-w-2xl" : "max-w-md"}`}>
-      <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-8 md:p-10">
-        <p className="mb-3 text-sm uppercase tracking-[0.3em] text-neutral-500">
-          {mode === "signin" ? "WELCOME BACK" : `JOIN ARBOR`}
+      <div className="ui-surface p-8 md:p-10">
+        <p className="ui-kicker">
+          {mode === "signin" ? "Welcome back" : "Join Arbor"}
         </p>
-        <h1 className="text-3xl font-semibold">
+        <h1 className="ui-title">
           {mode === "signin"
             ? `Sign in to ${appName}.`
             : `Create your Arbor account.`}
         </h1>
-        <p className="mt-3 flex items-center gap-2 text-sm text-neutral-400">
+        <p className="mt-3 flex items-center gap-2 text-sm text-fg-2">
           <span className="truncate">{email}</span>
           {/* Reloading the route clears the in-memory email step. */}
           <a
             href="/app-auth"
-            className="shrink-0 text-neutral-500 underline underline-offset-4 transition hover:text-neutral-300"
+            className="shrink-0 text-fg-3 underline underline-offset-4 transition hover:text-fg"
           >
             change
           </a>
@@ -184,7 +184,7 @@ function PasswordStep({
                     required
                     max={today}
                     autoComplete="bday"
-                    className={`${inputClass} [color-scheme:dark]`}
+                    className={inputClass}
                   />
                 </label>
 
@@ -324,12 +324,12 @@ function PasswordStep({
                 autoComplete="new-password"
                 placeholder="Re-enter your password"
                 aria-invalid={mismatch}
-                className={`rounded-2xl border bg-black px-5 py-3.5 outline-none transition focus:border-neutral-600 ${
-                  mismatch ? "border-red-500/70" : "border-neutral-800"
+                className={`rounded-2xl border bg-bg px-5 py-3.5 outline-none transition focus:border-fg-3 ${
+                  mismatch ? "border-danger" : "border-line"
                 }`}
               />
               {mismatch && (
-                <span className="px-1 text-xs text-red-400">
+                <span className="px-1 text-sm text-danger">
                   Passwords don&apos;t match.
                 </span>
               )}
@@ -337,13 +337,13 @@ function PasswordStep({
           )}
 
           {authState.error && (
-            <p className="px-1 text-sm text-red-400">{authState.error}</p>
+            <p className="px-1 text-sm text-danger">{authState.error}</p>
           )}
 
           <button
             type="submit"
             disabled={pending || mismatch}
-            className="mt-2 rounded-full bg-white px-8 py-4 font-medium text-black transition hover:bg-neutral-200 disabled:opacity-60"
+            className="mt-2 ui-primary"
           >
             {pending
               ? "Please wait…"

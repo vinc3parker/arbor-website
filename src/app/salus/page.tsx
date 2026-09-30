@@ -4,18 +4,18 @@ import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Salus — Mental Wellness & Journaling App | Arbor",
+  title: "Salus: your companion | Arbor",
   description:
-    "A calm space for reflection, journaling, and personal growth. Explore guided prompts and build a clearer picture of who you are over time.",
+    "Understand your thoughts and handle the life you are living. Built on Arbor, so it understands the whole of you, not just your mood.",
   keywords:
     "journaling app, mental wellness app, reflection app, mental health, personal growth, mindfulness, journaling",
   alternates: {
     canonical: "https://arborapps.co/salus",
   },
   openGraph: {
-    title: "Salus — Mental Wellness & Journaling App | Arbor",
+    title: "Salus: your companion | Arbor",
     description:
-      "Journaling and reflection app for mental wellbeing. Explore guided prompts, understand yourself better, and grow intentionally.",
+      "Understand your thoughts and handle the life you are living. Built on Arbor, so it understands the whole of you, not just your mood.",
     url: "https://arborapps.co/salus",
     type: "website",
     images: [
@@ -23,15 +23,15 @@ export const metadata: Metadata = {
         url: "https://arborapps.co/og-salus.png",
         width: 1200,
         height: 630,
-        alt: "Salus mental wellness and journaling app",
+        alt: "Salus, your companion, by Arbor",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Salus — Mental Wellness & Journaling App | Arbor",
+    title: "Salus: your companion | Arbor",
     description:
-      "Journaling and reflection app for mental wellbeing. Explore guided prompts, understand yourself better, and grow intentionally.",
+      "Understand your thoughts and handle the life you are living. Built on Arbor, so it understands the whole of you, not just your mood.",
     images: ["https://arborapps.co/og-salus.png"],
   },
 };
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Salus",
-    "Mental wellness and journaling app for reflection, personal growth, and understanding yourself better with guided prompts and journaling.",
+    "Understand your thoughts and handle the life you are living. Built on Arbor, so it understands the whole of you, not just your mood.",
     "https://arborapps.co/salus",
     "HealthAndFitnessApplication"
   );

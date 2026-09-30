@@ -27,13 +27,13 @@ export function BillingReturnRedirect({
     <div className="mt-8 flex flex-col items-center gap-3">
       <a
         href={deepLink}
-        className="inline-block rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
+        className="ui-primary"
       >
         {appName ? `Return to ${appName}` : "Return to the app"}
       </a>
       <Link
         href="/subscription"
-        className="text-sm text-neutral-500 transition hover:text-neutral-300"
+        className="text-sm text-fg-3 transition hover:text-fg"
       >
         Stay on the web
       </Link>

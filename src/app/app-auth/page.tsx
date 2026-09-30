@@ -25,12 +25,12 @@ export default async function AppAuthPage({
   const intent = rawIntent === "signup" ? "signup" : undefined;
 
   const shell = (children: React.ReactNode) => (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-bg text-fg">
       <Navbar />
       <section className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-8 py-32">
         {children}
-        <p className="mt-8 text-center text-sm text-neutral-600">
-          <Link href="/" className="transition hover:text-neutral-400">
+        <p className="mt-8 text-center text-sm text-fg-3">
+          <Link href="/" className="transition hover:text-fg">
             ← Back to home
           </Link>
         </p>
@@ -41,19 +41,19 @@ export default async function AppAuthPage({
 
   if (!isRegisteredApp(app)) {
     return shell(
-      <div className="w-full max-w-md rounded-3xl border border-neutral-800 bg-neutral-950 p-8 text-center md:p-10">
-        <p className="mb-3 text-sm uppercase tracking-[0.3em] text-neutral-500">
+      <div className="w-full max-w-md ui-surface p-8 text-center md:p-10">
+        <p className="ui-kicker">
           SOMETHING&apos;S OFF
         </p>
         <h1 className="text-2xl font-semibold">Open this from an Arbor app.</h1>
-        <p className="mt-3 text-sm leading-7 text-neutral-400">
+        <p className="mt-3 text-sm leading-7 text-fg-2">
           This sign-in page is launched by the Arbor apps. Open the app you want
           to sign in to and start from there — that way we know where to send you
           back.
         </p>
         <Link
           href="/login"
-          className="mt-6 inline-block rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
+          className="mt-6 ui-primary"
         >
           Sign in to the website instead
         </Link>

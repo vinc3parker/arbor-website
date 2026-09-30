@@ -17,11 +17,13 @@ type Props = {
   region: string;
   postalCode: string;
   country: string;
+  /** Shown as a "Cancel" button beside save, to close the form. */
+  onCancel?: () => void;
 };
 
 const fieldClass =
-  "rounded-2xl border border-neutral-800 bg-black px-5 py-3.5 outline-none transition focus:border-neutral-600";
-const labelClass = "text-xs uppercase tracking-[0.2em] text-neutral-500";
+  "ui-field";
+const labelClass = "ui-label";
 
 export function ProfileForm({
   firstName,
@@ -34,6 +36,7 @@ export function ProfileForm({
   region,
   postalCode,
   country,
+  onCancel,
 }: Props) {
   const [state, formAction, pending] = useActionState(
     updateProfile,
@@ -49,7 +52,7 @@ export function ProfileForm({
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
           <span className={labelClass}>First name</span>
           <input
@@ -88,12 +91,8 @@ export function ProfileForm({
           max={today}
           defaultValue={dateOfBirth}
           autoComplete="bday"
-          className={`${fieldClass} [color-scheme:dark]`}
+          className={`${fieldClass}`}
         />
-        <span className="px-1 text-xs text-neutral-600">
-          Shared across Arbor apps to personalise your experience. Your age is
-          calculated from this.
-        </span>
       </label>
 
       <label className="flex flex-col gap-2">
@@ -143,7 +142,7 @@ export function ProfileForm({
         />
       </label>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
           <span className={labelClass}>City</span>
           <input
@@ -173,7 +172,7 @@ export function ProfileForm({
         </label>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
           <span className={labelClass}>Postcode</span>
           <input
@@ -204,20 +203,25 @@ export function ProfileForm({
       </div>
 
       {state.error && (
-        <p className="px-1 text-sm text-red-400">{state.error}</p>
+        <p className="px-1 text-sm text-danger">{state.error}</p>
       )}
       {state.message && (
-        <p className="px-1 text-sm text-emerald-400">{state.message}</p>
+        <p className="px-1 text-sm text-success">{state.message}</p>
       )}
 
-      <div>
+      <div className="flex flex-wrap gap-3">
         <button
           type="submit"
           disabled={pending}
-          className="rounded-full bg-white px-7 py-3.5 text-sm font-medium text-black transition hover:bg-neutral-200 disabled:opacity-60"
+          className="ui-primary"
         >
-          {pending ? "Saving…" : "Save changes"}
+          {pending ? "Saving…" : "Save details"}
         </button>
+        {onCancel && (
+          <button type="button" onClick={onCancel} className="ui-secondary">
+            {state.message ? "Done" : "Cancel"}
+          </button>
+        )}
       </div>
     </form>
   );

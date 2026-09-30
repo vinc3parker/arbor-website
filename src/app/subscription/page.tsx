@@ -4,8 +4,14 @@ import { redirect } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { createClient } from "@/lib/supabase-server";
-import { TIERS } from "@/lib/subscription";
-import { fetchEntitlement } from "@/lib/arbor-core";
+import {
+  ACCOUNT_ONLY,
+  PLANS,
+  SUBSCRIPTION_INCLUDES,
+  hasAccess,
+  planName,
+} from "@/lib/subscription";
+import { fetchEntitlement, fetchOffer } from "@/lib/arbor-core";
 import { isRegisteredApp, sanitizeState } from "@/lib/app-auth";
 
 export const metadata = {
@@ -18,7 +24,7 @@ function Check() {
     <svg
       viewBox="0 0 20 20"
       fill="none"
-      className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400"
+      className="mt-0.5 h-4 w-4 shrink-0 text-fg-2"
       aria-hidden
     >
       <path
@@ -69,28 +75,30 @@ export default async function SubscriptionPage({
     redirect("/login?redirect=/subscription");
   }
 
-  const free = TIERS.free;
-  const beta = TIERS.beta_tester;
-
-  // Entitlement comes from Core (owns billing).
+  // Entitlement comes from Core (owns billing); so does the current price.
   let entStatus = "none";
+  let entPlan: string | null = null;
   let source: "stripe" | "trial" | "comp" | null = null;
   let periodEnd: number | null = null;
-  try {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (session?.access_token) {
-      const view = await fetchEntitlement(session.access_token);
-      entStatus = view.entitlement.status;
-      source = view.source;
-      periodEnd = view.entitlement.currentPeriodEnd;
-    }
-  } catch {
-    // Core unreachable — fall back to "not entitled".
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const [view, offer] = await Promise.all([
+    session?.access_token
+      ? fetchEntitlement(session.access_token).catch(() => null)
+      : Promise.resolve(null),
+    fetchOffer().catch(() => null),
+  ]);
+  if (view) {
+    entStatus = view.entitlement.status;
+    entPlan = view.entitlement.plan;
+    source = view.source;
+    periodEnd = view.entitlement.currentPeriodEnd;
   }
+  const price = PLANS[offer?.plan ?? "founder"];
 
-  const entitled = entStatus !== "none";
+  // "canceled" is not access: only these statuses unlock the apps.
+  const entitled = hasAccess(entStatus);
   const isStripeEntitled = entitled && source === "stripe";
   const isTrial = entitled && source === "trial";
   const isComp = entitled && source === "comp";
@@ -100,154 +108,134 @@ export default async function SubscriptionPage({
   const app = rawApp && isRegisteredApp(rawApp) ? rawApp : null;
   const state = sanitizeState(first(sp.state));
   const returnSuffix = appSuffix(app, state);
+  const codeHref = returnSuffix
+    ? `/subscription/checkout${returnSuffix}&method=code`
+    : "/subscription/checkout?method=code";
 
   // ── Current-plan presentation ──────────────────────────────────────────────
-  let planName: string = "Arbor account";
-  let chipLabel = "No subscription";
-  let chipClass = "border-neutral-700 bg-neutral-900 text-neutral-300";
-  let detail: string = free.tagline;
+  let heading: string = ACCOUNT_ONLY.name;
+  let chipLabel = "Not subscribed";
+  let chipClass = "border-line bg-bg text-fg-2";
+  let detail: string = ACCOUNT_ONLY.summary;
 
   if (isStripeEntitled) {
-    planName = beta.name;
+    heading = planName(entPlan);
     if (entStatus === "past_due") {
-      chipLabel = "Past due";
-      chipClass = "border-amber-800 bg-amber-950/40 text-amber-300";
+      chipLabel = "Payment due";
+      chipClass = "border-warning/40 bg-warning/10 text-warning";
       detail = periodEnd
-        ? `Your last payment failed — access continues until ${formatDate(periodEnd)}. Update your card to keep it.`
-        : "Your last payment failed. Please update your card.";
+        ? `Your last payment didn’t go through. Access continues until ${formatDate(periodEnd)}. Update your card to keep it.`
+        : "Your last payment didn’t go through. Update your card to keep access.";
     } else {
       chipLabel = "Active";
-      chipClass = "border-emerald-800 bg-emerald-950/40 text-emerald-300";
+      chipClass = "border-success/40 bg-success/10 text-success";
       detail = periodEnd
         ? `Your subscription renews on ${formatDate(periodEnd)}.`
         : "Your subscription is active.";
     }
   } else if (isTrial) {
-    planName = beta.name;
+    heading = planName(entPlan);
     chipLabel = "Temporary access";
-    chipClass = "border-sky-800 bg-sky-950/40 text-sky-300";
+    chipClass = "border-info/40 bg-info/10 text-info";
     detail = periodEnd
-      ? `Your access ends on ${formatDate(periodEnd)}. Subscribe any time to keep access.`
+      ? `Your access ends on ${formatDate(periodEnd)}. Subscribe any time to keep it.`
       : "Your temporary access is active.";
   } else if (isComp) {
-    planName = beta.name;
-    chipLabel = "Complimentary";
-    chipClass = "border-violet-800 bg-violet-950/40 text-violet-300";
+    heading = "Access code";
+    chipLabel = "Active";
+    chipClass = "border-success/40 bg-success/10 text-success";
     detail =
       periodEnd && periodEnd < FAR_FUTURE
-        ? `You have complimentary access until ${formatDate(periodEnd)}.`
-        : "You have complimentary access, with no expiry.";
+        ? `Your code gives you access until ${formatDate(periodEnd)}.`
+        : "Your code gives you access, with no end date.";
   }
 
-  // ── Primary action for the current-plan card ───────────────────────────────
-  let primary: ReactNode = null;
+  // ── Actions for the current-plan card ──────────────────────────────────────
+  let actions: ReactNode = null;
   if (isStripeEntitled) {
-    primary = (
-      <Link
-        href={`/billing/portal${returnSuffix}`}
-        className="inline-block rounded-full border border-neutral-600 px-6 py-3 text-sm font-medium text-white transition hover:border-neutral-400"
-      >
+    actions = (
+      <Link href={`/billing/portal${returnSuffix}`} className="ui-secondary">
         Manage billing
       </Link>
     );
-  } else if (isComp) {
-    primary = null; // complimentary — nothing to buy or manage
-  } else if (beta.available) {
-    primary = (
-      <Link
-        href={`/subscription/checkout${returnSuffix}`}
-        className="inline-block rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
-      >
-        {isTrial ? "Subscribe to keep access" : `Subscribe — ${beta.price}/mo`}
-      </Link>
-    );
-  } else {
-    primary = (
-      <button
-        type="button"
-        disabled
-        aria-disabled
-        className="cursor-not-allowed rounded-full bg-neutral-800 px-6 py-3 text-sm font-medium text-neutral-500"
-      >
-        Coming soon
-      </button>
+  } else if (!isComp) {
+    actions = (
+      <>
+        <Link href={`/subscription/checkout${returnSuffix}`} className="ui-primary">
+          {isTrial ? "Subscribe to keep access" : `Subscribe — ${price.price}/mo`}
+        </Link>
+        <Link
+          href={codeHref}
+          className="inline-flex min-h-12 items-center justify-center rounded-xl px-4 type-label text-fg-2 transition hover:bg-raised hover:text-fg"
+        >
+          Use a code instead
+        </Link>
+      </>
     );
   }
 
   const notice =
     sp.billing === "active"
-      ? { kind: "ok", text: "You’re already subscribed — thanks!" }
+      ? { kind: "ok", text: "You’re already subscribed. Thank you for being here." }
       : sp.billing === "unavailable"
-        ? { kind: "err", text: "Payments aren’t available right now. Please try again shortly." }
+        ? { kind: "err", text: "Payments aren’t available right now. Nothing has been charged. Try again in a little while." }
         : sp.billing
-          ? { kind: "err", text: "Something went wrong starting checkout. Please try again." }
+          ? { kind: "err", text: "Something went wrong on our side. Nothing has been charged. Try again in a moment." }
           : sp.code === "redeemed"
-              ? { kind: "ok", text: "Code redeemed — your access is now active." }
-              : sp.code_error === "CODE_EXHAUSTED"
-                      ? { kind: "err", text: "That code has already been fully redeemed." }
-                      : sp.code_error === "CODE_EXPIRED"
-                        ? { kind: "err", text: "That code has expired." }
-                        : sp.code_error && sp.code_error !== "empty"
-                          ? { kind: "err", text: "That code isn’t valid." }
-                          : null;
+            ? { kind: "ok", text: "Code accepted. You now have access to every Arbor app." }
+            : null;
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-bg text-fg">
       <Navbar />
 
-      <section className="mx-auto max-w-2xl px-6 pb-24 pt-40 sm:px-8">
-        <p className="mb-4 text-sm uppercase tracking-[0.3em] text-neutral-500">
-          SUBSCRIPTION
-        </p>
-        <h1 className="text-3xl font-semibold md:text-4xl">Manage subscription</h1>
+      <section className="page-shell page-shell-narrow">
+        <p className="ui-kicker">Subscription</p>
+        <h1 className="ui-title">Your subscription</h1>
 
         {notice && (
           <p
-            className={`mt-6 rounded-2xl border px-5 py-3 text-sm ${
+            role="status"
+            className={`mt-5 rounded-xl border px-4 py-3 text-base ${
               notice.kind === "ok"
-                ? "border-emerald-800 bg-emerald-950/30 text-emerald-300"
-                : "border-red-800 bg-red-950/50 text-red-200"
+                ? "border-success/40 bg-success/10 text-success"
+                : "border-danger/40 bg-danger/10 text-danger"
             }`}
           >
             {notice.text}
           </p>
         )}
 
-        {/* Current plan */}
-        <div className="mt-8 rounded-3xl border border-neutral-700 bg-neutral-950 p-8">
+        {/* Current state */}
+        <div className="ui-surface mt-8 p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-neutral-500">
-                Current plan
-              </p>
-              <h2 className="mt-1 text-2xl font-semibold">{planName}</h2>
-            </div>
-            <span className={`shrink-0 rounded-full border px-3 py-1 text-xs ${chipClass}`}>
+            <h2 className="text-[1.375rem] font-semibold">{heading}</h2>
+            <span className={`shrink-0 rounded-full border px-3 py-1 text-sm ${chipClass}`}>
               {chipLabel}
             </span>
           </div>
 
-          <p className="mt-4 text-sm leading-7 text-neutral-400">{detail}</p>
+          <p className="mt-3 text-fg-2">{detail}</p>
 
-          {primary && <div className="mt-6">{primary}</div>}
+          {actions && <div className="mt-8 flex flex-col gap-3 sm:flex-row">{actions}</div>}
         </div>
 
-        {/* What Founding Access includes */}
-        <div className="mt-10 rounded-3xl border border-neutral-900 bg-neutral-950/50 p-8">
+        {/* What a subscription includes */}
+        <div className="mt-6 border-t border-line py-8">
           <div className="flex items-baseline justify-between gap-4">
             <h3 className="text-lg font-semibold">
-              {entitled ? "What’s included" : `What ${beta.name} includes`}
+              {entitled ? "What’s included" : "What a subscription includes"}
             </h3>
-            <p className="shrink-0 text-sm text-neutral-400">
-              <span className="text-base font-semibold text-neutral-200">
-                {beta.price}
-              </span>{" "}
-              {beta.cadence}
-            </p>
+            {!entitled && (
+              <p className="shrink-0 text-fg-2">
+                <span className="text-lg font-semibold text-fg">{price.price}</span>{" "}
+                {price.cadence}
+              </p>
+            )}
           </div>
 
-          <ul className="mt-6 flex flex-col gap-3 text-sm text-neutral-300">
-            {beta.features.map((f) => (
+          <ul className="mt-6 flex flex-col gap-3 text-base text-fg">
+            {SUBSCRIPTION_INCLUDES.map((f) => (
               <li key={f} className="flex gap-3">
                 <Check />
                 <span>{f}</span>
@@ -256,16 +244,17 @@ export default async function SubscriptionPage({
           </ul>
 
           {!entitled && (
-            <p className="mt-6 border-t border-neutral-900 pt-5 text-sm leading-6 text-neutral-500">
-              Your account keeps your profile and data safe on Arbor Core.
-              Founding Access is what unlocks the apps.
+            <p className="mt-6 type-caption text-fg-2">
+              {offer?.plan === "standard"
+                ? PLANS.standard.summary
+                : `${PLANS.founder.summary} After that, Arbor is ${PLANS.standard.price} a month.`}
             </p>
           )}
         </div>
 
-        <p className="mt-10 text-sm text-neutral-600">
-          <Link href="/profile" className="transition hover:text-neutral-400">
-            ← Back to profile
+        <p className="mt-6 type-caption text-fg-2">
+          <Link href="/profile" className="transition hover:text-fg">
+            ← Back to your account
           </Link>
         </p>
       </section>

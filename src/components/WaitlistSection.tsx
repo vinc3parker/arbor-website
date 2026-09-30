@@ -19,7 +19,7 @@ export function WaitlistSection() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(email.trim())) {
-      setErrorMessage("Please enter a valid email address.");
+      setErrorMessage("That email doesn’t look quite right. Check it and try again.");
       return;
     }
 
@@ -35,7 +35,7 @@ export function WaitlistSection() {
       console.error(error);
 
       setErrorMessage(
-        "Something went wrong. Please try again."
+        "Something went wrong on our side. Try again in a moment."
       );
 
       return;
@@ -56,26 +56,26 @@ export function WaitlistSection() {
   return (
     <section
       id="early-access"
-      className="mx-auto max-w-6xl px-8 py-32"
+      className="site-container py-24"
     >
-      <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-10 md:p-14">
+      <div className="ui-surface p-6 sm:p-10">
 
-        <p className="mb-6 text-sm uppercase tracking-[0.3em] text-neutral-500">
-          EARLY ACCESS
+        <p className="ui-kicker">
+          Early access
         </p>
 
-        <h2 className="text-5xl font-semibold">
-          Join the Arbor waitlist.
+        <h2 className="type-h2">
+          Join the waitlist
         </h2>
 
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-400">
-          Register your interest and join the email list to be the first to hear when new Arbor apps launch, early access opens, and major updates are released.
+        <p className="mt-3 max-w-xl type-body text-fg-2">
+          Hear when new Arbor apps and early access become available.
         </p>
 
         {!joined ? (
           <form
             onSubmit={handleSubmit}
-            className="mt-10 flex flex-col gap-4"
+            className="mt-7 flex max-w-xl flex-col gap-3 sm:flex-row"
           >
             <input
               value={email}
@@ -83,44 +83,31 @@ export function WaitlistSection() {
                 setEmail(e.target.value)
               }
               placeholder="Email"
+              aria-label="Email"
               type="email"
               required
-              className="
-              rounded-2xl
-              border
-              border-neutral-800
-              bg-black
-              px-6
-              py-4
-            "
+              className="ui-field"
             />
             {errorMessage && (
-              <p className="px-2 text-sm text-red-400">
+              <p className="px-2 text-sm text-danger">
                 {errorMessage}
               </p>
             )}
 
             <button
-              className="
-              rounded-full
-              bg-white
-              px-8
-              py-4
-              text-black
-            "
+              type="submit"
+              className="ui-primary shrink-0"
             >
-              Join Waitlist
+              Join waitlist
             </button>
           </form>
         ) : (
           <div className="mt-10">
-            <div className="text-2xl font-medium">
+            <div className="text-2xl font-semibold">
               You&apos;re in.
             </div>
 
-            <p className="mt-3 max-w-xl leading-7 text-neutral-400">
-              You&apos;re on the list. We&apos;ll email you when early access opens, new apps launch, and there is something worth hearing about.
-            </p>
+            <p className="mt-2 text-fg-2">We&apos;ll email you when access opens.</p>
           </div>
         )}
 

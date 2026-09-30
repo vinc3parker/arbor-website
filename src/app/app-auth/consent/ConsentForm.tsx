@@ -51,8 +51,8 @@ export function ConsentForm({
 
       {optional.length > 0 && (
         <>
-          <div className="mt-1 border-t border-neutral-800 pt-5">
-            <p className="text-xs uppercase tracking-[0.2em] text-neutral-500">
+          <div className="mt-1 border-t border-line pt-5">
+            <p className="text-sm text-fg-3">
               Optional
             </p>
           </div>
@@ -75,13 +75,13 @@ export function ConsentForm({
         ))}
 
       {state.error && (
-        <p className="px-1 text-sm text-red-400">{state.error}</p>
+        <p className="px-1 text-sm text-danger">{state.error}</p>
       )}
 
       <button
         type="submit"
         disabled={pending || !allRequiredChecked}
-        className="mt-2 rounded-full bg-white px-8 py-4 font-medium text-black transition hover:bg-neutral-200 disabled:opacity-60"
+        className="mt-2 ui-primary"
       >
         {pending ? "Please wait…" : `Continue to ${appName}`}
       </button>
@@ -91,7 +91,7 @@ export function ConsentForm({
         formAction={declineConsent}
         formNoValidate
         disabled={pending}
-        className="text-sm text-neutral-500 underline underline-offset-4 transition hover:text-neutral-300 disabled:opacity-60"
+        className="text-sm text-fg-3 underline underline-offset-4 transition hover:text-fg disabled:opacity-60"
       >
         Not now
       </button>
@@ -114,18 +114,18 @@ function ConsentRow({
         type="checkbox"
         checked={checked}
         onChange={onToggle}
-        className="mt-1 h-5 w-5 shrink-0 rounded border-neutral-700 bg-black accent-white"
+        className="mt-1 h-5 w-5 shrink-0 rounded border-line bg-bg accent-white"
       />
       <span className="flex flex-col gap-1">
-        <span className="text-sm font-medium text-neutral-100">
+        <span className="text-sm font-medium text-fg">
           {item.title}
           {item.required && (
-            <span className="ml-2 text-xs font-normal text-neutral-500">
+            <span className="ml-2 text-sm font-normal text-fg-3">
               Required
             </span>
           )}
         </span>
-        <span className="text-sm leading-6 text-neutral-400">{item.body}</span>
+        <span className="text-sm leading-6 text-fg-2">{item.body}</span>
         {item.links && item.links.length > 0 && (
           <span className="mt-0.5 flex flex-wrap gap-x-4 gap-y-1">
             {item.links.map((l) => (
@@ -134,7 +134,7 @@ function ConsentRow({
                 href={l.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-neutral-400 underline underline-offset-4 transition hover:text-neutral-200"
+                className="text-sm text-fg-2 underline underline-offset-4 transition hover:text-fg"
               >
                 {l.label}
               </a>

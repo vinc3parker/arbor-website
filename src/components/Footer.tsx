@@ -1,27 +1,34 @@
+import Image from "next/image";
+import Link from "next/link";
+
 export function Footer() {
   return (
-    <footer className="border-t border-neutral-900">
-
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-8 py-12 md:flex-row md:items-center md:justify-between">
-
-        <div>
-
-          <div className="text-sm font-medium tracking-[0.3em]">
-            ARBOR
-          </div>
-
-          <p className="mt-3 max-w-md text-sm text-neutral-500">
-            Building technology for people who want more from life.
-          </p>
-
+    <footer className="border-t border-line">
+      <div className="site-container flex flex-wrap items-center justify-between gap-6 py-8">
+        <Image
+          src="/brand/arbor_wordmark_full.png"
+          alt="Arbor"
+          width={931}
+          height={227}
+          className="h-auto w-[96px] [.theme-dark_&]:hidden"
+        />
+        <Image
+          src="/brand/arbor_wordmark_reverse.png"
+          alt="Arbor"
+          width={931}
+          height={227}
+          className="hidden h-auto w-[96px] [.theme-dark_&]:block"
+        />
+        <div className="flex flex-wrap items-center gap-6 type-caption text-fg-2">
+          <Link href="/privacy" className="transition hover:text-fg">
+            Privacy
+          </Link>
+          <Link href="/terms" className="transition hover:text-fg">
+            Terms
+          </Link>
+          <span>© 2026 Arbor</span>
         </div>
-
-        <div className="text-sm text-neutral-600">
-          © 2026 Arbor
-        </div>
-
       </div>
-
     </footer>
   );
 }

@@ -1,11 +1,14 @@
 'use client';
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Canvas } from '@react-three/fiber';
 import { ObservatoryScene } from './scene/ObservatoryScene';
 import { heroState, titleOpacity } from './scroll/heroState';
 import type { ArborApp } from './data/apps';
+import { rememberEntered, shouldSkipIntro } from '@/lib/intro';
+import { appBrand } from '@/lib/brand';
 import { CAMERA_POS, CAMERA_FOV } from './room/constants';
 
 const NAVIGATE_AFTER_MS = 1150;
@@ -32,7 +35,6 @@ export function ArborRoom({
 }) {
   const router = useRouter();
   const titleRef = useRef<HTMLDivElement>(null);
-  const hintRef = useRef<HTMLDivElement>(null);
   // Latches once the auto-build finishes; from then on the room stays fully
   // built and every portal is live.
   const lockedRef = useRef(false);
@@ -75,16 +77,12 @@ export function ArborRoom({
     );
     if (!Number.isNaN(pinned)) heroState.progress = pinned;
 
-    // Returning from an app page (Esc → ?entered=1): start fully built and
-    // locked, with no replay of the intro. lockedRef is picked up on the first
-    // frame below, which also syncs the React `locked` state.
-    try {
-      if (new URLSearchParams(window.location.search).get('entered') === '1') {
-        lockedRef.current = true;
-      }
-    } catch {
-      /* no-op */
-    }
+    // Already inside the site (Esc → ?entered=1, the logo, or an earlier
+    // visit this session): start fully built and locked, with no replay of the
+    // intro. lockedRef is picked up on the first frame below, which also syncs
+    // the React `locked` state.
+    const skip = shouldSkipIntro();
+    if (skip) lockedRef.current = true;
 
     let syncedLock = false;
     let raf = 0;
@@ -109,6 +107,7 @@ export function ArborRoom({
         p = smoothstep(raw);
         if (raw >= 1) {
           lockedRef.current = true;
+          rememberEntered();
           syncedLock = true;
           setLocked(true);
           setEntering(false);
@@ -130,13 +129,10 @@ export function ArborRoom({
         titleRef.current.style.transform = `translateY(${-24 * (1 - o)}px)`;
         titleRef.current.style.visibility = o === 0 ? 'hidden' : 'visible';
       }
-      if (hintRef.current) {
-        hintRef.current.style.opacity = String(titleOpacity(p) * 0.6);
-      }
       // Navbar arrives only once every portal has woken.
       document.documentElement.classList.toggle('arbor-intro', p < 0.9);
     };
-    document.documentElement.classList.add('arbor-intro');
+    if (!skip) document.documentElement.classList.add('arbor-intro');
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
@@ -157,9 +153,17 @@ export function ArborRoom({
     };
   }, [entering]);
 
-  // Arriving already-completed (Esc): make sure we're at the top.
   useLayoutEffect(() => {
-    if (locked) window.scrollTo(0, 0);
+    if (shouldSkipIntro() && titleRef.current) {
+      titleRef.current.style.opacity = '0';
+      titleRef.current.style.visibility = 'hidden';
+    }
+  }, []);
+
+  // Arriving already-completed: start at the top, unless a link asked for a
+  // section further down (e.g. /#early-access).
+  useLayoutEffect(() => {
+    if (locked && !window.location.hash) window.scrollTo(0, 0);
   }, [locked]);
 
   // Wire the three.js side of hover / select to React.
@@ -247,51 +251,55 @@ export function ArborRoom({
             justifyContent: 'center',
             pointerEvents: 'none',
             textAlign: 'center',
+            // Solid Ink until the visitor enters: the room stays hidden
+            // behind the title, then is revealed as the title fades.
+            background: '#0A0A0A',
+            padding: '0 1.5rem',
           }}
         >
-          <h1
-            style={{
-              fontSize: 'clamp(3.5rem, 9vw, 7rem)',
-              fontWeight: 250,
-              letterSpacing: '0.35em',
-              marginLeft: '0.35em', // optically recentre the tracking
-              color: '#e8e6e1',
-            }}
-          >
-            ARBOR
+          {/* The wordmark is artwork — never retyped (brand guide 5.7). */}
+          <h1 style={{ margin: 0 }}>
+            <span className="sr-only">Arbor</span>
+            <Image
+              src="/brand/arbor_logo_reverse.png"
+              alt=""
+              width={942}
+              height={227}
+              priority
+              style={{ width: 'clamp(12rem, 32vw, 26rem)', height: 'auto' }}
+            />
           </h1>
           <p
             style={{
-              marginTop: '1.25rem',
-              fontSize: '0.95rem',
-              fontWeight: 300,
-              letterSpacing: '0.3em',
-              marginLeft: '0.3em',
-              color: 'rgba(232,230,225,0.55)',
-              textTransform: 'uppercase',
+              marginTop: '1.75rem',
+              fontSize: 'clamp(1rem, 1.6vw, 1.25rem)',
+              fontWeight: 400,
+              color: 'rgba(246,245,242,0.75)',
             }}
           >
-            One life · Eight dimensions
+            Live more of the life you choose.
           </p>
-        </div>
-
-        {/* ---- Enter hint ---- */}
-        <div
-          ref={hintRef}
-          style={{
-            position: 'absolute',
-            bottom: '2.5rem',
-            left: 0,
-            right: 0,
-            textAlign: 'center',
-            pointerEvents: 'none',
-            fontSize: '0.75rem',
-            letterSpacing: '0.25em',
-            textTransform: 'uppercase',
-            color: 'rgba(232,230,225,0.6)',
-          }}
-        >
-          {isMobile ? 'Tap to enter' : 'Click to enter'}
+          {/* Enter prompt. The whole screen is the click target (the button
+              above); this just makes it obvious. */}
+          <span
+            aria-hidden
+            style={{
+              marginTop: '2.75rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.625rem',
+              minHeight: 48,
+              padding: '0.75rem 1.5rem',
+              borderRadius: '0.75rem',
+              background: '#F6F5F2',
+              color: '#0A0A0A',
+              fontSize: '1rem',
+              fontWeight: 500,
+            }}
+          >
+            {isMobile ? 'Tap to enter' : 'Click to enter'}
+            <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>→</span>
+          </span>
         </div>
 
         {/* ---- Hover label: centred, boxless, in the app's accent colour.
@@ -344,7 +352,8 @@ export function ArborRoom({
                   letterSpacing: '0.3em',
                   marginLeft: '0.3em',
                   textTransform: 'uppercase',
-                  color: hovered.colour,
+                  // Dark leads (Wend, Telos, Sage) swap to their readable colour on Ink.
+                  color: appBrand(hovered.id)?.textOnInk ?? hovered.colour,
                 }}
               >
                 {hovered.dimension}

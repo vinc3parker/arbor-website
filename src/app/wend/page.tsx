@@ -4,18 +4,18 @@ import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Wend — Travel & Exploration App | Arbor",
+  title: "Wend: your explorer | Arbor",
   description:
-    "Discover places, experiences, and moments worth remembering. Explore the world shaped around what you enjoy and who you are becoming.",
+    "Make the most of your free time, from holidays to nights in. Built on Arbor, so it understands the whole of you, not just your weekends.",
   keywords:
     "travel app, travel planning, exploration app, travel recommendations, travel guide, travel planning app",
   alternates: {
     canonical: "https://arborapps.co/wend",
   },
   openGraph: {
-    title: "Wend — Travel & Exploration App | Arbor",
+    title: "Wend: your explorer | Arbor",
     description:
-      "Travel and exploration app for discovering places and experiences that feel right for you. Plan more meaningful adventures.",
+      "Make the most of your free time, from holidays to nights in. Built on Arbor, so it understands the whole of you, not just your weekends.",
     url: "https://arborapps.co/wend",
     type: "website",
     images: [
@@ -23,15 +23,15 @@ export const metadata: Metadata = {
         url: "https://arborapps.co/og-wend.png",
         width: 1200,
         height: 630,
-        alt: "Wend travel and exploration app",
+        alt: "Wend, your explorer, by Arbor",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Wend — Travel & Exploration App | Arbor",
+    title: "Wend: your explorer | Arbor",
     description:
-      "Travel and exploration app for discovering places and experiences that feel right for you. Plan more meaningful adventures.",
+      "Make the most of your free time, from holidays to nights in. Built on Arbor, so it understands the whole of you, not just your weekends.",
     images: ["https://arborapps.co/og-wend.png"],
   },
 };
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Wend",
-    "Travel and exploration app that helps you find places, experiences, and moments shaped around what you enjoy.",
+    "Make the most of your free time, from holidays to nights in. Built on Arbor, so it understands the whole of you, not just your weekends.",
     "https://arborapps.co/wend",
     "TravelApplication"
   );

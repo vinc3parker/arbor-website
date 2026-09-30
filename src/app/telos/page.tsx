@@ -4,18 +4,18 @@ import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Telos — Career & Work Purpose App | Arbor",
+  title: "Telos: your mentor | Arbor",
   description:
-    "Find work that fits who you are. Explore opportunities, understand your strengths, and build a career that supports the life you want.",
+    "Find purpose in your work and build a career that feels like yours. Built on Arbor, so it understands the whole of you, not just your job.",
   keywords:
     "career app, job search app, career planning, professional development, career guidance, job finding",
   alternates: {
     canonical: "https://arborapps.co/telos",
   },
   openGraph: {
-    title: "Telos — Career & Work Purpose App | Arbor",
+    title: "Telos: your mentor | Arbor",
     description:
-      "Career and purpose app for finding work that aligns with who you are. Build a career that supports your life, not the other way around.",
+      "Find purpose in your work and build a career that feels like yours. Built on Arbor, so it understands the whole of you, not just your job.",
     url: "https://arborapps.co/telos",
     type: "website",
     images: [
@@ -23,15 +23,15 @@ export const metadata: Metadata = {
         url: "https://arborapps.co/og-telos.png",
         width: 1200,
         height: 630,
-        alt: "Telos career and work purpose app",
+        alt: "Telos, your mentor, by Arbor",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Telos — Career & Work Purpose App | Arbor",
+    title: "Telos: your mentor | Arbor",
     description:
-      "Career and purpose app for finding work that aligns with who you are. Build a career that supports your life, not the other way around.",
+      "Find purpose in your work and build a career that feels like yours. Built on Arbor, so it understands the whole of you, not just your job.",
     images: ["https://arborapps.co/og-telos.png"],
   },
 };
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Telos",
-    "Career and work purpose app that helps people think more intentionally about work, growth, and purpose.",
+    "Find purpose in your work and build a career that feels like yours. Built on Arbor, so it understands the whole of you, not just your job.",
     "https://arborapps.co/telos",
     "BusinessApplication"
   );

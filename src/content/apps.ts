@@ -1,20 +1,22 @@
+import { APP_BRANDS } from "@/lib/brand";
+
 export const apps = {
   aevo: {
     name: "Aevo",
-    tag: "Performance",
+    tag: APP_BRANDS.aevo.domain,
     guide: {
-      role: "Your training coach",
+      role: `Your ${APP_BRANDS.aevo.title}`,
       blurb:
-        "Aevo learns how you actually train and builds a plan around your goals, your schedule, and your body — adapting as you do.",
+        "Aevo learns how you actually train and builds a plan around your goals, your week and your body, adapting as you do.",
     },
-    hero: "Training that actually understands you.",
+    hero: APP_BRANDS.aevo.line,
     overviewTitle: "Training built around you, not a template.",
     intro:
-      "Aevo pays attention to how you actually train — your goals, your level, your schedule, and the events you're working towards — and builds a plan that fits. Whether you run, lift, play a sport, or do all three, it adapts to you instead of pushing you through someone else's program.",
+      "Aevo pays attention to how you actually train: your goals, your level, your week and the events you're working towards. Whether you run, lift, play a sport or do all three, it plans around you instead of pushing you through someone else's programme.",
     detailedDescription:
-      "Aevo is training software that adapts to the individual. Most apps hand you a fixed prescription — a generic plan that ignores your history, your goals, and everything else you have going on. Aevo works the other way around: it pays attention to how you actually train and shapes your plan around your ability, your weekly routine, and the goal or event you're working towards. Run, lift, play a sport, or combine all of them — Aevo connects every session into one coherent system instead of scattering your training across separate apps. It was built to handle real complexity — the kind that comes from balancing strength, endurance, and sport at once — which is exactly why it works just as well when your training is simpler. The result is a plan that feels made for you, because it is: one that pushes you in the direction you actually want to go.",
+      "Most training apps hand you a fixed plan that ignores your history, your goals and everything else going on in your life. Aevo works the other way round. It shapes your plan around your ability, your weekly routine and the goal you're working towards, and connects every session into one plan instead of scattering it across separate apps. Because it's built on Arbor, it also knows when the rest of life gets busy, so a packed week can mean a shorter session rather than a missed one.",
     targetAudience:
-      "Aevo is for anyone who wants their training to understand them. That includes runners who also lift, lifters chasing their first race, people training for a sport, and hybrid athletes juggling several disciplines at once — but it's just as much for someone with a single, focused goal who's tired of generic plans. If you want training that adapts to your ability, your schedule, and where you actually want to go, rather than a one-size-fits-all prescription, Aevo is for you.",
+      "Aevo is for anyone who wants their training to understand them: runners who also lift, lifters chasing their first race, people training for a sport, and people with one simple goal who are tired of generic plans. Aevo plans around pain and illness but never diagnoses them. For anything that hurts, it will point you to a GP or physio.",
     features: [
       {
         title: "Connected training calendar",
@@ -46,30 +48,25 @@ export const apps = {
       type: "beta" as const,
       url: "https://testflight.apple.com/join/U6JcFCB7",
     },
-    backgroundScreenshots: [
-      "/screens/program.png",
-      "/screens/planning.png",
-      "/screens/profile.png",
-    ],
   },
 
   salus: {
     name: "Salus",
-    tag: "Mental wellbeing",
+    tag: APP_BRANDS.salus.domain,
     guide: {
-      role: "Your reflection companion",
+      role: `Your ${APP_BRANDS.salus.title}`,
       blurb:
-        "Salus gives you a calm space to journal, notice patterns, and understand yourself, without turning growth into another thing to optimise.",
+        "Salus gives you a calm place to reflect, notice patterns and understand yourself, without turning wellbeing into another thing to optimise.",
     },
-    hero: "Reflection and growth for everyday life.",
+    hero: APP_BRANDS.salus.line,
     overviewTitle:
-      "A calmer way to reflect, understand yourself, and keep moving forward.",
+      "A calmer way to reflect, understand yourself and keep going.",
     intro:
-      "Salus is a space for slowing down and paying attention. Journal, reflect, explore guided prompts, and build a clearer picture of who you are over time — without turning growth into another thing to optimise.",
+      "Salus is a space for slowing down and paying attention. Write, reflect, answer gentle prompts and build a clearer picture of how you're doing over time, at your own pace.",
     detailedDescription:
-      "Salus is a mental wellness app that combines journaling with structured reflection. It's designed for people who want to understand themselves better but feel overwhelmed by productivity-focused wellness apps. Rather than turning personal growth into another optimization task, Salus provides a calm, intentional space where reflection feels natural and sustainable.",
+      "Salus brings journaling and reflection together in one calm place. It asks more than it tells, helps you notice patterns in your mood and energy, and makes room for rest when you need it. Because it's built on Arbor, it can see when the rest of your life is heavy, and your other guides can lighten your week in return.",
     targetAudience:
-      "Salus is for anyone interested in deeper self-understanding and personal growth. This includes people exploring therapy concepts independently, those keeping private journals, individuals managing stress or anxiety, and anyone seeking mindfulness and reflection without the pressure of performance metrics. If you value introspection and want a judgment-free space to process your thoughts and emotions, Salus is for you.",
+      "Salus is for anyone who wants to understand themselves a little better: people who keep a journal, people going through a busy or unsettled time, and anyone who wants a private, judgement-free space to think things through. Salus supports and listens, but it isn't therapy or a crisis service. If you need more help, it will point you to your GP, NHS talking therapies or Samaritans on 116 123.",
     features: [
       {
         title: "Low-friction reflection",
@@ -101,132 +98,126 @@ export const apps = {
 
   thrive: {
     name: "Thrive",
-    tag: "Organisation",
+    tag: APP_BRANDS.thrive.domain,
     guide: {
-      role: "Your day-to-day planner",
+      role: `Your ${APP_BRANDS.thrive.title}`,
       blurb:
-        "Thrive turns intention into routines, plans, and a day that actually holds together.",
+        "Thrive turns what matters to you into routines, plans and days that actually hold together.",
     },
-    hero:
-      "Build routines and stay ahead of life.",
+    hero: APP_BRANDS.thrive.line,
     overviewTitle:
-      "Build a life that feels organised without feeling controlled.",
+      "Feel organised without feeling controlled.",
     intro:
-      "Thrive helps you create structure that works with real life. Build routines, plan intentionally, and understand where your time and energy actually go — so you can focus more on what matters and less on staying on top of everything.",
+      "Thrive helps you build structure that works with real life. Plan your days, build routines and see where your time and energy really go, so you can spend more of it on what matters.",
     detailedDescription:
-      "Thrive is an organization and productivity app that helps you build sustainable routines and manage your time in a way that feels natural, not restrictive. It's designed around real life constraints — not the idealized productivity culture. Thrive lets you see where your time and energy actually go, understand your patterns, and build a system that works for you.",
+      "Thrive is built around real life, not an ideal productivity routine. It shows you where your time goes, helps you plan a week that's realistic, and re-plans without guilt when things don't go to plan. Because it's built on Arbor, a packed week in Thrive can quietly lighten your plans in your other apps.",
     targetAudience:
-      "Thrive is for people who want more structure in their lives but haven't found an organizational system that feels right. This includes busy professionals managing multiple responsibilities, parents balancing work and family, students juggling coursework and personal projects, and anyone who feels overwhelmed by their schedule. If you want to feel more in control of your time without becoming a slave to your task list, Thrive is for you.",
+      "Thrive is for anyone who wants more structure without a system that feels rigid: people juggling work and family, students balancing study and everything else, and anyone who feels their week runs them rather than the other way round.",
     status:
      "Still in development"
   },
 
   nura: {
     name: "Nura",
-    tag: "Finance",
+    tag: APP_BRANDS.nura.domain,
     guide: {
-      role: "Your finance advisor",
+      role: `Your ${APP_BRANDS.nura.title}`,
       blurb:
-        "Nura makes sense of your money and helps you plan with confidence — without the stress or the judgment.",
+        "Nura helps you understand your money and plan with confidence, without stress or judgement.",
     },
-    hero:
-      "Money built around real life.",
+    hero: APP_BRANDS.nura.line,
     overviewTitle:
-      "Feel clearer and more confident about money.",
+      "Feel clearer and calmer about money.",
     intro:
-      "Nura is designed to help people understand their finances without turning money into stress. See where things are going, plan ahead, save with purpose, and build habits that support the life you actually want.",
+      "Nura helps you see how your money is doing, plan ahead and save for the things you care about, so your money works for the life you want.",
     detailedDescription:
-      "Nura is a personal finance app that makes money management feel less overwhelming. Instead of focusing on obsessive tracking or aggressive optimization, Nura helps you understand your financial reality and make intentional decisions that align with your life. It's built for people who want clarity about money without the anxiety.",
+      "Nura makes money feel less overwhelming. Instead of obsessive tracking, it helps you understand where things stand and make decisions that fit your life. Because it's built on Arbor, it knows when a trip or a big week is coming, and your plans can reflect it. Nura explains and guides; it doesn't give personal investment advice. For that, it will point you to MoneyHelper or a regulated adviser.",
     targetAudience:
-      "Nura is for anyone who wants to understand and improve their financial situation. This includes young professionals building better money habits, families managing shared expenses, people working toward savings goals, and anyone who finds traditional finance apps cold or overwhelming. If you want financial clarity without feeling judged or pressured, Nura is for you.",
+      "Nura is for anyone who wants a clearer picture of their money: people building better habits, households sharing costs, people saving towards something, and anyone who finds finance apps cold or stressful. Saving and enjoying it now are both valid, and Nura never judges spending.",
     status:
       "Still in development"
   },
 
   wend: {
     name: "Wend",
-    tag: "Explore",
+    tag: APP_BRANDS.wend.domain,
     guide: {
-      role: "Your travel guide",
+      role: `Your ${APP_BRANDS.wend.title}`,
       blurb:
-        "Wend finds the places, experiences, and moments that genuinely feel like you.",
+        "Wend helps you find places, plans and moments that feel like you.",
     },
-    hero:
-      "Discover places and experiences.",
+    hero: APP_BRANDS.wend.line,
     overviewTitle:
-      "Discover more of the world that feels like you.",
+      "Free time that feels like yours.",
     intro:
-      "Wend helps you find places, experiences, and moments that feel worth remembering. Less endless searching, more meaningful exploration shaped around what you enjoy and who you are becoming.",
+      "Wend helps you make the most of your free time, from big trips to quiet weekends and nights in. Less endless searching, more time spent on things you actually enjoy.",
     detailedDescription:
-      "Wend is a travel and exploration app that reimagines how you discover places. Rather than endless algorithm-driven recommendations, Wend helps you find experiences that genuinely align with who you are. It's about quality exploration — discovering places and moments that matter, not just popular tourist spots.",
+      "Wend learns what you enjoy and suggests places and plans that fit, whether that's a weekend away, a new hobby or a night in. Because it's built on Arbor, it can plan around your budget in Nura and the free time in your calendar, so ideas fit the life you actually have.",
     targetAudience:
-      "Wend is for travelers and adventurers who want more meaningful explorations. This includes digital nomads exploring new cities, people planning meaningful vacations, adventure seekers looking for authentic experiences, and travelers who feel overwhelmed by generic travel guides. If you value authentic experiences over Instagram-worthy locations, Wend is for you.",
+      "Wend is for anyone who wants their free time to feel well spent: people who love to travel, people who'd rather stay close to home, and everyone in between. A budget weekend counts just as much as a big trip.",
     status:
       "Still in development"
   },
 
   kith: {
     name: "Kith",
-    tag: "Connection",
+    tag: APP_BRANDS.kith.domain,
     guide: {
-      role: "Your confidant",
+      role: `Your ${APP_BRANDS.kith.title}`,
       blurb:
-        "Kith helps you stay close to the people who matter, on your terms rather than an algorithm's.",
+        "Kith helps you stay close to the people who matter, and meet new ones you'll click with.",
     },
-    hero:
-      "Intentional social connection.",
+    hero: APP_BRANDS.kith.line,
     overviewTitle:
-      "Social connection that feels more human.",
+      "Stay close to your people.",
     intro:
-      "Kith is built around the idea that relationships deserve more than feeds and algorithms. Stay connected, spend time more intentionally, and build stronger relationships with the people who matter.",
+      "Kith helps you keep in touch with friends, family and community, remember what matters to them and make time to see them.",
     detailedDescription:
-      "Kith is a social connection app that prioritizes relationship quality over engagement metrics. It's designed for people exhausted by social media but who still want to stay connected with others. Kith brings the focus back to what relationships are actually about — genuine human connection.",
+      "Kith is about the people in your life, not feeds or follower counts. It helps you notice when you haven't seen someone in a while, find a time that works and remember the moments that matter. Because it's built on Arbor, it can suggest a catch-up when your week has room for one. It never messages anyone without you.",
     targetAudience:
-      "Kith is for anyone who wants to maintain real relationships without social media toxicity. This includes people stepping away from traditional social networks, groups of friends wanting a private communication space, people with shared interests seeking community without algorithm-driven content, and anyone who feels social media damages rather than improves their relationships. If you value depth over reach, Kith is for you.",
+      "Kith is for anyone who wants to stay closer to the people they care about, whether that's a few close friends or a big social life. Both are equally valid.",
     status:
       "Still in development"
   },
 
   telos: {
     name: "Telos",
-    tag: "Purpose",
+    tag: APP_BRANDS.telos.domain,
     guide: {
-      role: "Your career mentor",
+      role: `Your ${APP_BRANDS.telos.title}`,
       blurb:
-        "Telos helps you think clearly about work, strengths, and purpose, and find a path that fits who you are.",
+        "Telos helps you think clearly about work, strengths and purpose, and find a path that feels like yours.",
     },
-    hero:
-      "Find work that fits who you are.",
+    hero: APP_BRANDS.telos.line,
     overviewTitle:
       "Build work around life, not life around work.",
     intro:
-      "Telos helps people think more intentionally about work, growth, and purpose. Explore opportunities, understand your strengths, and create a career that supports the life you want to build.",
+      "Telos helps you think about your work, what you're good at and what you want from it, and shape a career that supports the life you want.",
     detailedDescription:
-      "Telos is a career and purpose app that challenges the traditional job search. It helps you think intentionally about your work rather than defaulting to what's available. Telos is about finding work that actually fits who you are, not forcing yourself to fit a job description.",
+      "Telos asks the big questions and challenges kindly. It helps you understand your strengths, explore what's next and take one useful step at a time. Because it's built on Arbor, your mentor can see when work is squeezing everything else, and bring in Sage when a new skill would help.",
     targetAudience:
-      "Telos is for people questioning their career path or seeking more alignment. This includes professionals feeling stuck in their current roles, career changers exploring new directions, early-career people trying to choose a path thoughtfully, and anyone who feels their job doesn't reflect their values. If you believe work should enhance your life rather than consume it, Telos is for you.",
+      "Telos is for anyone thinking about their work: people who feel stuck, people considering a change, people early in their career choosing a path, and people shaping a next chapter later in life. Changing course and sticking with it are both valid.",
     status:
       "Still in development"
   },
 
   sage: {
     name: "Sage",
-    tag: "Learning",
+    tag: APP_BRANDS.sage.domain,
     guide: {
-      role: "Your personal tutor",
+      role: `Your ${APP_BRANDS.sage.title}`,
       blurb:
-        "Sage helps you build knowledge that actually sticks — connecting ideas and tracking real progress.",
+        "Sage helps you learn what you need to grow, and makes new things simple.",
     },
-    hero:
-      "Build knowledge intentionally.",
+    hero: APP_BRANDS.sage.line,
     overviewTitle:
-      "Learn in a way that actually sticks.",
+      "Learn in a way that sticks.",
     intro:
-      "Sage helps people learn with more direction and less overwhelm. Build knowledge over time, connect ideas together, and make progress towards the things you genuinely want to understand.",
+      "Sage helps you learn with direction and less overwhelm, from courses and new skills to curiosities you want to explore.",
     detailedDescription:
-      "Sage is a learning and knowledge management app that helps you build knowledge that actually sticks. Rather than bookmarking articles and forgetting them, Sage helps you construct knowledge systematically, connect ideas together, and track genuine progress toward understanding.",
+      "Sage is a patient tutor. It helps you choose what to learn, breaks it into simple steps and helps ideas stick instead of piling up in bookmarks. Because it's built on Arbor, it can fit learning into the gaps in your week and connect it to the goals you've set in Telos.",
     targetAudience:
-      "Sage is for serious learners and knowledge seekers. This includes students wanting better study methods, professionals developing expertise in new fields, lifelong learners pursuing multiple interests, and anyone who feels they consume lots of information but retain little. If you want to learn in a way that builds genuine knowledge rather than just collecting information, Sage is for you.",
+      "Sage is for anyone who wants to keep learning, about themselves or the world: students, people building skills for work, and lifelong learners following their curiosity.",
     status:
       "Still in development"
   },

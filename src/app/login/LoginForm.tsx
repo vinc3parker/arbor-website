@@ -6,8 +6,8 @@ import { login, signup, type AuthState } from "./actions";
 
 const initialState: AuthState = {};
 const inputClass =
-  "rounded-2xl border border-neutral-800 bg-black px-5 py-3.5 outline-none transition focus:border-neutral-600";
-const labelClass = "text-xs uppercase tracking-[0.2em] text-neutral-500";
+  "ui-field";
+const labelClass = "ui-label";
 
 export function LoginForm({ redirectTo }: { redirectTo: string }) {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -30,19 +30,19 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
 
   return (
     <div className={`w-full ${mode === "signup" ? "max-w-2xl" : "max-w-md"}`}>
-      <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-8 md:p-10">
-        <p className="mb-3 text-sm uppercase tracking-[0.3em] text-neutral-500">
-          {mode === "login" ? "WELCOME BACK" : "CREATE ACCOUNT"}
+      <div className="ui-surface p-6 sm:p-8">
+        <p className="ui-kicker">
+          {mode === "login" ? "Welcome back" : "Create account"}
         </p>
 
-        <h1 className="text-3xl font-semibold">
-          {mode === "login" ? "Sign in to Arbor." : "Join Arbor."}
+        <h1 className="ui-title">
+          {mode === "login" ? "Sign in" : "Join Arbor"}
         </h1>
 
-        <p className="mt-3 text-sm leading-7 text-neutral-400">
+        <p className="mt-2 text-sm leading-6 text-fg-2">
           {mode === "login"
-            ? "Access your profile and manage your subscription."
-            : "Create a free account to set up your profile and subscription."}
+            ? "Your account and subscription."
+            : "One account for every Arbor app."}
         </p>
 
         <form action={formAction} className="mt-8 flex flex-col gap-4">
@@ -99,7 +99,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
                     required
                     max={today}
                     autoComplete="bday"
-                    className={`${inputClass} [color-scheme:dark]`}
+                    className={inputClass}
                   />
                 </label>
 
@@ -238,12 +238,12 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
                 autoComplete="new-password"
                 placeholder="Re-enter your password"
                 aria-invalid={mismatch}
-                className={`rounded-2xl border bg-black px-5 py-3.5 outline-none transition focus:border-neutral-600 ${
-                  mismatch ? "border-red-500/70" : "border-neutral-800"
+                className={`ui-field ${
+                  mismatch ? "border-danger" : "border-line"
                 }`}
               />
               {mismatch && (
-                <span className="px-1 text-xs text-red-400">
+                <span className="px-1 text-sm text-danger">
                   Passwords don&apos;t match.
                 </span>
               )}
@@ -251,16 +251,16 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
           )}
 
           {state.error && (
-            <p className="px-1 text-sm text-red-400">{state.error}</p>
+            <p className="px-1 text-sm text-danger">{state.error}</p>
           )}
           {state.message && (
-            <p className="px-1 text-sm text-emerald-400">{state.message}</p>
+            <p className="px-1 text-sm text-success">{state.message}</p>
           )}
 
           <button
             type="submit"
             disabled={pending || mismatch}
-            className="mt-2 rounded-full bg-white px-8 py-4 font-medium text-black transition hover:bg-neutral-200 disabled:opacity-60"
+            className="ui-primary mt-2 w-full"
           >
             {pending
               ? "Please wait…"
@@ -270,12 +270,12 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
           </button>
         </form>
 
-        <p className="mt-6 text-sm text-neutral-500">
+        <p className="mt-6 text-sm text-fg-3">
           {mode === "login" ? "New to Arbor? " : "Already have an account? "}
           <button
             type="button"
             onClick={toggleMode}
-            className="text-white underline underline-offset-4 transition hover:text-neutral-300"
+            className="text-fg underline underline-offset-4 transition hover:text-fg"
           >
             {mode === "login" ? "Create an account" : "Sign in"}
           </button>

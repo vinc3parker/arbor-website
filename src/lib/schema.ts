@@ -5,7 +5,7 @@ export function getOrganizationSchema() {
     name: "Arbor",
     url: "https://arborapps.co",
     logo: "https://arborapps.co/icon.png",
-    description: "An ecosystem of apps for training, reflection, organization, exploration, and intentional living.",
+    description: "A guide for your whole life. Eight apps, each with its own guide, that share one understanding of you.",
   };
 }
 

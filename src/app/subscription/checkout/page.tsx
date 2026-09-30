@@ -5,24 +5,32 @@ import { Footer } from "@/components/Footer";
 import { createClient } from "@/lib/supabase-server";
 import { ArborCoreError, createCheckout, fetchEntitlement } from "@/lib/arbor-core";
 import { isRegisteredApp, sanitizeState } from "@/lib/app-auth";
+import { PLANS, hasAccess } from "@/lib/subscription";
 import { EmbeddedCheckoutForm } from "./EmbeddedCheckoutForm";
 import { redeemCodeAction } from "../actions";
 
 export const metadata = {
-  title: "Checkout — Arbor",
+  title: "Subscribe — Arbor",
   robots: { index: false, follow: false },
 };
 export const dynamic = "force-dynamic";
 
 type SearchParams = { [k: string]: string | string[] | undefined };
 
-function suffix(app?: string, state?: string): string {
-  const params = new URLSearchParams();
-  if (app) params.set("app", app);
-  if (state) params.set("state", state);
-  const query = params.toString();
-  return query ? `?${query}` : "";
+function query(params: Record<string, string | undefined>): string {
+  const p = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) if (v) p.set(k, v);
+  const q = p.toString();
+  return q ? `?${q}` : "";
 }
+
+// Messages for Core's redeem error codes.
+const CODE_ERRORS: Record<string, string> = {
+  CODE_EXHAUSTED: "That code has already been used as many times as it allows.",
+  CODE_EXPIRED: "That code has expired.",
+  INVALID_CODE: "That code isn’t valid. Check it and try again.",
+  empty: "Enter your code to continue.",
+};
 
 export default async function CheckoutPage({
   searchParams,
@@ -37,115 +45,162 @@ export default async function CheckoutPage({
   const appRaw = typeof sp.app === "string" ? sp.app : undefined;
   const app = appRaw && isRegisteredApp(appRaw) ? appRaw : undefined;
   const state = sanitizeState(typeof sp.state === "string" ? sp.state : undefined) ?? undefined;
-  const returnSuffix = suffix(app, state);
+  const method = sp.method === "code" ? "code" : "card";
+  const codeError = typeof sp.code_error === "string" ? sp.code_error : undefined;
 
-  if (!user) redirect(`/login?redirect=${encodeURIComponent(`/subscription/checkout${returnSuffix}`)}`);
+  const here = `/subscription/checkout${query({ app, state, method: method === "code" ? "code" : undefined })}`;
+  const back = `/subscription${query({ app, state })}`;
+
+  if (!user) redirect(`/login?redirect=${encodeURIComponent(here)}`);
 
   const {
     data: { session },
   } = await supabase.auth.getSession();
   const token = session?.access_token ?? null;
-  if (!token) redirect(`/login?redirect=${encodeURIComponent(`/subscription/checkout${returnSuffix}`)}`);
+  if (!token) redirect(`/login?redirect=${encodeURIComponent(here)}`);
 
-  // Already on a paid subscription? Nothing to buy. (redirect outside try/catch.)
-  let alreadyPaid = false;
+  // Already have access? Nothing to buy or redeem. (redirect outside try/catch.)
+  let alreadyEntitled = false;
   try {
     const view = await fetchEntitlement(token);
-    const st = view.entitlement.status;
-    alreadyPaid = view.source === "stripe" && (st === "active" || st === "trialing");
+    alreadyEntitled = hasAccess(view.entitlement.status) && view.entitlement.status !== "past_due";
   } catch {
-    // ignore — let them proceed to checkout
+    // ignore — let them carry on
   }
-  if (alreadyPaid) {
-    const params = new URLSearchParams();
-    params.set("billing", "active");
-    if (app) params.set("app", app);
-    if (state) params.set("state", state);
-    redirect(`/subscription?${params.toString()}`);
+  if (alreadyEntitled) {
+    redirect(`/subscription${query({ billing: "active", app, state })}`);
   }
 
+  // Card: create the Checkout Session server-side so failures are visible, not
+  // blank. Skipped for codes — starting a session reserves a founding place.
   const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-
-  // Create the Checkout Session server-side so failures are visible, not blank.
   let clientSecret: string | null = null;
+  let plan: "founder" | "standard" | undefined;
   let errorMsg: string | null = null;
-  if (!publishableKey) {
-    errorMsg =
-      "Payments aren’t set up on the website yet — NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is missing.";
-  } else {
-    try {
-      const result = await createCheckout(token, { app, state });
-      clientSecret = result.clientSecret;
-    } catch (err) {
-      errorMsg =
-        err instanceof ArborCoreError
-          ? `Couldn’t start checkout: ${err.message}`
-          : "Couldn’t reach the billing service. Please try again.";
+  if (method === "card") {
+    if (!publishableKey) {
+      errorMsg = "Payments aren’t set up on the website yet.";
+    } else {
+      try {
+        const result = await createCheckout(token, { app, state });
+        clientSecret = result.clientSecret;
+        plan = result.plan;
+      } catch (err) {
+        errorMsg =
+          err instanceof ArborCoreError
+            ? err.message
+            : "We couldn’t reach the payment service. Nothing has been charged.";
+      }
     }
   }
+  const price = plan ? PLANS[plan] : null;
+
+  const tabClass = (active: boolean) =>
+    `flex min-h-11 flex-1 items-center justify-center rounded-xl px-4 type-label transition ${
+      active ? "bg-bg text-fg shadow-sm" : "text-fg-2 hover:text-fg"
+    }`;
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-bg text-fg">
       <Navbar />
-      <section className="mx-auto max-w-2xl px-6 pb-24 pt-40 sm:px-8">
-        <p className="mb-4 text-sm uppercase tracking-[0.3em] text-neutral-500">
-          FOUNDING ACCESS
+      <section className="page-shell page-shell-narrow">
+        <p className="ui-kicker">Subscription</p>
+        <h1 className="ui-title">Subscribe to Arbor</h1>
+        <p className="mt-3 text-fg-2">
+          One subscription for every Arbor app. Pay by card, or use a code if
+          you have one.
         </p>
-        <h1 className="text-3xl font-semibold md:text-4xl">
-          Complete your subscription
-        </h1>
-        <p className="mt-4 text-neutral-400">Payment is handled securely by Stripe.</p>
 
-        {clientSecret && publishableKey ? (
-          <EmbeddedCheckoutForm publishableKey={publishableKey} clientSecret={clientSecret} />
+        {/* Pay or use a code */}
+        <nav aria-label="How to subscribe" className="mt-8 flex gap-1 rounded-2xl bg-surface p-1">
+          <Link
+            href={`/subscription/checkout${query({ app, state })}`}
+            aria-current={method === "card" ? "page" : undefined}
+            className={tabClass(method === "card")}
+          >
+            Pay by card
+          </Link>
+          <Link
+            href={`/subscription/checkout${query({ app, state, method: "code" })}`}
+            aria-current={method === "code" ? "page" : undefined}
+            className={tabClass(method === "code")}
+          >
+            Use a code
+          </Link>
+        </nav>
+
+        {method === "card" ? (
+          <>
+            {price && (
+              <div className="mt-6 flex items-baseline justify-between gap-4 rounded-2xl border border-line p-5">
+                <div>
+                  <p className="type-label text-fg">{price.name}</p>
+                  <p className="mt-1 type-caption text-fg-2">{price.summary}</p>
+                </div>
+                <p className="shrink-0 text-fg-2">
+                  <span className="text-2xl font-semibold text-fg">{price.price}</span>{" "}
+                  {price.cadence}
+                </p>
+              </div>
+            )}
+
+            {clientSecret && publishableKey ? (
+              <>
+                <p className="mt-6 type-caption text-fg-2">Secure payment by Stripe.</p>
+                <EmbeddedCheckoutForm publishableKey={publishableKey} clientSecret={clientSecret} />
+              </>
+            ) : (
+              <div role="alert" className="mt-6 rounded-2xl border border-danger/40 bg-danger/10 p-5">
+                <p className="type-label text-danger">We couldn’t open the payment form</p>
+                <p className="mt-2 text-danger">{errorMsg}</p>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Link href={`/subscription/checkout${query({ app, state })}`} className="ui-primary">
+                    Try again
+                  </Link>
+                </div>
+              </div>
+            )}
+          </>
         ) : (
-          <div className="mt-8 rounded-2xl border border-red-800 bg-red-950/50 p-6">
-            <p className="text-sm font-semibold text-red-200">
-              We couldn’t open the payment form
+          <div className="ui-surface mt-6 p-6 sm:p-8">
+            <h2 className="text-xl font-semibold">Use a code</h2>
+            <p className="mt-2 text-fg-2">
+              If you&apos;ve been given an Arbor code, enter it here instead of paying.
             </p>
-            <p className="mt-2 text-sm leading-6 text-red-200/90">{errorMsg}</p>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Link
-                href={`/subscription/checkout${returnSuffix}`}
-                className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-neutral-200"
-              >
-                Try again
-              </Link>
-              <Link
-                href={`/subscription${returnSuffix}`}
-                className="rounded-full border border-neutral-600 px-5 py-2.5 text-sm font-medium text-white transition hover:border-neutral-400"
-              >
-                Back to plans
-              </Link>
-            </div>
+            <form action={redeemCodeAction} className="mt-6 flex flex-col gap-3 sm:flex-row">
+              {app && <input type="hidden" name="app" value={app} />}
+              {state && <input type="hidden" name="state" value={state} />}
+              <label htmlFor="code" className="sr-only">
+                Code
+              </label>
+              <input
+                id="code"
+                name="code"
+                required
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                placeholder="Enter your code"
+                aria-invalid={codeError ? true : undefined}
+                aria-describedby={codeError ? "code-error" : undefined}
+                className="ui-field uppercase placeholder:normal-case"
+              />
+              <button type="submit" className="ui-primary shrink-0">
+                Use code
+              </button>
+            </form>
+            {codeError && (
+              <p id="code-error" role="alert" className="mt-3 type-caption text-danger">
+                {CODE_ERRORS[codeError] ??
+                  "We couldn’t check that code just now. Try again in a moment."}
+              </p>
+            )}
           </div>
         )}
 
-        {/* Redeem an access code instead of paying */}
-        <div className="mt-6 rounded-3xl border border-neutral-800 bg-neutral-950 p-6">
-          <h2 className="text-lg font-semibold">Have an access code?</h2>
-          <p className="mt-2 text-sm leading-6 text-neutral-400">
-            Redeem it to unlock the apps instead of paying.
-          </p>
-          <form action={redeemCodeAction} className="mt-5 flex gap-3">
-            <input
-              name="code"
-              required
-              placeholder="Enter code"
-              className="w-full rounded-full border border-neutral-700 bg-black px-4 py-3 text-sm text-white placeholder-neutral-600 outline-none focus:border-neutral-400"
-            />
-            <button
-              type="submit"
-              className="shrink-0 rounded-full border border-neutral-600 px-5 py-3 text-sm font-medium text-white transition hover:border-neutral-400"
-            >
-              Redeem
-            </button>
-          </form>
-        </div>
-
-        <p className="mt-10 text-sm text-neutral-600">
-          <Link href={`/subscription${returnSuffix}`} className="transition hover:text-neutral-400">
-            ← Back to plans
+        <p className="mt-10 type-caption text-fg-2">
+          <Link href={back} className="transition hover:text-fg">
+            ← Back to your subscription
           </Link>
         </p>
       </section>

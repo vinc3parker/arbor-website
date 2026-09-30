@@ -4,18 +4,18 @@ import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Sage — Learning & Knowledge Management App | Arbor",
+  title: "Sage: your tutor | Arbor",
   description:
-    "Build knowledge intentionally. Learn with more direction and less overwhelm. Connect ideas together and make progress toward genuine understanding.",
+    "Learn what you need to grow, from courses to new curiosities. Built on Arbor, so it understands the whole of you, not just your studies.",
   keywords:
     "learning app, knowledge management, study app, educational app, skill development, learning platform",
   alternates: {
     canonical: "https://arborapps.co/sage",
   },
   openGraph: {
-    title: "Sage — Learning & Knowledge Management App | Arbor",
+    title: "Sage: your tutor | Arbor",
     description:
-      "Learning and knowledge app for building knowledge intentionally. Connect ideas, track learning, and grow in what you care about.",
+      "Learn what you need to grow, from courses to new curiosities. Built on Arbor, so it understands the whole of you, not just your studies.",
     url: "https://arborapps.co/sage",
     type: "website",
     images: [
@@ -23,15 +23,15 @@ export const metadata: Metadata = {
         url: "https://arborapps.co/og-sage.png",
         width: 1200,
         height: 630,
-        alt: "Sage learning and knowledge management app",
+        alt: "Sage, your tutor, by Arbor",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sage — Learning & Knowledge Management App | Arbor",
+    title: "Sage: your tutor | Arbor",
     description:
-      "Learning and knowledge app for building knowledge intentionally. Connect ideas, track learning, and grow in what you care about.",
+      "Learn what you need to grow, from courses to new curiosities. Built on Arbor, so it understands the whole of you, not just your studies.",
     images: ["https://arborapps.co/og-sage.png"],
   },
 };
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Sage",
-    "Learning and knowledge management app that helps people learn with more direction and less overwhelm.",
+    "Learn what you need to grow, from courses to new curiosities. Built on Arbor, so it understands the whole of you, not just your studies.",
     "https://arborapps.co/sage",
     "EducationalApplication"
   );

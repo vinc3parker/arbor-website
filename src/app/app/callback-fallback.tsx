@@ -54,35 +54,35 @@ export function AppCallbackFallback({
       });
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-bg text-fg">
       <Navbar />
       {returnUrl && <ReturnToApp returnUrl={returnUrl} />}
       <section className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-8 py-32">
-        <div className="w-full max-w-md rounded-3xl border border-neutral-800 bg-neutral-950 p-8 text-center md:p-10">
-          <p className="mb-3 text-sm uppercase tracking-[0.3em] text-neutral-500">
-            {name.toUpperCase()}
+        <div className="w-full max-w-md ui-surface p-8 text-center md:p-10">
+          <p className="ui-kicker">
+            {name}
           </p>
           <h1 className="text-2xl font-semibold">
             {error ? `Couldn't return to ${name}.` : `Returning to ${name}...`}
           </h1>
-          <p className="mt-3 text-sm leading-7 text-neutral-400">
+          <p className="mt-3 text-sm leading-7 text-fg-2">
             {error
               ? `The sign-in flow returned an error. Reopen ${name} and try again.`
               : `You're signed in. ${name} should reopen automatically. If nothing happened, use the button below.`}
           </p>
           <a
             href={returnUrl ?? callbackHref}
-            className="mt-6 inline-block rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
+            className="mt-6 ui-primary"
           >
             Open {name}
           </a>
         </div>
-        <p className="mt-8 text-center text-sm text-neutral-600">
-          <Link href={`/${app}`} className="transition hover:text-neutral-400">
+        <p className="mt-8 text-center text-sm text-fg-3">
+          <Link href={`/${app}`} className="transition hover:text-fg">
             Get {name}
           </Link>
           <span className="px-3">/</span>
-          <Link href="/" className="transition hover:text-neutral-400">
+          <Link href="/" className="transition hover:text-fg">
             Back to home
           </Link>
         </p>

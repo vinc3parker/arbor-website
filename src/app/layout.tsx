@@ -1,19 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { getOrganizationSchema, getWebsiteSchema } from "@/lib/schema";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Poppins is the only brand typeface (brand guide 5.14).
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata = {
@@ -21,17 +18,17 @@ export const metadata = {
   verification: {
     google: "Glp10hFviQoJXfudbRS3Q5ajAmIKUQ_cnbusiGoei-k",
   },
-  title: "Arbor Apps — Ecosystem for Intentional Living",
+  title: "Arbor — A guide for your whole life",
   description:
-    "Discover Arbor apps for performance training, mental wellbeing, organization, finance, travel, social connection, careers, and learning. Join the ecosystem for intentional living.",
-  keywords: "arbor apps, arbor app, productivity apps, wellness app, training app, intentional living",
+    "Arbor is eight apps, each with its own guide: a coach, a mentor, a money manager and more. They share one understanding of you, so every suggestion fits your whole life.",
+  keywords: "arbor, arbor apps, personal life guidance, life guide app, aevo, salus, thrive, nura, wend, kith, telos, sage",
   alternates: {
     canonical: "https://arborapps.co",
   },
   openGraph: {
-    title: "Arbor Apps — Ecosystem for Intentional Living",
+    title: "Arbor — A guide for your whole life",
     description:
-      "Performance, wellbeing, organization, finance, travel, social connection, careers, and learning apps designed for people who want more from life.",
+      "Live more of the life you choose. Eight guides, one for every part of your life, that learn from each other.",
     url: "https://arborapps.co",
     type: "website",
     images: [
@@ -39,15 +36,15 @@ export const metadata = {
         url: "https://arborapps.co/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Arbor Apps ecosystem",
+        alt: "Arbor: live more of the life you choose",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Arbor Apps — Ecosystem for Intentional Living",
+    title: "Arbor — A guide for your whole life",
     description:
-      "Performance, wellbeing, organization, finance, travel, social connection, careers, and learning apps designed for people who want more from life.",
+      "Live more of the life you choose. Eight guides, one for every part of your life, that learn from each other.",
     images: ["https://arborapps.co/og-image.png"],
   },
 };
@@ -59,8 +56,8 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="en-GB"
+      className={`${poppins.variable} theme-light h-full antialiased`}
     >
       <head>
         <script

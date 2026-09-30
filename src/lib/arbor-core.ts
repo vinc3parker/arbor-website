@@ -271,11 +271,30 @@ export function fetchEntitlement(accessToken: string): Promise<EntitlementView> 
   return authedGet("/api/me/entitlement", accessToken);
 }
 
-/** Ask Core to create an embedded Stripe Checkout session; returns its client secret. */
+/**
+ * Which price a new subscriber gets right now: "founder" while founding places
+ * are open, otherwise "standard". Public; never reserves a place.
+ */
+export async function fetchOffer(): Promise<{ plan: "founder" | "standard" }> {
+  let res: Response;
+  try {
+    res = await fetch(`${ARBOR_CORE_URL}/api/billing/offer`, {
+      next: { revalidate: 60 },
+    });
+  } catch {
+    throw new ArborCoreError("NETWORK", "Couldn't reach Arbor. Please try again.", 502);
+  }
+  return handle(res);
+}
+
+/**
+ * Ask Core to create an embedded Stripe Checkout session; returns its client
+ * secret and the plan it priced (founding places are reserved here).
+ */
 export function createCheckout(
   accessToken: string,
   opts: { app?: string; state?: string } = {}
-): Promise<{ clientSecret: string }> {
+): Promise<{ clientSecret: string; plan?: "founder" | "standard" }> {
   return authedPost("/api/billing/checkout", accessToken, opts);
 }
 
@@ -285,4 +304,79 @@ export function createPortal(
   opts: { app?: string; state?: string } = {}
 ): Promise<{ url: string }> {
   return authedPost("/api/billing/portal", accessToken, opts);
+}
+
+// ── What Arbor knows (data rights) ───────────────────────────────────────────
+// Mirrors Arbor Core's src/modules/account/dataOverview.service.ts.
+
+export type DataCategoryId =
+  | "memories"
+  | "feelings"
+  | "plans"
+  | "guide_suggestions"
+  | "training"
+  | "money"
+  | "apps";
+
+export interface OverviewItem {
+  id: string;
+  text: string;
+  /** App it came from, or null when Arbor pieced it together. */
+  source: string | null;
+  domains: string[];
+  /** Handled privately: guides don't bring it up unprompted. */
+  locked: boolean;
+  updatedAt: string | null;
+}
+
+export interface OverviewCategory {
+  id: DataCategoryId;
+  app: string;
+  title: string;
+  description: string;
+  count: number;
+  lastUpdated: string | null;
+  items: OverviewItem[];
+  facts: string[];
+  removable: true;
+  removeNote?: string;
+}
+
+export interface OverviewRecord {
+  key: string;
+  label: string;
+  detail: string;
+  at: string | null;
+}
+
+export interface DataOverview {
+  apps: { app: string; firstSeenAt: string; lastSeenAt: string; platform: string | null }[];
+  categories: OverviewCategory[];
+  consents: OverviewRecord[];
+  membership: OverviewRecord[];
+}
+
+/** Everything Arbor holds for the signed-in user, as a readable summary. */
+export function fetchDataOverview(accessToken: string): Promise<DataOverview> {
+  return authedGet("/api/account/overview", accessToken);
+}
+
+/** Every server-held record for the signed-in user (credentials excluded). */
+export function exportAllData(accessToken: string): Promise<unknown> {
+  return authedGet("/api/account/export/full", accessToken);
+}
+
+export function removeDataCategory(
+  accessToken: string,
+  category: DataCategoryId
+): Promise<{ removed: boolean }> {
+  return authedDelete(`/api/account/data/${encodeURIComponent(category)}`, accessToken);
+}
+
+export function removeMemory(accessToken: string, id: string): Promise<{ removed: boolean }> {
+  return authedDelete(`/api/account/memories/${encodeURIComponent(id)}`, accessToken);
+}
+
+export function removeFeeling(accessToken: string, axisId: string): Promise<{ removed: boolean }> {
+  return authedDelete(`/api/account/feelings/${encodeURIComponent(axisId)}`, accessToken);
 }

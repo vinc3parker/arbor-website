@@ -7,7 +7,7 @@ import { getAllPosts, formatDate } from "@/lib/blog";
 export const metadata: Metadata = {
   title: "Blog — Notes from Arbor | Building Arbor",
   description:
-    "Updates, ideas, and behind-the-scenes notes from Vince — building Arbor, an ecosystem of apps for intentional living.",
+    "Updates, ideas, and behind-the-scenes notes from Vince — building Arbor, a guide for your whole life.",
   keywords:
     "arbor blog, arbor news, arbor updates, intentional living, product updates",
   alternates: {
@@ -45,27 +45,27 @@ export default async function BlogIndexPage() {
   const posts = await getAllPosts();
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-bg text-fg">
       <Navbar />
 
-      <section className="mx-auto max-w-6xl px-8 pt-40 pb-16 sm:pt-44">
-        <p className="mb-6 text-sm uppercase tracking-[0.4em] text-neutral-500">
-          THE ARBOR BLOG
+      <section className="site-container pt-40 pb-16 sm:pt-44">
+        <p className="ui-kicker">
+          The Arbor blog
         </p>
-        <h1 className="max-w-4xl text-5xl font-semibold leading-tight md:text-7xl">
+        <h1 className="type-display max-w-4xl">
           Notes from building Arbor.
         </h1>
-        <p className="mt-8 max-w-2xl text-xl leading-8 text-neutral-400">
-          Product updates, ideas, and behind-the-scenes thinking as I build an
-          ecosystem of apps for intentional living.
+        <p className="mt-8 max-w-2xl type-body text-fg-2">
+          Product updates, ideas and behind-the-scenes thinking as I build a
+          guide for your whole life.
         </p>
       </section>
 
-      <section className="mx-auto max-w-6xl px-8 pb-32">
+      <section className="site-container pb-32">
         {posts.length === 0 ? (
-          <p className="text-neutral-500">No posts yet. Check back soon.</p>
+          <p className="text-fg-3">No posts yet. Check back soon.</p>
         ) : (
-          <ul className="divide-y divide-neutral-900 border-t border-neutral-900">
+          <ul className="divide-y divide-line border-t border-line">
             {posts.map((post) => (
               <li key={post.slug}>
                 <Link
@@ -74,22 +74,22 @@ export default async function BlogIndexPage() {
                 >
                   <div className="flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between md:gap-8">
                     <div className="max-w-3xl">
-                      <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-neutral-500">
-                        <span className="rounded-full border border-neutral-800 px-3 py-1">
+                      <div className="flex items-center gap-3 type-caption text-fg-2">
+                        <span className="rounded-full border border-line px-3 py-1">
                           {post.tag}
                         </span>
                         <span>{post.readingTime}</span>
                       </div>
-                      <h2 className="mt-4 text-2xl font-semibold leading-snug transition group-hover:text-neutral-300 md:text-3xl">
+                      <h2 className="mt-4 text-2xl font-semibold leading-snug decoration-moss underline-offset-4 group-hover:underline md:text-[1.75rem]">
                         {post.title}
                       </h2>
-                      <p className="mt-3 text-base leading-7 text-neutral-400">
+                      <p className="mt-3 text-base leading-7 text-fg-2">
                         {post.summary}
                       </p>
                     </div>
                     <time
                       dateTime={post.date}
-                      className="shrink-0 text-sm text-neutral-500"
+                      className="shrink-0 type-caption text-fg-2"
                     >
                       {formatDate(post.date)}
                     </time>

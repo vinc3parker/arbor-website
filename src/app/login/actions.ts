@@ -88,7 +88,7 @@ export async function signup(
   }
 
   if (!data.user) {
-    return { error: "Account created, but we couldn't load your user profile." };
+    return { error: "Your account was created, but we couldn't load your details. Try signing in again in a moment." };
   }
 
   const { error: profileError } = await upsertProfile(
@@ -100,7 +100,7 @@ export async function signup(
   if (profileError) {
     return {
       error:
-        "Your account was created, but we couldn't save your profile. Please try again from your profile page.",
+        "Your account was created, but we couldn't save your details. Nothing is lost. Add them from your account page.",
     };
   }
 
