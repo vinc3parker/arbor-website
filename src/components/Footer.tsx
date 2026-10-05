@@ -20,6 +20,9 @@ export function Footer() {
           className="hidden h-auto w-[96px] [.theme-dark_&]:block"
         />
         <div className="flex flex-wrap items-center gap-6 type-caption text-fg-2">
+          <Link href="/business" className="transition hover:text-fg">
+            For businesses
+          </Link>
           <Link href="/privacy" className="transition hover:text-fg">
             Privacy
           </Link>

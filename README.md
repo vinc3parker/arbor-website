@@ -20,6 +20,20 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Business portal maps
+
+The `/business` portal shows Leaflet maps. Set these in Vercel (and `.env.local`
+to match production locally):
+
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_MAPBOX_TOKEN` | Public Mapbox token (`pk.`), restricted to Arbor's domains in the Mapbox account. |
+| `NEXT_PUBLIC_MAPBOX_STYLE` | Optional; defaults to `mapbox/light-v11`. |
+
+Without a token the maps fall back to OpenStreetMap's public tiles, which are
+only for local development. Mapbox's free allowance covers commercial use;
+beyond it, tile requests are billed.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
