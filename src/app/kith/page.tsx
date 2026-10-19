@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { AppLanding } from "@/components/AppLanding";
 import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
+import { getAppDescription } from "@/lib/app-metadata";
+
+const description = getAppDescription("kith");
 
 export const metadata: Metadata = {
   title: "Kith: your connector | Arbor",
-  description:
-    "Stay close to your people and meet new ones you will click with. Built on Arbor, so it understands the whole of you, not just your contacts.",
+  description,
   keywords:
     "social app, social network, messaging app, relationship app, social connection, communication app",
   alternates: {
@@ -14,8 +16,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Kith: your connector | Arbor",
-    description:
-      "Stay close to your people and meet new ones you will click with. Built on Arbor, so it understands the whole of you, not just your contacts.",
+    description,
     url: "https://arborapps.co/kith",
     type: "website",
     images: [
@@ -30,8 +31,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Kith: your connector | Arbor",
-    description:
-      "Stay close to your people and meet new ones you will click with. Built on Arbor, so it understands the whole of you, not just your contacts.",
+    description,
     images: ["https://arborapps.co/og-kith.png"],
   },
 };
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Kith",
-    "Stay close to your people and meet new ones you will click with. Built on Arbor, so it understands the whole of you, not just your contacts.",
+    description,
     "https://arborapps.co/kith",
     "SocialApplication"
   );

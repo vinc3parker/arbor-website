@@ -1,58 +1,35 @@
-import { Reveal } from "@/components/home/Reveal";
-import { ScatteredLife } from "@/components/home/ScatteredLife";
-import { WholeLifeTree } from "@/components/home/WholeLifeTree";
+import Link from "next/link";
+import { GuideStories } from "@/components/home/GuideStories";
 
-/**
- * The problem and the answer, as a pair: eight parts of life scattered on
- * their own, then the same eight grown from one Arbor trunk. Text and picture
- * swap sides between the two so the page reads down, not across.
- */
 export function AboutSection() {
   return (
-    <section id="about" className="site-container py-24">
-      {/* The problem (brand guide 1.2) */}
-      <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+    <section id="how-it-works" className="site-container py-16 sm:py-24">
+      <div className="grid gap-7 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
         <div>
           <p className="ui-kicker">Why Arbor</p>
-          <h2 className="type-h1">You are one whole person.</h2>
-          <p className="mt-6 max-w-xl type-body text-fg-2">
-            Your work, health, mind and relationships all belong to the same
-            person, and each one shapes how you show up in the others. There
-            are apps for each part of life, but none of them connect, so
-            you&apos;re left carrying the context yourself.
+          <h2 className="type-h1 max-w-xl">You are one whole person.<br /><span className="text-fg-3">Your guides should see that.</span></h2>
+        </div>
+        <div className="lg:pt-9">
+          <p className="max-w-xl type-body text-fg-2">
+            Your health, work, money and relationships shape each other.
+            Arbor is being built around that connection, with a specialist app
+            and personal guide for each part of life.
+          </p>
+          <p className="mt-5 max-w-xl leading-relaxed text-fg-2">
+            Each guide is a distinct AI agent with its own expertise and way of
+            helping. The aim is for the apps to build on a shared understanding
+            of your life, helping you think things through and take practical next steps
+            without starting from scratch in every part of life.
           </p>
         </div>
-        <Reveal>
-          <ScatteredLife />
-        </Reveal>
       </div>
 
-      {/* The answer (brand guide 3.6, 6.9) */}
-      <div className="mt-24 grid items-center gap-12 border-t border-line pt-24 lg:grid-cols-2 lg:gap-16">
-        <Reveal className="order-2 lg:order-1">
-          <WholeLifeTree />
-        </Reveal>
-        <div className="order-1 lg:order-2">
-          <p className="ui-kicker">A guide for your whole life</p>
-          <h2 className="type-h1">
-            Eight guides, one for every part of your life, that learn from each
-            other.
-          </h2>
-          <p className="mt-6 max-w-xl type-body text-fg-2">
-            Arbor is eight apps for your health, mind, time, money, free time,
-            friends, work and learning, each with its own guide. Behind them
-            sits one shared understanding of you, built from what you share and
-            what you say matters. So when your week gets busy, your coach knows.
-            There is no ideal life to chase, just yours.
-          </p>
-          <a
-            href="#apps"
-            className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-xl px-1 type-label text-fg underline decoration-moss decoration-2 underline-offset-8 transition hover:decoration-fg"
-          >
-            Meet the guides
-            <span aria-hidden>↓</span>
-          </a>
-        </div>
+      <GuideStories />
+
+      <div className="mt-10 grid gap-8 border-b border-line pb-12 md:grid-cols-3 md:gap-10">
+        <div><p className="mb-3 type-caption text-fg-3">01 / Personal</p><h3 className="text-lg font-semibold">Your life sets the direction.</h3><p className="mt-3 text-sm leading-relaxed text-fg-2">Your goals, your pace, your version of a good life. There is no ideal person to become.</p></div>
+        <div><p className="mb-3 type-caption text-fg-3">02 / Connected</p><h3 className="text-lg font-semibold">One understanding of you.</h3><p className="mt-3 text-sm leading-relaxed text-fg-2">The apps are being built to connect the parts of life that already shape each other, so each guide can see the fuller picture.</p></div>
+        <div><p className="mb-3 type-caption text-fg-3">03 / Useful</p><h3 className="text-lg font-semibold">Guidance with context.</h3><p className="mt-3 text-sm leading-relaxed text-fg-2">A guide for one part of life can understand what is happening in the others, making its next step more useful.</p><Link href="/privacy" className="mt-4 inline-flex min-h-8 items-center text-sm underline decoration-line underline-offset-4">How we handle your data <span aria-hidden className="ml-2">↗</span></Link></div>
       </div>
     </section>
   );

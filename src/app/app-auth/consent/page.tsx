@@ -4,7 +4,11 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { appDisplayName, isRegisteredApp } from "@/lib/app-auth";
 import { consentStatusForApp } from "@/lib/arbor-core";
-import { blockingConsents, optionalOffers } from "@/lib/app-consent";
+import {
+  blockingConsents,
+  isExistingAccount,
+  optionalOffers,
+} from "@/lib/app-consent";
 import { readPendingAuth } from "@/lib/pending-auth";
 import { ConsentForm } from "./ConsentForm";
 
@@ -37,6 +41,7 @@ export default async function ConsentPage() {
   );
   const blocking = blockingConsents(status);
   const optional = optionalOffers(status);
+  const existingAccount = isExistingAccount(status);
 
   return (
     <main className="min-h-screen bg-bg text-fg">
@@ -47,18 +52,12 @@ export default async function ConsentPage() {
             <p className="ui-kicker">
               {appName}
             </p>
-            <h1 className="ui-title">
-              Before you continue.
-            </h1>
-            <p className="mt-3 text-sm leading-7 text-fg-2">
-              A few permissions so {appName} can work the way it should. You can
-              change these later in your Arbor profile.
-            </p>
 
             <ConsentForm
               appName={appName}
               blocking={blocking}
               optional={optional}
+              existingAccount={existingAccount}
             />
           </div>
 

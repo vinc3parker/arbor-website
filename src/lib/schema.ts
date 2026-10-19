@@ -1,3 +1,6 @@
+import { appBrand } from "@/lib/brand";
+import { APP_ROADMAP } from "@/content/roadmap";
+
 export function getOrganizationSchema() {
   return {
     "@context": "https://schema.org",
@@ -5,11 +8,12 @@ export function getOrganizationSchema() {
     name: "Arbor",
     url: "https://arborapps.co",
     logo: "https://arborapps.co/icon.png",
-    description: "A guide for your whole life. Eight apps, each with its own guide, that share one understanding of you.",
+    description: "Arbor is building eight specialist apps, each with its own AI guide, designed to work together across the different parts of life.",
   };
 }
 
 export function getProductSchema(appName: string, description: string, url: string, category: string) {
+  const brand = appBrand(appName);
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -17,11 +21,7 @@ export function getProductSchema(appName: string, description: string, url: stri
     description: description,
     url: url,
     applicationCategory: category,
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-    },
+    ...(brand ? { creativeWorkStatus: APP_ROADMAP[brand.id].label } : {}),
   };
 }
 

@@ -64,8 +64,30 @@
   color-scheme: dark;
 }
 
+.theme-grove {
+  --bg: #edf2ef;
+  --surface: #ffffff;
+  --raised: #dfe7e2;
+  --line: #c8d3cd;
+  --fg: #16231d;
+  --fg-2: #52645c;
+  --fg-3: #718078;
+  --accent: #2f6f5e;
+  --success: #1f7a4d;
+  --warning: #986018;
+  --danger: #b3261e;
+  --info: #2e6377;
+  color-scheme: light;
+}
+
+.theme-grove ::selection {
+  background: var(--accent);
+  color: #ffffff;
+}
+
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 6.5rem;
 }
 
 body {
@@ -98,6 +120,23 @@ h3 {
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.01em;
+}
+
+.home-headline {
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.guide-map-centre {
+  box-shadow: 0 0 0 12px rgb(138 143 122 / 0.04),
+    0 0 0 25px rgb(138 143 122 / 0.025);
+}
+
+@keyframes portal-arrive {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .type-h1 {
   font-size: clamp(2.5rem, 6vw, 4rem);
@@ -331,16 +370,8 @@ h3 {
   margin: 2rem 0;
 }
 
-/* --- Observatory intro: the navbar stays hidden until the portals have
-       fully lit (class toggled from the ArborRoom scroll driver). --- */
 .site-navbar {
-  transition: opacity 700ms ease, transform 700ms ease;
-}
-
-html.arbor-intro .site-navbar {
-  opacity: 0;
-  transform: translateY(-12px);
-  pointer-events: none;
+  transition: background 160ms ease;
 }
 
 /* --- Breathing halos (6.1, 6.7): two soft rings around a centre. One per
@@ -371,6 +402,12 @@ html.arbor-intro .site-navbar {
 .halo-inner { animation-name: haloInner; }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
   .halo-outer,
   .halo-inner {
     animation: none;

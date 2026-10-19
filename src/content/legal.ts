@@ -8,13 +8,16 @@
  * This file is a mirror of that canonical source. When the wording changes
  * there, update it here too (and bump CONSENT_VERSIONS.arbor_core in Arbor Core
  * to the new effective date so users re-accept). Keep the two in step.
- * Current version / effective date: August 22, 2026.
+ * Current version / effective date: August 22, 2026 (Terms; arbor_core).
+ * Privacy Policy revised October 7, 2026 for sleep sharing, notice-only: the
+ * new processing has its own opt-in, so arbor_core was not bumped.
  * ────────────────────────────────────────────────────────────────────────────
  *
  * Framed for a UK company (UK GDPR / Data Protection Act 2018; England & Wales
  * governing law). Grounded in how Thrive actually works today: content you create
  * is stored on your device, an Arbor account is held on our backend, and data is
- * sent off-device only when you use AI features or auto-planning.
+ * sent off-device only when you use AI features or auto-planning, or turn on
+ * sleep sharing.
  *
  * NOTE FOR MAINTAINERS: "Arbor" is used as the operating name; replace it with
  * the registered legal entity (and company number/registered address) once
@@ -49,6 +52,12 @@ export const LEGAL_META = {
   contactEmail: "vinc3.parker@gmail.com",
   website: "arborapps.co",
   effectiveDate: "August 22, 2026",
+  /**
+   * Privacy Policy revision (sleep sharing). Notice-only: the new processing
+   * needs its own opt-in (arbor_rhythm_data), so Core's arbor_core consent
+   * version stays on the Terms date and existing users aren't re-prompted.
+   */
+  privacyEffectiveDate: "October 7, 2026",
   governingLaw: "England and Wales",
   homeCountry: "the United Kingdom",
 } as const;
@@ -56,7 +65,7 @@ export const LEGAL_META = {
 export const PRIVACY_POLICY: LegalDoc = {
   id: "privacy",
   title: "Privacy Policy",
-  effectiveDate: LEGAL_META.effectiveDate,
+  effectiveDate: LEGAL_META.privacyEffectiveDate,
   intro: [
     "This Privacy Policy explains how Arbor (“Arbor”, “we”, “us”) collects, uses, and protects your information when you use an Arbor app — including Thrive, our personal productivity and habit app, and Nura, our personal finance app — together with related services (the “Service”).",
     "Arbor is a UK-based company and is the controller of your personal information under UK data protection law (the UK GDPR and the Data Protection Act 2018).",
@@ -89,48 +98,61 @@ export const PRIVACY_POLICY: LegalDoc = {
       ],
     },
     {
-      heading: "5. Notifications",
+      heading: "5. Sleep from Apple Health and Garmin (optional)",
+      body: [
+        "Thrive can plan your day around how you actually slept. This is off unless you turn on “Share sleep from Apple Health” in Thrive’s Settings.",
+        "When you turn it on, Thrive asks for permission to read sleep analysis from Apple Health. Thrive sends Arbor only the times you were in bed, asleep or awake during the night, not which sleep stage you were in, and it does not read any other health data. Arbor uses these times to work out one sleep time and one wake time for each night.",
+        "If you have connected a Garmin account to Arbor in any Arbor app, Arbor also uses the sleep times Garmin sends for the same purpose. Where both record the same night, Arbor uses one of them.",
+        "Thrive uses these times to start the day’s plan from when you woke, and to tell you when your sleep has been drifting from the wake and sleep times you set. Your other Arbor apps can use the same sleep and wake times. Sleep data is not sent to our AI provider.",
+        "Sleep times are health data. We process them only with your explicit consent, which you give by turning sleep sharing on and can withdraw at any time by turning it off. You can also remove Thrive’s access in the Health app, and remove the sleep times Arbor holds in “What Arbor knows” on your Arbor account.",
+        "Data from Apple Health is never used for advertising or marketing, never sold, and never shared with anyone other than the service providers that help us run the Service.",
+      ],
+    },
+    {
+      heading: "6. Notifications",
       body: [
         "With your permission, Thrive schedules reminders and alerts as local notifications on your device. You can turn notifications off at any time in your device settings.",
       ],
     },
     {
-      heading: "6. Cross-app presence",
+      heading: "7. Cross-app presence",
       body: [
         "Thrive is part of the Arbor family of apps. When you sign in, we record that your account uses Thrive so that cross-app features can work across the Arbor apps tied to your account.",
       ],
     },
     {
-      heading: "7. Analytics and advertising",
+      heading: "8. Analytics and advertising",
       body: [
         "We do not currently use third-party analytics, advertising, or cross-app tracking technologies, and we do not sell your personal information. If this changes, we will update this policy and, where required, ask for your consent.",
       ],
     },
     {
-      heading: "8. How we use your information",
+      heading: "9. How we use your information",
       body: ["We use the information above to:"],
       bullets: [
         "provide and operate the Service;",
         "authenticate you and keep your account secure;",
         "deliver the AI features and notifications you choose to use;",
+        "plan your day around when you actually slept, if you turn on sleep sharing;",
         "maintain, troubleshoot, and improve the Service; and",
         "comply with legal obligations and enforce our terms.",
       ],
     },
     {
-      heading: "9. Legal bases for processing",
+      heading: "10. Legal bases for processing",
       body: [
         "Under the UK GDPR, we rely on the following legal bases to process your personal information:",
       ],
       bullets: [
         "Performance of a contract — to create and secure your account and provide the core features of the Service;",
         "Legitimate interests — to maintain, troubleshoot, secure and improve the Service and enable cross-app features, in ways you would reasonably expect and that do not override your rights;",
-        "Consent — for optional device permissions such as notifications and calendar access, and when you choose to use AI features; you can withdraw consent at any time in your device settings or by not using those features; and",
+        "Consent — for optional device permissions such as notifications and calendar access, and when you choose to use AI features; you can withdraw consent at any time in your device settings or by not using those features;",
+        "Explicit consent — for sleep data from Apple Health or Garmin, which is health data (special category data under the UK GDPR). You give it by turning on sleep sharing and can withdraw it at any time by turning it off; and",
         "Legal obligation — where we must process information to comply with the law.",
       ],
     },
     {
-      heading: "10. How your information is shared",
+      heading: "11. How your information is shared",
       body: [
         "We share information only with service providers (processors) that help us run the Service, and only as needed for them to perform that role:",
       ],
@@ -138,49 +160,50 @@ export const PRIVACY_POLICY: LegalDoc = {
         "Supabase — account authentication and database;",
         "Anthropic — AI processing for AI features you use;",
         "Railway — backend hosting; and",
-        "Apple — app distribution and system notification delivery.",
+        "Apple — app distribution, system notification delivery and, if you turn on sleep sharing, reading your sleep data from Apple Health on your device.",
       ],
     },
     {
-      heading: "11. Data retention and deletion",
+      heading: "12. Data retention and deletion",
       body: [
         "Account data is retained until you delete your account. Content you create in Thrive is stored on your device and remains until you delete it or uninstall the app.",
+        "If you turn on sleep sharing, the sleep and wake times Arbor holds are kept until you remove them in “What Arbor knows” on your Arbor account or delete your account. Turning sleep sharing off stops new sleep data being collected and stops Arbor apps using it.",
         "You can delete your account at any time in the app (Settings → Delete account). This permanently deletes your Arbor account and erases Thrive’s data on that device, and cannot be undone.",
       ],
     },
     {
-      heading: "12. Security",
+      heading: "13. Security",
       body: [
         "Data is transmitted over encrypted connections (HTTPS), and your session credentials are stored securely on your device (for example, in the iOS Keychain). No method of transmission or storage is completely secure, so we cannot guarantee absolute security.",
       ],
     },
     {
-      heading: "13. Children",
+      heading: "14. Children",
       body: [
         "Thrive is not directed to children under 13, and we do not knowingly collect personal information from them. If you believe a child has provided us information, please contact us and we will delete it.",
       ],
     },
     {
-      heading: "14. Your rights",
+      heading: "15. Your rights",
       body: [
         "If you are in the UK or the EEA, you have rights under the UK GDPR / EU GDPR to access, correct, delete, or receive a portable copy of your personal information, to object to or restrict certain processing, and to withdraw consent where we rely on it. You can exercise many of these directly in the app (for example, by deleting your account); for anything else, contact us at vinc3.parker@gmail.com.",
         "You also have the right to complain to the UK’s Information Commissioner’s Office (ICO) at ico.org.uk, or to your local supervisory authority. We would appreciate the chance to address your concerns first. If you are elsewhere, you may have similar rights under your local laws.",
       ],
     },
     {
-      heading: "15. International data transfers",
+      heading: "16. International data transfers",
       body: [
         "Arbor is based in the United Kingdom. Some of our service providers process data outside the UK — for example, our AI provider (Anthropic), hosting (Railway), and authentication and database (Supabase) may process data in the United States. Where personal data is transferred outside the UK, we rely on appropriate safeguards, such as the UK’s International Data Transfer Agreement (IDTA) or an adequacy decision, to keep it protected.",
       ],
     },
     {
-      heading: "16. Changes to this policy",
+      heading: "17. Changes to this policy",
       body: [
         "We may update this Privacy Policy from time to time. We will revise the “Effective” date above and, for material changes, provide additional notice where appropriate.",
       ],
     },
     {
-      heading: "17. Contact us",
+      heading: "18. Contact us",
       body: [
         "If you have questions about this policy or your information, contact us at vinc3.parker@gmail.com.",
       ],

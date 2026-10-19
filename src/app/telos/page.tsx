@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { AppLanding } from "@/components/AppLanding";
 import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
+import { getAppDescription } from "@/lib/app-metadata";
+
+const description = getAppDescription("telos");
 
 export const metadata: Metadata = {
   title: "Telos: your mentor | Arbor",
-  description:
-    "Find purpose in your work and build a career that feels like yours. Built on Arbor, so it understands the whole of you, not just your job.",
+  description,
   keywords:
     "career app, job search app, career planning, professional development, career guidance, job finding",
   alternates: {
@@ -14,8 +16,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Telos: your mentor | Arbor",
-    description:
-      "Find purpose in your work and build a career that feels like yours. Built on Arbor, so it understands the whole of you, not just your job.",
+    description,
     url: "https://arborapps.co/telos",
     type: "website",
     images: [
@@ -30,8 +31,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Telos: your mentor | Arbor",
-    description:
-      "Find purpose in your work and build a career that feels like yours. Built on Arbor, so it understands the whole of you, not just your job.",
+    description,
     images: ["https://arborapps.co/og-telos.png"],
   },
 };
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Telos",
-    "Find purpose in your work and build a career that feels like yours. Built on Arbor, so it understands the whole of you, not just your job.",
+    description,
     "https://arborapps.co/telos",
     "BusinessApplication"
   );

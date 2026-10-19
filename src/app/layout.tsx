@@ -13,22 +13,22 @@ const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
 });
 
-export const metadata = {
+export const metadata: Metadata = {
   metadataBase: new URL("https://arborapps.co"),
   verification: {
     google: "Glp10hFviQoJXfudbRS3Q5ajAmIKUQ_cnbusiGoei-k",
   },
-  title: "Arbor — A guide for your whole life",
+  title: "Arbor — Eight specialist apps for one connected life",
   description:
-    "Arbor is eight apps, each with its own guide: a coach, a mentor, a money manager and more. They share one understanding of you, so every suggestion fits your whole life.",
+    "Arbor is building eight specialist apps, each with its own AI guide, for different parts of life. Designed to work together as one connected system with a fuller understanding of your life.",
   keywords: "arbor, arbor apps, personal life guidance, life guide app, aevo, salus, thrive, nura, wend, kith, telos, sage",
   alternates: {
     canonical: "https://arborapps.co",
   },
   openGraph: {
-    title: "Arbor — A guide for your whole life",
+    title: "Arbor — Eight specialist apps for one connected life",
     description:
-      "Live more of the life you choose. Eight guides, one for every part of your life, that learn from each other.",
+      "Eight specialist apps, each with its own AI guide, designed to work together across the different parts of your life.",
     url: "https://arborapps.co",
     type: "website",
     images: [
@@ -42,9 +42,9 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Arbor — A guide for your whole life",
+    title: "Arbor — Eight specialist apps for one connected life",
     description:
-      "Live more of the life you choose. Eight guides, one for every part of your life, that learn from each other.",
+      "Eight specialist apps, each with its own AI guide, designed to work together across the different parts of your life.",
     images: ["https://arborapps.co/og-image.png"],
   },
 };
