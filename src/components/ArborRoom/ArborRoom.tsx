@@ -159,7 +159,7 @@ function InteractiveRoom() {
 
       {locked && hovered && (
         <div
-          className="pointer-events-none absolute inset-x-0 top-[38%] z-10 mx-auto w-[min(40rem,calc(100vw-3rem))] -translate-y-1/2 px-6 py-10 text-center"
+          className="pointer-events-none absolute inset-x-0 top-[44%] z-10 mx-auto w-[min(40rem,calc(100vw-3rem))] -translate-y-1/2 px-6 py-10 text-center"
           role="status"
           aria-live="polite"
           style={{
