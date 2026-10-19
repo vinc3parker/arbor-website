@@ -16,9 +16,14 @@ export const metadata = {
 export default async function AppAuthPage({
   searchParams,
 }: {
-  searchParams: Promise<{ app?: string; state?: string; intent?: string }>;
+  searchParams: Promise<{
+    app?: string;
+    state?: string;
+    intent?: string;
+    confirmation?: string;
+  }>;
 }) {
-  const { app, state: rawState, intent: rawIntent } = await searchParams;
+  const { app, state: rawState, intent: rawIntent, confirmation } = await searchParams;
   const state = sanitizeState(rawState);
   // Frames the copy only; the real sign-in-vs-create branch is decided by the
   // email check, so an existing email can never be turned into a duplicate.
@@ -62,11 +67,30 @@ export default async function AppAuthPage({
   }
 
   return shell(
-    <AppAuthForm
-      app={app}
-      appName={appDisplayName(app)}
-      state={state}
-      intent={intent}
-    />
+    <div className="w-full max-w-2xl">
+      {confirmation === "confirmed" && (
+        <p className="mb-5 rounded-2xl border border-line p-4 text-sm" role="status">
+          Email confirmed. Sign in to continue to {appDisplayName(app)}.
+        </p>
+      )}
+      {confirmation === "invalid" && (
+        <p className="mb-5 rounded-2xl border border-danger p-4 text-sm" role="alert">
+          This confirmation link is invalid or expired. Return here to sign in or
+          request help if you still cannot access your account.
+        </p>
+      )}
+      {confirmation === "profile_error" && (
+        <p className="mb-5 rounded-2xl border border-danger p-4 text-sm" role="alert">
+          Your email is confirmed, but we could not finish saving your account
+          details. Please contact Arbor support before continuing.
+        </p>
+      )}
+      <AppAuthForm
+        app={app}
+        appName={appDisplayName(app)}
+        state={state}
+        intent={intent}
+      />
+    </div>
   );
 }

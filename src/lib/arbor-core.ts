@@ -1,3 +1,5 @@
+import type { ArborProfileFields } from "@/lib/arbor-profile-fields";
+
 // Server-side client for Arbor Core's auth API. The hosted sign-in flow at
 // /app-auth authenticates through these endpoints (rather than the website's
 // own Supabase server actions) for two reasons:
@@ -160,8 +162,20 @@ export async function signin(email: string, password: string): Promise<Session> 
   return toSession(await post("/api/auth/signin", { email, password }));
 }
 
-export async function signup(email: string, password: string): Promise<Session> {
-  return toSession(await post("/api/auth/signup", { email, password }));
+export async function signup(
+  email: string,
+  password: string,
+  hosted: { app: string; state: string | null; profile: ArborProfileFields }
+): Promise<{ confirmationRequired: true }> {
+  return post("/api/auth/signup", { email, password, ...hosted });
+}
+
+export function resendSignupConfirmation(
+  email: string,
+  app: string,
+  state: string | null
+): Promise<{ confirmationRequired: true }> {
+  return post("/api/auth/resend-confirmation", { email, app, state });
 }
 
 /** Mint the one-time code the app will exchange for this session. */

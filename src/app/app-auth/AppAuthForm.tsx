@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import {
   authenticate,
   checkEmailAction,
+  resendConfirmationAction,
   type AuthState,
   type CheckState,
 } from "./actions";
@@ -27,6 +28,7 @@ export function AppAuthForm({
   // Step 1 — email. The answer decides sign-in vs create-account.
   const [check, checkFormAction, checking] = useActionState<CheckState, FormData>(
     checkEmailAction,
+  resendConfirmationAction,
     {}
   );
 
@@ -113,9 +115,36 @@ function PasswordStep({
     {}
   );
 
+  const [resendState, resendAction, resending] = useActionState<AuthState, FormData>(
+    resendConfirmationAction,
+    {}
+  );
+
   const mismatch =
     mode === "signup" && confirm.length > 0 && password !== confirm;
+  const returnParams = new URLSearchParams({ app });
+  if (state) returnParams.set("state", state);
+  const returnTo = `/app-auth?${returnParams}`;
   const today = new Date().toISOString().split("T")[0];
+
+  if (authState.confirmationRequired) {
+    return (
+      <div className="w-full max-w-md">
+        <div className="ui-surface p-8 md:p-10" role="status">
+          <p className="ui-kicker">{appName}</p>
+          <h1 className="ui-title">Check your email</h1>
+          <p className="mt-3 text-sm leading-7 text-fg-2">
+            We sent a confirmation link to {authState.confirmationEmail}. Open it
+            to confirm your email, then return here and sign in to continue to
+            {` ${appName}`}.
+          </p>
+          <a href={returnTo} className="mt-6 inline-block text-sm underline underline-offset-4">
+            Return to sign in
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`w-full ${mode === "signup" ? "max-w-2xl" : "max-w-md"}`}>
@@ -351,6 +380,19 @@ function PasswordStep({
                 ? `Sign in to ${appName}`
                 : "Create account"}
           </button>
+          {authState.resendAvailable && mode === "signin" && (
+            <>
+              <button type="submit" formAction={resendAction} disabled={resending} className="text-sm underline underline-offset-4">
+                {resending ? "Sending…" : "Resend confirmation email"}
+              </button>
+              {resendState.confirmationSent && (
+                <p className="text-sm text-fg-2" role="status">
+                  If this account needs confirmation, a new email is on its way.
+                </p>
+              )}
+              {resendState.error && <p className="text-sm text-danger">{resendState.error}</p>}
+            </>
+          )}
         </form>
       </div>
     </div>
