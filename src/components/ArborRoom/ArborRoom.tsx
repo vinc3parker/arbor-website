@@ -157,13 +157,31 @@ function InteractiveRoom() {
         </Canvas>
       </div>
 
-      {locked && hovered && <div className="pointer-events-none absolute inset-x-6 top-[38%] z-10 mx-auto max-w-md rounded-3xl bg-ink/80 p-6 text-center backdrop-blur-sm" role="status">
-        <p className="text-3xl font-medium sm:text-5xl">{hovered.name}</p>
-        <p className="mt-2 text-sm" style={{ color: APP_BRANDS[hovered.id].textOnInk }}>Your {APP_BRANDS[hovered.id].title} / {hovered.dimension}</p>
-        <p className="mt-3 text-sm text-fg-2">{hovered.blurb}</p>
-        <p className="mt-3 text-xs text-fg-2">{APP_ROADMAP[hovered.id].label}</p>
-        {mobile && <Link href={hovered.route} onClick={markBuilt} className="ui-secondary pointer-events-auto mt-5 min-h-11 bg-ink px-5 text-sm">Meet {hovered.name} <span aria-hidden className="ml-3">↗</span></Link>}
-      </div>}
+      {locked && hovered && (
+        <div
+          className="pointer-events-none absolute inset-x-0 top-[38%] z-10 mx-auto w-[min(40rem,calc(100vw-3rem))] -translate-y-1/2 px-6 py-10 text-center"
+          role="status"
+          aria-live="polite"
+          style={{
+            background: "radial-gradient(ellipse at center, rgba(6,8,11,0.62) 0%, rgba(6,8,11,0.34) 48%, rgba(6,8,11,0) 78%)",
+          }}
+        >
+          <p className="text-5xl font-light tracking-[0.14em] text-fg sm:text-7xl">
+            {hovered.name}
+          </p>
+          <div
+            className="mx-auto mt-5 h-0.5 w-16"
+            style={{ backgroundColor: hovered.colour, boxShadow: `0 0 16px ${hovered.colour}` }}
+          />
+          <p
+            className="mt-5 text-xs uppercase tracking-[0.3em] sm:text-sm"
+            style={{ color: APP_BRANDS[hovered.id].textOnInk }}
+          >
+            {hovered.dimension}
+          </p>
+          {mobile && <p className="mt-5 text-xs uppercase tracking-[0.2em] text-fg-2">Tap to enter</p>}
+        </div>
+      )}
 
       <div className="absolute inset-x-0 bottom-0 z-20 border-t border-line bg-ink/90 px-4 pt-4 pb-5 sm:px-8">
         <div className="mx-auto max-w-6xl"><div className="flex items-center justify-between gap-4 text-xs text-fg-2"><p>{locked ? mobile ? "Swipe to look around. Tap an archway to explore." : "Hover to discover. Click an archway to step inside." : "The room is coming together."}</p><div className="flex shrink-0 items-center gap-4">{!locked && <button type="button" onClick={() => { heroState.progress = 1; setLocked(true); }} className="py-2 text-fg underline underline-offset-4">Skip animation</button>}<Link href="#guide-directory" className="py-2 text-fg underline underline-offset-4">Browse below <span aria-hidden>↓</span></Link></div></div>
