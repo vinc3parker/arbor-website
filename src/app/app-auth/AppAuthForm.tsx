@@ -202,16 +202,6 @@ function PasswordStep({
           </a>
         </p>
 
-        {mode === "signin" && !forgot && (
-          <button
-            type="button"
-            onClick={() => setForgot(true)}
-            className="mt-4 text-sm text-fg underline underline-offset-4 transition hover:text-fg-2"
-          >
-            Forgot password?
-          </button>
-        )}
-
         {forgot ? (
           <ForgotPasswordForm
             email={email}
@@ -392,6 +382,16 @@ function PasswordStep({
               className={inputClass}
             />
           </label>
+
+          {mode === "signin" && (
+            <button
+              type="button"
+              onClick={() => setForgot(true)}
+              className="self-start text-sm text-fg underline underline-offset-4 transition hover:text-fg-2"
+            >
+              Forgot password?
+            </button>
+          )}
 
           {mode === "signup" && (
             <label className="flex flex-col gap-2">
