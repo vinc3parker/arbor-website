@@ -6,6 +6,7 @@ import {
   authorize,
   checkEmail,
   consentStatusForApp,
+  resendSignupConfirmation,
   signin,
   signup,
 } from "@/lib/arbor-core";
@@ -13,12 +14,17 @@ import { blockingConsents } from "@/lib/app-consent";
 import { savePendingAuth } from "@/lib/pending-auth";
 import { buildCallbackUrl, isRegisteredApp, sanitizeState } from "@/lib/app-auth";
 import { parseArborProfileForm } from "@/lib/arbor-profile-fields";
-import { upsertProfileWithAccessToken } from "@/lib/profile";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export type CheckState = { exists?: boolean; email?: string; error?: string };
-export type AuthState = { error?: string };
+export type AuthState = {
+  error?: string;
+  confirmationRequired?: boolean;
+  confirmationEmail?: string;
+  resendAvailable?: boolean;
+  confirmationSent?: boolean;
+};
 
 /**
  * Step 1 of the email-first flow: does this person already have an Arbor
@@ -97,27 +103,14 @@ export async function authenticate(
   // Where we end up: either the consent step, or straight back to the app.
   let destination: string;
   try {
-    const session =
-      mode === "signup"
-        ? await signup(email, password)
-        : await signin(email, password);
-
     if (mode === "signup") {
       const parsed = parseArborProfileForm(formData);
       if (parsed.error !== null) return { error: parsed.error };
-      const { error: profileError } = await upsertProfileWithAccessToken(
-        session.accessToken,
-        session.user.id,
-        session.user.email,
-        parsed.profile
-      );
-      if (profileError) {
-        return {
-          error:
-            "Your account was created, but we couldn't save your details. Nothing is lost. Sign in and add them from your account page.",
-        };
-      }
+      await signup(email, password, { app, state, profile: parsed.profile });
+      return { confirmationRequired: true, confirmationEmail: email };
     }
+
+    const session = await signin(email, password);
 
     // Fail closed: if we can't read consent status we do NOT proceed to mint a
     // code — better to ask the person to retry than to hand back a session that
@@ -133,6 +126,9 @@ export async function authenticate(
       destination = buildCallbackUrl(app, { code, state });
     }
   } catch (err) {
+    if (err instanceof ArborCoreError && err.code === "EMAIL_NOT_CONFIRMED") {
+      return { error: err.message, resendAvailable: true };
+    }
     return {
       error:
         err instanceof ArborCoreError
@@ -144,4 +140,22 @@ export async function authenticate(
   // Outside the try/catch: redirect() works by throwing, which we must not
   // swallow. Hand control to the consent step or back to the app.
   redirect(destination);
+}
+
+export async function resendConfirmationAction(
+  _prev: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const app = String(formData.get("app") ?? "");
+  const email = String(formData.get("email") ?? "").trim();
+  const state = sanitizeState(String(formData.get("state") ?? ""));
+  if (!isRegisteredApp(app)) return { error: "Unknown app. Please reopen this from your Arbor app." };
+  if (!emailRegex.test(email)) return { error: "Please enter a valid email address." };
+
+  try {
+    await resendSignupConfirmation(email, app, state);
+    return { confirmationSent: true };
+  } catch {
+    return { error: "Could not send a confirmation email right now. Please try again." };
+  }
 }
