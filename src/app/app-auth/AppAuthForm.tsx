@@ -28,7 +28,6 @@ export function AppAuthForm({
   // Step 1 — email. The answer decides sign-in vs create-account.
   const [check, checkFormAction, checking] = useActionState<CheckState, FormData>(
     checkEmailAction,
-  resendConfirmationAction,
     {}
   );
 
