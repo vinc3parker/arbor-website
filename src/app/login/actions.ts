@@ -71,6 +71,7 @@ export async function signup(
     password,
     options: {
       emailRedirectTo: `${origin}/auth/confirm`,
+      data: { arbor_profile: parsed.profile },
     },
   });
 
@@ -81,10 +82,7 @@ export async function signup(
   // If email confirmation is enabled, no session is returned yet.
   if (!data.session) {
     await savePendingSignupProfile({ email, profile: parsed.profile });
-    return {
-      message:
-        "Check your inbox to confirm your email address, then sign in.",
-    };
+    redirect("/auth/confirmation");
   }
 
   if (!data.user) {
