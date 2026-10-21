@@ -12,6 +12,7 @@ import { CAMERA_END, CAMERA_START, JOURNEY_STOPS, roadX } from "./journeyConfig"
 type JourneySceneProps = {
   progress: RefObject<number>;
   captions: RefObject<Array<HTMLElement | null>>;
+  stage: RefObject<HTMLDivElement | null>;
   animated: boolean;
   onChapter: (chapter: number) => void;
   onReady: (invalidate: () => void) => void;
@@ -239,7 +240,12 @@ function WoodlandLight() {
   </>;
 }
 
-function JourneyCamera({ progress, captions, animated, onChapter }: JourneySceneProps) {
+function smoothRange(value: number, start: number, end: number) {
+  const t = Math.max(0, Math.min(1, (value - start) / (end - start)));
+  return t * t * (3 - 2 * t);
+}
+
+function JourneyCamera({ progress, captions, stage, animated, onChapter }: JourneySceneProps) {
   const { camera, scene, size, invalidate } = useThree();
   const current = useRef<number | null>(null);
   const lastChapter = useRef(-1);
@@ -251,6 +257,11 @@ function JourneyCamera({ progress, captions, animated, onChapter }: JourneyScene
     current.current += (target - current.current) * (1 - Math.exp(-Math.min(delta, .05) * 13));
     if (Math.abs(target - current.current) < .00003) current.current = target;
     const p = current.current;
+    // Share the camera's eased progress so the forest and page surfaces never drift apart.
+    const clearing = smoothRange(p, .84, .97);
+    stage.current?.style.setProperty("--opening", (1 - smoothRange(p, .015, .14)).toFixed(4));
+    stage.current?.style.setProperty("--clearing", clearing.toFixed(4));
+    stage.current?.style.setProperty("--clearing-mix", `${(clearing * 100).toFixed(2)}%`);
     const z = CAMERA_START + (CAMERA_END - CAMERA_START) * p;
     const warmth = Math.max(0, Math.min(1, (p - .73) / .19));
     colours.mixed.lerpColors(colours.forest, colours.clearing, warmth * warmth * (3 - 2 * warmth));
@@ -271,14 +282,21 @@ function JourneyCamera({ progress, captions, animated, onChapter }: JourneyScene
         point.set(roadX(anchorZ) + (size.width < 768 ? 0 : offsets[i]), 2.9, anchorZ).project(camera);
         const enter = Math.max(0, Math.min(1, (23 - distance) / 5));
         const exit = Math.max(0, Math.min(1, (distance - 5) / 4));
-        const opacity = point.z > -1 && point.z < 1 && distance > 0 ? Math.min(enter, exit) : 0;
-        const scale = Math.max(.55, Math.min(size.width < 768 ? 1 : 1.25, 13 / Math.max(1, distance)));
+        const visible = point.z > -1 && point.z < 1 && distance > 0 ? Math.min(enter, exit) : 0;
+        const opacity = visible * (i === JOURNEY_STOPS.length - 1 ? smoothRange(p, .94, .985) : 1);
+        let scale = Math.max(.55, Math.min(size.width < 768 ? 1 : 1.25, 13 / Math.max(1, distance)));
+        // Arrive at a settled composition as the path opens into the final, plain clearing.
+        const settle = i === JOURNEY_STOPS.length - 1 ? smoothRange(p, .88, .98) : 0;
+        scale += (1 - scale) * settle;
         const captionWidth = size.width < 768 ? size.width * .88 : size.width >= 1600 ? Math.min(size.width * .65, 1040) : Math.min(size.width * .68, 790);
         const margin = size.width < 768 ? 14 : 28;
         const half = captionWidth * scale / 2;
-        const screenX = Math.max(half + margin, Math.min(size.width - half - margin, (point.x + 1) * size.width / 2));
+        let screenX = Math.max(half + margin, Math.min(size.width - half - margin, (point.x + 1) * size.width / 2));
+        let screenY = (1 - point.y) * size.height / 2;
+        screenX += (size.width / 2 - screenX) * settle;
+        screenY += (size.height * .44 - screenY) * settle;
         caption.style.opacity = opacity.toFixed(4);
-        caption.style.transform = `translate3d(${screenX.toFixed(1)}px, ${((1 - point.y) * size.height / 2).toFixed(1)}px, 0) translate(-50%, -50%) scale(${scale.toFixed(4)})`;
+        caption.style.transform = `translate3d(${screenX.toFixed(1)}px, ${screenY.toFixed(1)}px, 0) translate(-50%, -50%) scale(${scale.toFixed(4)})`;
         caption.inert = i !== closest || opacity < .15;
         caption.setAttribute("aria-hidden", String(i !== closest || opacity < .15));
       });

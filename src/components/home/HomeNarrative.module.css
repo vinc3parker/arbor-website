@@ -1,6 +1,14 @@
 .experience { position: relative; color: #f6f5f2; background: #18271c; }
 .experience[data-enhanced="true"] { height: 1000svh; }
-.stage { position: relative; isolation: isolate; overflow: clip; min-height: 100svh; }
+.stage {
+  --opening: 1;
+  --clearing: 0;
+  --clearing-mix: 0%;
+  --ink: color-mix(in srgb, #f6f5f2, #233127 var(--clearing-mix));
+  --soft-ink: color-mix(in srgb, #e1e7d2, #596353 var(--clearing-mix));
+  --accent-ink: color-mix(in srgb, #dce8c5, #63744d var(--clearing-mix));
+  position: relative; isolation: isolate; overflow: clip; min-height: 100svh;
+}
 .experience[data-enhanced="true"] .stage { position: sticky; top: 0; height: 100svh; }
 .world, .forestBackdrop, .sceneShade { position: absolute; inset: 0; }
 .forestBackdrop { z-index: -3; background: #243725 url("/images/arbor-woodland.webp") center / cover; }
@@ -8,6 +16,9 @@
 .world, .world > div, .world canvas { pointer-events: none !important; touch-action: pan-y !important; }
 .world[data-ready="true"] { opacity: 1; }
 .sceneShade { z-index: -1; pointer-events: none; background: linear-gradient(180deg, #07140c55, #07140c08 60%, #07140de8), radial-gradient(ellipse at 50% 35%, #07140c55, transparent 70%); }
+.openingFade, .clearingFade { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.openingFade { background: #0d1712; opacity: var(--opening); }
+.clearingFade { background: #f6f5f0; opacity: var(--clearing); }
 .location { position: absolute; left: 5%; right: 5%; top: 110px; display: flex; justify-content: space-between; color: #e3e8d0b3; font-size: 10px; letter-spacing: .04em; }
 .worldCaptions { position: relative; z-index: 2; padding: 150px 6% 300px; pointer-events: none; }
 .caption { width: min(100%, 790px); margin: auto; padding: 90px 0; text-align: center; text-shadow: 0 2px 25px #07130d88; }
@@ -49,7 +60,22 @@
 .legal { position: absolute; z-index: 4; bottom: 5px; left: 5%; right: 5%; display: flex; gap: 18px; font-size: 8px; color: #cfdbc0; }
 .legal span { margin-right: auto; }
 
+/* The journey opens in ink and arrives on paper, including its persistent controls. */
+.location { z-index: 1; color: var(--soft-ink); }
+.caption { color: var(--ink); text-shadow: 0 2px 25px color-mix(in srgb, #07130d88, transparent var(--clearing-mix)); }
+.caption h1 span, .caption h2 span { color: var(--accent-ink); }
+.eyebrow, .availability, .guideRail a, .scrollCue, .count small, .legal { color: var(--soft-ink); }
+.copy, .secondary, .count, .chapterNav button[aria-current] { color: var(--ink); }
+.primary { color: color-mix(in srgb, #24331e, #f6f5f0 var(--clearing-mix)); background: color-mix(in srgb, #edf0de, #283a2c var(--clearing-mix)); }
+.primary:hover { background: color-mix(in srgb, #fff, #41543a var(--clearing-mix)); }
+.secondary:hover { color: var(--accent-ink); }
+.chapterNav button { color: var(--soft-ink); }
+.chapterNav i { background: color-mix(in srgb, #e1e7d04d, #67745d66 var(--clearing-mix)); }
+.chapterNav button[aria-current] i, .scrollTrack span { background: var(--ink); }
+.scrollTrack { border-color: color-mix(in srgb, #d0dfb980, #67745d80 var(--clearing-mix)); }
+
 .experience[data-enhanced="false"] .stage { min-height: 100svh; }
+.experience[data-enhanced="false"] .openingFade, .experience[data-enhanced="false"] .clearingFade { display: none; }
 .experience[data-enhanced="false"] .world, .experience[data-enhanced="false"] .forestBackdrop, .experience[data-enhanced="false"] .sceneShade { position: fixed; }
 .experience[data-enhanced="false"] .journeyControls { display: none; }
 .experience[data-enhanced="false"] .guideRail { bottom: 65px; }

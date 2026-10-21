@@ -34,6 +34,7 @@ function Arrow() {
 
 export function HomeNarrative() {
   const rootRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const captionRefs = useRef<Array<HTMLElement | null>>([]);
   const progress = useRef(0);
   const invalidateRef = useRef<(() => void) | null>(null);
@@ -103,14 +104,16 @@ export function HomeNarrative() {
   return (
     <main id="main-content" ref={rootRef} className={styles.experience} data-enhanced={enhanced}>
       <Navbar tone="dark" />
-      <div className={styles.stage}>
+      <div ref={stageRef} className={styles.stage}>
         <div className={styles.forestBackdrop} aria-hidden />
         <div className={styles.world} aria-hidden="true" data-ready={ready}>
           {available && <SceneBoundary onFail={onUnavailable}>
-            <JourneyScene progress={progress} captions={captionRefs} animated={enhanced} onChapter={onChapter} onReady={onReady} onUnavailable={onUnavailable} />
+            <JourneyScene progress={progress} captions={captionRefs} stage={stageRef} animated={enhanced} onChapter={onChapter} onReady={onReady} onUnavailable={onUnavailable} />
           </SceneBoundary>}
         </div>
         <div className={styles.sceneShade} aria-hidden />
+        <div className={styles.openingFade} aria-hidden />
+        <div className={styles.clearingFade} aria-hidden />
         <div className={styles.location} aria-hidden><span>A path of your own.</span><span>Arbor / A connected life</span></div>
 
         <div className={styles.worldCaptions}>
