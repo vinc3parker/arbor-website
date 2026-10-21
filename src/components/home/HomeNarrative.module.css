@@ -1,158 +1,100 @@
-.experience {
-  --story-ink: #23271f;
-  --story-moss: #7a8b6b;
-  position: relative;
-  background: #f6f5f2;
-  color: var(--story-ink);
-}
-.stage { position: relative; isolation: isolate; overflow: clip; }
-.experience[data-enhanced="true"] { height: 630svh; }
+.experience { position: relative; color: #f6f5f2; background: #18271c; }
+.experience[data-enhanced="true"] { height: 1000svh; }
+.stage { position: relative; isolation: isolate; overflow: clip; min-height: 100svh; }
 .experience[data-enhanced="true"] .stage { position: sticky; top: 0; height: 100svh; }
-.paperLight { position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse at 77% 40%, #eef0e4 0, #f6f5f2 65%); }
-.topline { position: absolute; inset: 113px 5.5% auto; display: flex; justify-content: space-between; font-size: 10px; letter-spacing: .04em; color: #8b8f82; }
-.story { position: relative; z-index: 3; width: min(89%, 1440px); margin: auto; padding: 150px 0 70px; pointer-events: none; }
-.panel { padding: 60px 0; max-width: 640px; }
-.panel h1, .panel h2 { font-weight: 500; font-size: clamp(3rem, 4.6vw, 5.1rem); line-height: 1.065; letter-spacing: -.065em; margin: 23px 0 25px; }
-.panel h1 span, .panel h2 span { color: var(--story-moss); }
-.panel a, .panel button { pointer-events: auto; }
-.eyebrow { display: flex; align-items: center; gap: 9px; font-size: 11px; font-weight: 500; letter-spacing: .07em; color: #6b7261; }
-.eyebrow > span { width: 5px; height: 5px; background: #879575; border-radius: 50%; }
-.copy { max-width: 365px; font-size: 14px; color: #6b7164; line-height: 1.85; text-wrap: pretty; }
-.begin { display: inline-flex; align-items: center; gap: 28px; margin-top: 27px; padding-block: 8px; border-bottom: 1px solid #b7bead; font-size: 12px; cursor: pointer; }
-.begin svg { transition: transform .2s; }
-.begin:hover svg { transform: rotate(90deg) translateX(3px) !important; }
-.note { margin-top: 21px; color: #737d67; font-size: 10px; }
-.experience[data-enhanced="true"] .story { height: 100%; padding: 0; }
-.experience[data-enhanced="true"] .panel { position: absolute; left: 0; top: clamp(153px, 23svh, 260px); width: 49%; opacity: 0; padding: 0; will-change: transform, opacity; }
-.experience[data-enhanced="true"] .panel:first-child { opacity: 1; }
-.actions { margin-top: 27px; display: flex; flex-direction: column; align-items: flex-start; gap: 13px; }
-.primary { display: inline-flex; align-items: center; gap: 25px; border-radius: 5px; background: #293222; color: #f6f5f2; padding: 15px 19px; font-size: 12px; transition: background .2s; }
-.primary:hover { background: #45533b; }
-.secondary { display: inline-flex; align-items: center; gap: 16px; font-size: 11px; padding: 5px 0; }
-.secondary:hover { color: #73846a; }
-.availability { margin-top: 19px; max-width: 345px; font-size: 10px; line-height: 1.8; color: #737d67; }
-.availability a { color: #64715a; text-decoration: underline; text-underline-offset: 3px; }
-.mobileActions { display: none; }
+.world, .forestBackdrop, .sceneShade { position: absolute; inset: 0; }
+.forestBackdrop { z-index: -3; background: #243725 url("/images/arbor-woodland.webp") center / cover; }
+.world { z-index: -2; opacity: 0; transition: opacity .8s; }
+.world, .world > div, .world canvas { pointer-events: none !important; touch-action: pan-y !important; }
+.world[data-ready="true"] { opacity: 1; }
+.sceneShade { z-index: -1; pointer-events: none; background: linear-gradient(180deg, #07140c55, #07140c08 60%, #07140de8), radial-gradient(ellipse at 50% 35%, #07140c55, transparent 70%); }
+.location { position: absolute; left: 5%; right: 5%; top: 110px; display: flex; justify-content: space-between; color: #e3e8d0b3; font-size: 10px; letter-spacing: .04em; }
+.worldCaptions { position: relative; z-index: 2; padding: 150px 6% 300px; pointer-events: none; }
+.caption { width: min(100%, 790px); margin: auto; padding: 90px 0; text-align: center; text-shadow: 0 2px 25px #07130d88; }
+.experience[data-enhanced="true"] .worldCaptions { position: absolute; inset: 0; padding: 0; }
+.experience[data-enhanced="true"] .caption { position: absolute; top: 0; left: 0; width: min(68vw, 790px); padding: 0; opacity: 0; transform-origin: center; will-change: transform, opacity; }
+.experience[data-enhanced="true"] .caption:first-child { opacity: 1; transform: translate3d(50vw, 40svh, 0) translate(-50%, -50%); }
+.caption h1, .caption h2 { font-size: clamp(3.2rem, 5.6vw, 6rem); font-weight: 500; line-height: 1.045; letter-spacing: -.06em; margin: 20px 0 23px; text-wrap: balance; }
+.caption h1 span, .caption h2 span { color: #dce8c5; }
+.eyebrow { color: #e0e8ce; font-size: 11px; letter-spacing: .07em; font-weight: 500; }
+.copy { max-width: 460px; margin: auto; font-size: 15px; line-height: 1.8; color: #eff0e5; text-wrap: pretty; }
+.caption a, .caption button { pointer-events: auto; }
+.begin { display: inline-flex; align-items: center; gap: 18px; padding: 10px 0; margin-top: 22px; border-bottom: 1px solid #ebefd680; color: #f5f5e9; font-size: 12px; cursor: pointer; }
+.begin svg { transform: rotate(90deg); }
+.actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 23px; margin-top: 24px; }
+.primary, .secondary { display: inline-flex; align-items: center; gap: 15px; font-size: 12px; padding: 13px 17px; border-radius: 5px; text-shadow: none; }
+.primary { color: #24331e; background: #edf0de; transition: background .2s; }
+.primary:hover { background: #fff; }
+.secondary { color: #f6f5ec; padding-inline: 0; }
+.secondary:hover { color: #d9e7bc; }
+.availability { margin: 16px auto 0; font-size: 10px; color: #e1e9d1; }
+.availability a { text-decoration: underline; text-underline-offset: 3px; }
 
-/* The same illustration remains in the frame for the whole story. */
-.journey { position: absolute; z-index: 2; width: min(53vw, 720px, calc((100svh - 182px) * .935)); aspect-ratio: 860 / 920; top: 52%; right: 3%; transform: translateY(-50%); margin: 0; }
-.landscape { width: 100%; height: 100%; display: block; }
-.journeyTrail { stroke-dasharray: 1; stroke-dashoffset: 1; }
-.traveller text { font-size: 21px; font-weight: 500; letter-spacing: -.025em; }
-.treeApps { position: absolute; inset: 0; list-style: none; padding: 0; margin: 0; }
-.treeApp { position: absolute; transform: translate(-50%, -50%); }
-.treeApp a { display: flex; min-width: 82px; min-height: 65px; flex-direction: column; align-items: center; justify-content: flex-start; border-radius: 12px; color: #35442c; }
-.treeIcon { width: 42px; height: 42px; border-radius: 12px; box-shadow: 0 0 0 5px #f6f6eecc, 0 8px 20px #51613b18; transition: transform .18s, box-shadow .18s; }
-.treeApp a:hover .treeIcon, .treeApp a:focus-visible .treeIcon { transform: translateY(-3px); box-shadow: 0 0 0 5px #fafaf3, 0 11px 20px #51613b25; }
-.treeName { margin-top: 8px; font-size: 11px; font-weight: 500; line-height: 1.25; }
-.treeDomain { margin-top: 2px; font-size: 8px; color: #748366; line-height: 1.25; }
-.journeyCaption { position: absolute; bottom: -9px; left: 0; right: 0; text-align: center; color: #75816a; font-size: 10px; letter-spacing: .015em; }
-
-.bottomBar { position: absolute; bottom: 31px; left: 5.5%; right: 5.5%; z-index: 5; display: flex; align-items: flex-end; justify-content: space-between; }
-.scrollCue { display: flex; gap: 11px; align-items: center; padding: 10px 0; color: #7d8672; font-size: 9px; cursor: pointer; }
-.scrollCue:disabled { cursor: default; }
-.scrollTrack { display: block; width: 15px; height: 23px; border: 1px solid #a4af96; border-radius: 10px; position: relative; }
-.scrollTrack span { position: absolute; top: 6px; left: 6px; width: 1px; height: 5px; background: #80916f; }
-.chapterNav { display: flex; align-items: flex-end; gap: 23px; }
-.chapterNav button { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 9px; min-width: 45px; padding: 10px 0; color: #838d76; font-size: 9px; cursor: pointer; transition: color .2s; }
-.chapterNav button:hover, .chapterNav button[aria-current] { color: #37472c; }
-.chapterIndex { font-size: 9px; font-variant-numeric: tabular-nums; }
-.chapterLabel { display: none; }
-.chapterLine { display: block; height: 1px; width: 45px; background: #d2d7c9; }
-.chapterNav button[aria-current] .chapterLine { background: #738263; }
-.chapterNav button[aria-current] .chapterLabel { display: block; position: absolute; left: 0; bottom: 47px; font-size: 9px; white-space: nowrap; }
-.pageCount { font-size: 11px; letter-spacing: .08em; font-variant-numeric: tabular-nums; padding-bottom: 10px; }
-.pageCount span { margin-left: 8px; color: #838d76; font-size: 9px; }
-.legal { position: absolute; z-index: 5; bottom: 4px; left: 5.5%; right: 5.5%; display: flex; gap: 18px; font-size: 8px; color: #75816a; visibility: hidden; }
+.guideRail { position: absolute; z-index: 4; left: 50%; bottom: 87px; transform: translateX(-50%); display: flex; gap: 24px; align-items: center; padding: 10px 0; }
+.guideRail a { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 37px; font-size: 9px; color: #e1e7d2; }
+.guideRail img { width: 34px; height: 34px; border-radius: 10px; box-shadow: 0 3px 14px #06100844; transition: transform .2s; }
+.guideRail a:hover img { transform: translateY(-3px); }
+.journeyControls { position: absolute; z-index: 4; bottom: 30px; left: 5%; right: 5%; display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+.scrollCue { display: flex; align-items: center; gap: 10px; font-size: 9px; color: #dae4c8; padding: 7px 0; cursor: pointer; }
+.scrollCue:disabled { cursor: default; opacity: .6; }
+.scrollTrack { width: 14px; height: 22px; border: 1px solid #d0dfb980; border-radius: 10px; position: relative; }
+.scrollTrack span { position: absolute; width: 1px; height: 5px; top: 5px; left: 5.5px; background: #e4e9d5; }
+.chapterNav { display: flex; gap: 18px; }
+.chapterNav button { min-width: 37px; min-height: 43px; display: flex; flex-direction: column; justify-content: center; gap: 8px; font-size: 9px; color: #c7d1b2aa; cursor: pointer; }
+.chapterNav i { display: block; width: 37px; height: 1px; background: #e1e7d04d; }
+.chapterNav button[aria-current] { color: #f1f1df; }
+.chapterNav button[aria-current] i { background: #eff1d7; }
+.count { font-size: 11px; color: #f0f1e4; letter-spacing: .06em; margin-bottom: 8px; }
+.count small { margin-left: 9px; font-size: 9px; color: #c7d1b2; }
+.legal { position: absolute; z-index: 4; bottom: 5px; left: 5%; right: 5%; display: flex; gap: 18px; font-size: 8px; color: #cfdbc0; }
 .legal span { margin-right: auto; }
-.stage[data-chapter="5"] .legal { visibility: visible; }
 
-/* Without animation, the same content is a normal, readable document. */
-.experience[data-enhanced="false"] .journey { top: 130px; right: 1%; width: 46%; transform: none; }
-.experience[data-enhanced="false"] .panel { min-height: 75vh; }
-.experience[data-enhanced="false"] .panel:last-child { min-height: 90vh; }
-.experience[data-enhanced="false"] .bottomBar { display: none; }
-.experience[data-enhanced="false"] .legal { visibility: visible; bottom: 15px; }
+.experience[data-enhanced="false"] .stage { min-height: 100svh; }
+.experience[data-enhanced="false"] .world, .experience[data-enhanced="false"] .forestBackdrop, .experience[data-enhanced="false"] .sceneShade { position: fixed; }
+.experience[data-enhanced="false"] .journeyControls { display: none; }
+.experience[data-enhanced="false"] .guideRail { bottom: 65px; }
+.experience[data-enhanced="false"] .caption { min-height: 70vh; }
 
-@media (min-width: 1500px) {
-  .story { width: min(86%, 1440px); }
-  .journey { right: 4%; width: min(51vw, 830px, calc((100svh - 185px) * .935)); }
-  .panel h1, .panel h2 { font-size: clamp(4.5rem, 4.6vw, 6rem); }
-  .copy { font-size: 15px; max-width: 390px; }
-  .chapterNav { gap: 30px; }
-  .chapterLine { width: 60px; }
+@media (min-width: 1600px) {
+  .caption h1, .caption h2 { font-size: clamp(5rem, 5.5vw, 7.2rem); }
+  .experience[data-enhanced="true"] .caption { width: min(65vw, 1040px); }
+  .copy { font-size: 17px; max-width: 520px; }
 }
-@media (max-width: 1100px) {
-  .panel h1, .panel h2 { font-size: clamp(3rem, 5.1vw, 4.5rem); }
-  .copy { font-size: 13px; max-width: 330px; }
-  .journey { right: 1%; width: min(54vw, calc((100svh - 185px) * .935)); }
-  .treeIcon { width: 37px; height: 37px; border-radius: 10px; }
-  .treeName { font-size: 10px; }
-  .chapterNav { gap: 15px; }
-  .chapterLine { width: 35px; }
+@media (max-width: 1023px) {
+  .caption h1, .caption h2 { font-size: clamp(2.7rem, 5.6vw, 4.5rem); }
+  .copy { font-size: 14px; }
 }
 @media (max-width: 767px) {
-  .experience[data-enhanced="true"] { height: 610svh; }
-  .topline { top: 101px; left: 6%; right: 6%; font-size: 8px; }
-  .topline span:last-child { display: none; }
-  .story { width: 88%; padding-top: 110px; }
-  .experience[data-enhanced="true"] .panel { width: 100%; top: 130px; }
-  .eyebrow { font-size: 9px; gap: 7px; letter-spacing: .045em; }
-  .panel h1, .panel h2 { font-size: clamp(2.1rem, 7.6vw, 3.5rem); margin: 13px 0 14px; letter-spacing: -.06em; line-height: 1.04; }
-  .panel h1 br:first-child { display: none; }
-  .copy { max-width: 96%; font-size: 12px; line-height: 1.7; }
-  .begin { margin-top: 14px; padding-block: 6px; font-size: 10px; gap: 16px; }
-  .begin svg { width: 15px; height: 15px; }
-  .note { font-size: 8px; margin-top: 9px; }
-  .journey { width: min(94vw, calc((100svh - 405px) * .935), 435px); top: auto; bottom: 62px; right: 50%; transform: translateX(50%); }
-  .treeApp a { min-width: 61px; min-height: 45px; }
-  .treeIcon { width: 28px; height: 28px; border-radius: 8px; box-shadow: 0 0 0 3px #f6f6eecc, 0 5px 10px #51613b16; }
-  .treeName { margin-top: 5px; font-size: 9px; }
-  .treeDomain { display: none; }
-  .traveller text { font-size: 25px; }
-  .journeyCaption { font-size: 8px; bottom: -12px; }
-  .experience[data-enhanced="true"] .panel .actions, .experience[data-enhanced="true"] .panel .availability { display: none; }
-  .mobileActions { position: absolute; z-index: 5; bottom: 78px; left: 6%; right: 6%; text-align: center; opacity: 0; visibility: hidden; transition: opacity .25s; }
-  .mobileActions[data-visible="true"] { display: block; opacity: 1; visibility: visible; }
-  .mobileActions .actions { margin: 0; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px; }
-  .primary { padding: 12px 13px; gap: 10px; font-size: 10px; }
-  .primary svg, .secondary svg { width: 14px; height: 14px; }
-  .secondary { font-size: 9px; gap: 5px; }
-  .mobileActions .availability { font-size: 8px; margin: 8px auto 0; }
-  .stage[data-chapter="5"] .journeyCaption { visibility: hidden; }
-  .bottomBar { bottom: 16px; left: 6%; right: 6%; align-items: center; }
-  .scrollCue { font-size: 8px; gap: 8px; }
-  .scrollTrack { width: 12px; height: 19px; }
-  .scrollTrack span { left: 5px; top: 5px; height: 4px; }
-  .chapterNav { gap: 9px; }
-  .chapterNav button { min-width: 16px; height: 35px; justify-content: center; }
-  .chapterIndex, .chapterLabel, .chapterNav button[aria-current] .chapterLabel { display: none; }
-  .chapterLine { width: 16px; height: 2px; }
-  .pageCount { font-size: 9px; padding: 0; }
-  .pageCount span { font-size: 8px; margin-left: 4px; }
-  .legal { left: 6%; right: 6%; bottom: 3px; font-size: 7px; gap: 12px; }
-  .stage[data-chapter="5"] .scrollCue { visibility: hidden; }
-  .experience[data-enhanced="false"] .panel { max-width: 100%; min-height: 60vh; padding: 40px 0; }
-  .experience[data-enhanced="false"] .journey { position: relative; width: 90%; margin: -40px auto 50px; top: auto; right: auto; bottom: auto; transform: none; }
-  .experience[data-enhanced="false"] .mobileActions { display: none; }
+  .experience[data-enhanced="true"] { height: 950svh; }
+  .experience[data-enhanced="true"] .caption { width: 88vw; }
+  .caption h1, .caption h2 { font-size: clamp(2rem, 8.5vw, 3.6rem); margin: 15px 0 17px; line-height: 1.06; }
+  .caption h1 br:first-child { display: none; }
+  .eyebrow { font-size: 9px; letter-spacing: .035em; }
+  .copy { font-size: 12px; max-width: 320px; line-height: 1.75; }
+  .begin { margin-top: 15px; font-size: 10px; padding: 8px 0; }
+  .location { top: 102px; left: 6%; right: 6%; font-size: 8px; }
+  .location span:last-child { display: none; }
+  .guideRail { width: 88%; justify-content: space-between; gap: 4px; bottom: 69px; }
+  .guideRail a { min-width: 27px; font-size: 7px; gap: 5px; }
+  .guideRail img { width: 26px; height: 26px; border-radius: 8px; }
+  .journeyControls { bottom: 24px; left: 6%; right: 6%; gap: 14px; align-items: center; }
+  .scrollCue { font-size: 8px; gap: 7px; max-width: 110px; text-align: left; }
+  .scrollTrack { flex-shrink: 0; width: 12px; height: 19px; }
+  .scrollTrack span { left: 4.5px; top: 4px; height: 4px; }
+  .chapterNav { gap: 8px; }
+  .chapterNav button { min-width: 15px; min-height: 33px; }
+  .chapterNav button span { display: none; }
+  .chapterNav i { width: 15px; height: 2px; }
+  .count { font-size: 9px; margin: 0; }
+  .count small { font-size: 8px; margin-left: 4px; }
+  .legal { bottom: 5px; left: 6%; right: 6%; font-size: 7px; gap: 12px; }
+  .actions { gap: 15px; margin-top: 19px; }
+  .primary, .secondary { font-size: 10px; gap: 9px; padding: 12px; }
+  .secondary { padding-inline: 0; }
+  .primary svg, .secondary svg { width: 15px; height: 15px; }
+  .availability { font-size: 8px; margin-top: 12px; }
 }
-@media (max-height: 750px) and (min-width: 768px) {
-  .topline { top: 100px; }
-  .panel h1, .panel h2 { font-size: clamp(2.7rem, 4vw, 4rem); margin-block: 18px; }
-  .journey { width: min(48vw, 570px, calc((100svh - 185px) * .935)); right: 3%; }
-  .copy { font-size: 12px; }
-  .actions { margin-top: 18px; }
-  .availability { margin-top: 14px; }
-}
-@media (max-height: 750px) and (max-width: 767px) {
-  .experience[data-enhanced="true"] .panel { top: 112px; }
-  .topline { display: none; }
-  .panel h1, .panel h2 { font-size: clamp(2rem, 7.4vw, 2.8rem); }
-  .journey { width: min(90vw, calc((100svh - 370px) * .935), 340px); bottom: 57px; }
-  .begin { margin-top: 9px; }
-  .treeIcon { width: 25px; height: 25px; border-radius: 7px; }
-  .treeName { font-size: 8px; margin-top: 4px; }
-}
+@media (max-width: 370px) { .scrollCue > span:last-child { display: none; } }
 @media (prefers-reduced-motion: reduce) {
   .experience *, .experience *::before, .experience *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
