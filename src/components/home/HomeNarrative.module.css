@@ -139,7 +139,7 @@
   .visual { width: min(95vw, calc(100svh - 420px), 420px); right: 50%; top: auto; bottom: 60px; transform: translateX(50%); }
   .iconWell { width: 45px; height: 45px; border-radius: 14px; padding: 4px; }.appIcon { width: 35px; height: 35px; border-radius: 10px; }
   .nodeName { font-size: 9px; margin-top: 5px; }.nodeDomain { font-size: 7px; }
-  .heroAnnotation { font-size: 9px; right: 15%; bottom: 6%; gap: 8px; }.fineRule { width: 25px; }
+  .heroAnnotation { display: none; }.fineRule { width: 25px; }
   .visualFootnote { display: none; }
   .annotation { font-size: 9px; }
   .connectionCentre { width: 75px; height: 75px; font-size: 17px; }.connectionCentre small { font-size: 7px; }
