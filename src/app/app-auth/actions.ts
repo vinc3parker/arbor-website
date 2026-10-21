@@ -107,7 +107,9 @@ export async function authenticate(
       const parsed = parseArborProfileForm(formData);
       if (parsed.error !== null) return { error: parsed.error };
       await signup(email, password, { app, state, profile: parsed.profile });
-      return { confirmationRequired: true, confirmationEmail: email };
+      const confirmation = new URLSearchParams({ app });
+      if (state) confirmation.set("state", state);
+      redirect(`/app-auth/confirmation?${confirmation}`);
     }
 
     const session = await signin(email, password);
