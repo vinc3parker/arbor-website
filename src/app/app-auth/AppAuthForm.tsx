@@ -9,6 +9,7 @@ import {
   type CheckState,
 } from "./actions";
 import { GENDER_OPTIONS } from "@/lib/arbor-profile-fields";
+import { CountryRegionFields } from "@/components/profile/CountryRegionFields";
 import { ForgotPasswordForm } from "@/app/auth/PasswordRecoveryForm";
 
 const inputClass =
@@ -305,6 +306,11 @@ function PasswordStep({
                 />
               </label>
 
+              <CountryRegionFields
+                className={inputClass}
+                labelClass={labelClass}
+              />
+
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="flex flex-col gap-2">
                   <span className={labelClass}>City</span>
@@ -320,21 +326,6 @@ function PasswordStep({
                 </label>
 
                 <label className="flex flex-col gap-2">
-                  <span className={labelClass}>Region / county</span>
-                  <input
-                    name="region"
-                    type="text"
-                    required
-                    maxLength={100}
-                    autoComplete="address-level1"
-                    placeholder="Region or county"
-                    className={inputClass}
-                  />
-                </label>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="flex flex-col gap-2">
                   <span className={labelClass}>Postcode</span>
                   <input
                     name="postal_code"
@@ -343,19 +334,6 @@ function PasswordStep({
                     maxLength={32}
                     autoComplete="postal-code"
                     placeholder="Postcode"
-                    className={inputClass}
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className={labelClass}>Country</span>
-                  <input
-                    name="country"
-                    type="text"
-                    required
-                    maxLength={80}
-                    autoComplete="country-name"
-                    placeholder="Country"
                     className={inputClass}
                   />
                 </label>

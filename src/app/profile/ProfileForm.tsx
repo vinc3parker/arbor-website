@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { GENDER_OPTIONS } from "@/lib/arbor-profile-fields";
+import { CountryRegionFields } from "@/components/profile/CountryRegionFields";
 import { updateProfile, type ProfileState } from "./actions";
 
 const initialState: ProfileState = {};
@@ -42,11 +43,6 @@ export function ProfileForm({
     updateProfile,
     initialState
   );
-  const genderOptions =
-    gender && !GENDER_OPTIONS.includes(gender as (typeof GENDER_OPTIONS)[number])
-      ? [gender, ...GENDER_OPTIONS]
-      : GENDER_OPTIONS;
-
   // Latest birthdate allowed = today (no future dates).
   const today = new Date().toISOString().split("T")[0];
 
@@ -107,7 +103,7 @@ export function ProfileForm({
           <option value="" disabled>
             Select gender
           </option>
-          {genderOptions.map((option) => (
+          {GENDER_OPTIONS.map((option) => (
             <option key={option} value={option}>
               {option}
             </option>
@@ -142,6 +138,13 @@ export function ProfileForm({
         />
       </label>
 
+      <CountryRegionFields
+        country={country}
+        region={region}
+        className={fieldClass}
+        labelClass={labelClass}
+      />
+
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
           <span className={labelClass}>City</span>
@@ -158,22 +161,6 @@ export function ProfileForm({
         </label>
 
         <label className="flex flex-col gap-2">
-          <span className={labelClass}>Region / county</span>
-          <input
-            name="region"
-            type="text"
-            required
-            maxLength={100}
-            defaultValue={region}
-            autoComplete="address-level1"
-            placeholder="Region or county"
-            className={fieldClass}
-          />
-        </label>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-2">
           <span className={labelClass}>Postcode</span>
           <input
             name="postal_code"
@@ -183,20 +170,6 @@ export function ProfileForm({
             defaultValue={postalCode}
             autoComplete="postal-code"
             placeholder="Postcode"
-            className={fieldClass}
-          />
-        </label>
-
-        <label className="flex flex-col gap-2">
-          <span className={labelClass}>Country</span>
-          <input
-            name="country"
-            type="text"
-            required
-            maxLength={80}
-            defaultValue={country}
-            autoComplete="country-name"
-            placeholder="Country"
             className={fieldClass}
           />
         </label>
