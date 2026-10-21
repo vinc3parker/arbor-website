@@ -84,11 +84,10 @@ export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
 
             <Link
               href="/login"
-              className="transition hover:text-fg"
+              className="ui-primary min-h-10 px-4 py-2 text-sm"
             >
               Account
             </Link>
-            <Link href="/early-access" className="ui-primary min-h-10 px-4 py-2 text-sm">Join the waitlist <span aria-hidden className="ml-3">↗</span></Link>
           </div>
 
           {/* Mobile toggle */}
@@ -136,11 +135,10 @@ export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
             <Link
               href="/login"
               onClick={() => setOpen(false)}
-              className="rounded-xl px-4 py-3 text-fg-2 transition hover:bg-surface hover:text-fg"
+              className="ui-primary mt-2"
             >
               Account
             </Link>
-            <Link href="/early-access" onClick={() => setOpen(false)} className="ui-primary mt-2">Join the waitlist</Link>
           </div>
         )}
       </div>
