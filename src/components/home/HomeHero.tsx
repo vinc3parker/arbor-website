@@ -88,7 +88,7 @@ export function HomeHero() {
             const isClone = index < homeCopy.apps.length || index >= homeCopy.apps.length * 2;
 
             return <li key={`${app.id}-${index}`} data-rail-card aria-hidden={isClone || undefined} className="w-[calc(100vw-5rem)] shrink-0 snap-center transition-opacity duration-150 sm:w-[42rem] lg:w-[46rem]">
-              <article className="theme-dark relative isolate flex min-h-[23rem] overflow-hidden rounded-3xl border border-line bg-ink text-paper sm:min-h-[21rem]">
+              <article className="theme-dark relative isolate flex min-h-[23rem] overflow-hidden rounded-3xl bg-ink text-paper sm:min-h-[21rem]">
                 <Image src={cardImages[app.id]} alt="" fill sizes="(max-width: 639px) calc(100vw - 3rem), (max-width: 1023px) 38rem, 43rem" className="-z-20 object-cover" />
                 <div className="absolute inset-0 -z-10 bg-linear-to-r from-ink via-ink/85 to-ink/25" />
                 <div className="flex w-full flex-col p-6 sm:max-w-[72%] sm:p-8">
