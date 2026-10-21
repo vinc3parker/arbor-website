@@ -148,6 +148,8 @@ export function AccountView({
                     ? subscription?.source === "comp"
                       ? "Add payment details"
                       : "Update payment"
+                    : subscription?.source === "comp"
+                      ? "View membership"
                     : subscription && !subscription.active
                       ? "Subscribe"
                       : "Manage subscription"}

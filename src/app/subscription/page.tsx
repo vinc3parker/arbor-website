@@ -219,7 +219,13 @@ export default async function SubscriptionPage({
 
   const subscribeButton = (
     <Link href={`/subscription/checkout${returnSuffix}`} className="ui-primary w-full">
-      {testerPaymentDue ? "Add payment details" : isTrial ? "Subscribe to keep access" : `Subscribe — ${price.price}/mo`}
+      {testerPaymentDue
+        ? "Add payment details"
+        : isTrial
+          ? "Subscribe to keep access"
+          : isComp
+            ? "Set up payment early"
+            : `Subscribe — ${price.price}/mo`}
     </Link>
   );
 
@@ -277,7 +283,10 @@ export default async function SubscriptionPage({
             {founderIsActive ? (
               <>
                 <p className="mb-4 text-sm text-fg-2">{detail}</p>
-                {manageBilling ?? (isTrial || testerPaymentDue ? subscribeButton : null)}
+                {manageBilling ??
+                  (isTrial || testerPaymentDue || (isComp && periodEnd && periodEnd < FAR_FUTURE)
+                    ? subscribeButton
+                    : null)}
               </>
             ) : !entitled && offeredPlan === "founder" ? (
               subscribeButton
