@@ -253,9 +253,9 @@ export default async function SubscriptionPage({
         </div>
 
         <p className="mt-6 type-caption text-fg-2">
-          <Link href="/profile" className="transition hover:text-fg">
+          <a href="/account" className="transition hover:text-fg">
             ← Back to your account
-          </Link>
+          </a>
         </p>
       </section>
 
