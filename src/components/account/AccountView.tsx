@@ -25,7 +25,13 @@ export function AccountView({
   subscription,
 }: {
   /** From Arbor Core; null when it couldn't be reached. */
-  subscription: { active: boolean; plan: string | null; comp: boolean } | null;
+  subscription: {
+    active: boolean;
+    plan: string | null;
+    source: "stripe" | "trial" | "comp" | null;
+    status: string;
+    currentPeriodEnd: number | null;
+  } | null;
   profile: ArborUser;
   email: string | null;
   createdAt: string | null;
@@ -33,6 +39,14 @@ export function AccountView({
 }) {
   const name = displayNameFor(profile, email);
   const memberSince = formatDay(createdAt);
+  const paymentDue = subscription?.status === "past_due";
+  const periodDate = subscription?.currentPeriodEnd
+    ? new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : null;
 
   return (
     <main className="min-h-screen bg-bg text-fg">
@@ -90,16 +104,26 @@ export function AccountView({
               <h2 id="subscription-title" className="type-h2 mb-6">Subscription</h2>
               <div className="ui-surface flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
                 <div>
-                  {subscription?.active ? (
+                  {subscription && (subscription.active || paymentDue) ? (
                     <>
                       <p className="flex items-center gap-3 text-[1.375rem] font-semibold">
                         {planName(subscription.plan)}
-                        <span className="ui-status">Active</span>
+                        <span className="ui-status">
+                          {paymentDue ? "Payment due" : "Active"}
+                        </span>
                       </p>
                       <p className="mt-2 text-fg-2">
-                        {subscription.comp
-                          ? "This membership was granted with an access code."
-                          : "You have access to every Arbor app."}
+                        {paymentDue
+                          ? subscription.source === "comp"
+                            ? "Your tester access has ended. Add payment details to continue your Founding membership."
+                            : "Your last payment did not go through. Update your payment details to keep access."
+                          : subscription.source === "comp" && periodDate
+                            ? `Your Founding membership is included until ${periodDate}.`
+                            : subscription.source === "comp"
+                              ? "Your Founding membership was granted with an access code."
+                              : periodDate
+                                ? `Your next payment is due on ${periodDate}.`
+                                : "You have access to every Arbor app."}
                       </p>
                     </>
                   ) : subscription ? (
@@ -120,7 +144,13 @@ export function AccountView({
                   href="/subscription"
                   className={`${subscription && !subscription.active ? "ui-primary" : "ui-secondary"} shrink-0`}
                 >
-                  {subscription && !subscription.active ? "Subscribe" : "Manage subscription"}
+                  {paymentDue
+                    ? subscription?.source === "comp"
+                      ? "Add payment details"
+                      : "Update payment"
+                    : subscription && !subscription.active
+                      ? "Subscribe"
+                      : "Manage subscription"}
                 </Link>
               </div>
             </section>

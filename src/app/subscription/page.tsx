@@ -148,7 +148,7 @@ export default async function SubscriptionPage({
   const price = PLANS[offeredPlan];
 
   // "canceled" is not access: only these statuses unlock the apps.
-  const entitled = hasAccess(entStatus);
+  const entitled = hasAccess(entStatus, periodEnd);
   const isStripeEntitled = entitled && source === "stripe";
   const isTrial = entitled && source === "trial";
   const isComp = entitled && source === "comp";

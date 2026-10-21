@@ -42,9 +42,14 @@ export default async function ProfilePage() {
       subscription={
         entitlement
           ? {
-              active: hasAccess(entitlement.entitlement.status),
+              active: hasAccess(
+                entitlement.entitlement.status,
+                entitlement.entitlement.currentPeriodEnd
+              ),
               plan: entitlement.entitlement.plan,
-              comp: entitlement.source === "comp",
+              source: entitlement.source,
+              status: entitlement.entitlement.status,
+              currentPeriodEnd: entitlement.entitlement.currentPeriodEnd,
             }
           : null
       }

@@ -48,8 +48,15 @@ export const ACCOUNT_ONLY = {
 };
 
 /** Subscription statuses (from Arbor Core) that give access to the apps. */
-export function hasAccess(status: string): boolean {
-  return status === "active" || status === "trialing" || status === "past_due";
+export function hasAccess(
+  status: string,
+  currentPeriodEnd: number | null = null,
+  nowSeconds: number = Math.floor(Date.now() / 1000)
+): boolean {
+  if (status === "active" || status === "trialing") return true;
+  // Stripe can allow a short grace period after a failed payment. Core supplies
+  // the end of that period; once it has passed, access is no longer active.
+  return status === "past_due" && currentPeriodEnd != null && nowSeconds < currentPeriodEnd;
 }
 
 /** Friendly name for the plan Core reports. */
