@@ -93,10 +93,14 @@ export function AccountView({
                   {subscription?.active ? (
                     <>
                       <p className="flex items-center gap-3 text-[1.375rem] font-semibold">
-                        {subscription.comp ? "Access code" : planName(subscription.plan)}
+                        {planName(subscription.plan)}
                         <span className="ui-status">Active</span>
                       </p>
-                      <p className="mt-2 text-fg-2">You have access to every Arbor app.</p>
+                      <p className="mt-2 text-fg-2">
+                        {subscription.comp
+                          ? "This membership was granted with an access code."
+                          : "You have access to every Arbor app."}
+                      </p>
                     </>
                   ) : subscription ? (
                     <>

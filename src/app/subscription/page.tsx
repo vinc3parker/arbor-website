@@ -141,13 +141,13 @@ export default async function SubscriptionPage({
       ? `Your access ends on ${formatDate(periodEnd)}. Subscribe any time to keep it.`
       : "Your temporary access is active.";
   } else if (isComp) {
-    heading = "Access code";
+    heading = planName(entPlan);
     chipLabel = "Active";
     chipClass = "border-success/40 bg-success/10 text-success";
     detail =
       periodEnd && periodEnd < FAR_FUTURE
-        ? `Your code gives you access until ${formatDate(periodEnd)}.`
-        : "Your code gives you access, with no end date.";
+        ? `Your membership was granted with an access code and ends on ${formatDate(periodEnd)}.`
+        : "Your membership was granted with an access code and has no end date.";
   }
 
   // ── Actions for the current-plan card ──────────────────────────────────────
