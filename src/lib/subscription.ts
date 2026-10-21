@@ -56,5 +56,6 @@ export function hasAccess(status: string): boolean {
 export function planName(plan: string | null): string {
   if (plan === "founder") return PLANS.founder.name;
   if (plan === "standard") return PLANS.standard.name;
+  if (plan === "trial" || plan === "comp") return "Tester access";
   return "Arbor subscription";
 }

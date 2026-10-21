@@ -61,6 +61,55 @@ function appSuffix(app: string | null, state: string | null): string {
   return query ? `?${query}` : "";
 }
 
+function MembershipCard({
+  name,
+  price,
+  cadence,
+  description,
+  active = false,
+  status,
+  children,
+}: {
+  name: string;
+  price: string;
+  cadence: string;
+  description: string;
+  active?: boolean;
+  status?: ReactNode;
+  children?: ReactNode;
+}) {
+  return (
+    <article
+      className={`flex min-h-[29rem] flex-col rounded-3xl border p-6 sm:p-7 ${
+        active
+          ? "border-fg bg-surface shadow-[0_16px_40px_rgb(0_0_0_/_0.08)]"
+          : "border-line bg-surface"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <h2 className="text-[1.375rem] font-semibold">{name}</h2>
+        {status}
+      </div>
+      <p className="mt-8 text-4xl font-semibold tracking-tight">
+        {price}
+        <span className="ml-2 text-base font-normal tracking-normal text-fg-2">
+          {cadence}
+        </span>
+      </p>
+      <p className="mt-5 min-h-14 text-fg-2">{description}</p>
+      <ul className="mt-8 flex flex-col gap-3 text-sm text-fg">
+        {SUBSCRIPTION_INCLUDES.map((feature) => (
+          <li key={feature} className="flex gap-3">
+            <Check />
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+      {children && <div className="mt-auto pt-8">{children}</div>}
+    </article>
+  );
+}
+
 export default async function SubscriptionPage({
   searchParams,
 }: {
@@ -95,7 +144,8 @@ export default async function SubscriptionPage({
     source = view.source;
     periodEnd = view.entitlement.currentPeriodEnd;
   }
-  const price = PLANS[offer?.plan ?? "founder"];
+  const offeredPlan = offer?.plan ?? "founder";
+  const price = PLANS[offeredPlan];
 
   // "canceled" is not access: only these statuses unlock the apps.
   const entitled = hasAccess(entStatus);
@@ -112,14 +162,17 @@ export default async function SubscriptionPage({
     ? `/subscription/checkout${returnSuffix}&method=code`
     : "/subscription/checkout?method=code";
 
-  // ── Current-plan presentation ──────────────────────────────────────────────
-  let heading: string = ACCOUNT_ONLY.name;
+  const isLegacyTesterAccess = isComp && entPlan === "comp";
+  const testerIsActive = isTrial || isLegacyTesterAccess;
+  const founderIsActive = entitled && !testerIsActive && entPlan === "founder";
+  const standardIsActive = entitled && !testerIsActive && entPlan === "standard";
+
+  // ── Current membership presentation ────────────────────────────────────────
   let chipLabel = "Not subscribed";
   let chipClass = "border-line bg-bg text-fg-2";
   let detail: string = ACCOUNT_ONLY.summary;
 
   if (isStripeEntitled) {
-    heading = planName(entPlan);
     if (entStatus === "past_due") {
       chipLabel = "Payment due";
       chipClass = "border-warning/40 bg-warning/10 text-warning";
@@ -134,14 +187,12 @@ export default async function SubscriptionPage({
         : "Your subscription is active.";
     }
   } else if (isTrial) {
-    heading = planName(entPlan);
     chipLabel = "Temporary access";
     chipClass = "border-info/40 bg-info/10 text-info";
     detail = periodEnd
       ? `Your access ends on ${formatDate(periodEnd)}. Subscribe any time to keep it.`
       : "Your temporary access is active.";
   } else if (isComp) {
-    heading = planName(entPlan);
     chipLabel = "Active";
     chipClass = "border-success/40 bg-success/10 text-success";
     detail =
@@ -150,29 +201,17 @@ export default async function SubscriptionPage({
         : "Your membership was granted with an access code and has no end date.";
   }
 
-  // ── Actions for the current-plan card ──────────────────────────────────────
-  let actions: ReactNode = null;
-  if (isStripeEntitled) {
-    actions = (
+  const manageBilling = isStripeEntitled ? (
       <Link href={`/billing/portal${returnSuffix}`} className="ui-secondary">
         Manage billing
       </Link>
-    );
-  } else if (!isComp) {
-    actions = (
-      <>
-        <Link href={`/subscription/checkout${returnSuffix}`} className="ui-primary">
-          {isTrial ? "Subscribe to keep access" : `Subscribe — ${price.price}/mo`}
-        </Link>
-        <Link
-          href={codeHref}
-          className="inline-flex min-h-12 items-center justify-center rounded-xl px-4 type-label text-fg-2 transition hover:bg-raised hover:text-fg"
-        >
-          Use a code instead
-        </Link>
-      </>
-    );
-  }
+  ) : null;
+
+  const subscribeButton = (
+    <Link href={`/subscription/checkout${returnSuffix}`} className="ui-primary w-full">
+      {isTrial ? "Subscribe to keep access" : `Subscribe — ${price.price}/mo`}
+    </Link>
+  );
 
   const notice =
     sp.billing === "active"
@@ -191,7 +230,11 @@ export default async function SubscriptionPage({
 
       <section className="page-shell page-shell-narrow">
         <p className="ui-kicker">Subscription</p>
-        <h1 className="ui-title">Your subscription</h1>
+        <h1 className="ui-title">Choose your membership</h1>
+        <p className="mt-3 max-w-2xl text-lg text-fg-2">
+          One Arbor membership gives you access across every Arbor app. Your current
+          membership is highlighted below.
+        </p>
 
         {notice && (
           <p
@@ -206,51 +249,90 @@ export default async function SubscriptionPage({
           </p>
         )}
 
-        {/* Current state */}
-        <div className="ui-surface mt-8 p-6 sm:p-8">
-          <div className="flex items-start justify-between gap-4">
-            <h2 className="text-[1.375rem] font-semibold">{heading}</h2>
-            <span className={`shrink-0 rounded-full border px-3 py-1 text-sm ${chipClass}`}>
-              {chipLabel}
-            </span>
-          </div>
-
-          <p className="mt-3 text-fg-2">{detail}</p>
-
-          {actions && <div className="mt-8 flex flex-col gap-3 sm:flex-row">{actions}</div>}
-        </div>
-
-        {/* What a subscription includes */}
-        <div className="mt-6 border-t border-line py-8">
-          <div className="flex items-baseline justify-between gap-4">
-            <h3 className="text-lg font-semibold">
-              {entitled ? "What’s included" : "What a subscription includes"}
-            </h3>
-            {!entitled && (
-              <p className="shrink-0 text-fg-2">
-                <span className="text-lg font-semibold text-fg">{price.price}</span>{" "}
-                {price.cadence}
-              </p>
+        <div className="mt-8 grid gap-5 md:grid-cols-3">
+          <MembershipCard
+            name="Tester access"
+            price="Included"
+            cadence="for invited testers"
+            description="Temporary access for people helping us test Arbor before launch."
+            active={testerIsActive}
+            status={
+              testerIsActive ? (
+                <span className={`shrink-0 rounded-full border px-3 py-1 text-sm ${chipClass}`}>
+                  {chipLabel}
+                </span>
+              ) : undefined
+            }
+          >
+            {testerIsActive && (
+              <>
+                <p className="mb-4 text-sm text-fg-2">{detail}</p>
+                {isTrial && subscribeButton}
+              </>
             )}
-          </div>
+          </MembershipCard>
 
-          <ul className="mt-6 flex flex-col gap-3 text-base text-fg">
-            {SUBSCRIPTION_INCLUDES.map((f) => (
-              <li key={f} className="flex gap-3">
-                <Check />
-                <span>{f}</span>
-              </li>
-            ))}
-          </ul>
+          <MembershipCard
+            name={PLANS.founder.name}
+            price={PLANS.founder.price}
+            cadence={PLANS.founder.cadence}
+            description={PLANS.founder.summary}
+            active={founderIsActive}
+            status={
+              founderIsActive ? (
+                <span className={`shrink-0 rounded-full border px-3 py-1 text-sm ${chipClass}`}>
+                  {chipLabel}
+                </span>
+              ) : undefined
+            }
+          >
+            {founderIsActive ? (
+              <>
+                <p className="mb-4 text-sm text-fg-2">{detail}</p>
+                {manageBilling}
+              </>
+            ) : !entitled && offeredPlan === "founder" ? (
+              subscribeButton
+            ) : (
+              <p className="text-sm text-fg-2">Available while founding places remain.</p>
+            )}
+          </MembershipCard>
 
-          {!entitled && (
-            <p className="mt-6 type-caption text-fg-2">
-              {offer?.plan === "standard"
-                ? PLANS.standard.summary
-                : `${PLANS.founder.summary} After that, Arbor is ${PLANS.standard.price} a month.`}
-            </p>
-          )}
+          <MembershipCard
+            name={PLANS.standard.name}
+            price={PLANS.standard.price}
+            cadence={PLANS.standard.cadence}
+            description={PLANS.standard.summary}
+            active={standardIsActive}
+            status={
+              standardIsActive ? (
+                <span className={`shrink-0 rounded-full border px-3 py-1 text-sm ${chipClass}`}>
+                  {chipLabel}
+                </span>
+              ) : undefined
+            }
+          >
+            {standardIsActive ? (
+              <>
+                <p className="mb-4 text-sm text-fg-2">{detail}</p>
+                {manageBilling}
+              </>
+            ) : !entitled && offeredPlan === "standard" ? (
+              subscribeButton
+            ) : (
+              <p className="text-sm text-fg-2">Available once founding places are filled.</p>
+            )}
+          </MembershipCard>
         </div>
+
+        {!entitled && (
+          <p className="mt-6 text-center type-caption text-fg-2">
+            Have an access code?{" "}
+            <Link href={codeHref} className="font-medium text-fg underline underline-offset-4">
+              Use it instead
+            </Link>
+          </p>
+        )}
 
         <p className="mt-6 type-caption text-fg-2">
           <a href="/account" className="transition hover:text-fg">
