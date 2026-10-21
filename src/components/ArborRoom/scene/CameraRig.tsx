@@ -64,10 +64,17 @@ export function CameraRig() {
   const look = useRef(new THREE.Vector3());
 
   useEffect(() => {
-    isMobile.current = window.matchMedia(
+    const query = window.matchMedia(
       '(pointer: coarse), (max-width: 768px)'
-    ).matches;
-    heroState.isMobile = isMobile.current;
+    );
+    const syncPointer = () => {
+      isMobile.current = query.matches;
+      heroState.isMobile = query.matches;
+      lastFrontId.current = null;
+      if (!query.matches) heroState.setHovered?.(null);
+    };
+    syncPointer();
+    query.addEventListener('change', syncPointer);
 
     const el = gl.domElement;
 
@@ -119,6 +126,8 @@ export function CameraRig() {
     window.addEventListener('pointerup', onUp);
     window.addEventListener('pointercancel', onCancel);
     return () => {
+      query.removeEventListener('change', syncPointer);
+      document.body.style.cursor = '';
       el.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);

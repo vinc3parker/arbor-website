@@ -2,11 +2,15 @@ import type { Metadata } from "next";
 import { AppLanding } from "@/components/AppLanding";
 import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
+import { getAppDescription } from "@/lib/app-metadata";
+
+export const revalidate = 60;
+
+const description = getAppDescription("thrive");
 
 export const metadata: Metadata = {
   title: "Thrive: your assistant | Arbor",
-  description:
-    "Your time, habits and routines, shaped around who you want to be. Built on Arbor, so it understands the whole of you, not just your calendar.",
+  description,
   keywords:
     "productivity app, organisation app, routine planner, task management, time management, scheduling app",
   alternates: {
@@ -14,8 +18,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Thrive: your assistant | Arbor",
-    description:
-      "Your time, habits and routines, shaped around who you want to be. Built on Arbor, so it understands the whole of you, not just your calendar.",
+    description,
     url: "https://arborapps.co/thrive",
     type: "website",
     images: [
@@ -30,8 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Thrive: your assistant | Arbor",
-    description:
-      "Your time, habits and routines, shaped around who you want to be. Built on Arbor, so it understands the whole of you, not just your calendar.",
+    description,
     images: ["https://arborapps.co/og-thrive.png"],
   },
 };
@@ -39,7 +41,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Thrive",
-    "Your time, habits and routines, shaped around who you want to be. Built on Arbor, so it understands the whole of you, not just your calendar.",
+    description,
     "https://arborapps.co/thrive",
     "ProductivityApplication"
   );

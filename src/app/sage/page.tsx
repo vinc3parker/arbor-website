@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { AppLanding } from "@/components/AppLanding";
 import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
+import { getAppDescription } from "@/lib/app-metadata";
+
+const description = getAppDescription("sage");
 
 export const metadata: Metadata = {
   title: "Sage: your tutor | Arbor",
-  description:
-    "Learn what you need to grow, from courses to new curiosities. Built on Arbor, so it understands the whole of you, not just your studies.",
+  description,
   keywords:
     "learning app, knowledge management, study app, educational app, skill development, learning platform",
   alternates: {
@@ -14,8 +16,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Sage: your tutor | Arbor",
-    description:
-      "Learn what you need to grow, from courses to new curiosities. Built on Arbor, so it understands the whole of you, not just your studies.",
+    description,
     url: "https://arborapps.co/sage",
     type: "website",
     images: [
@@ -30,8 +31,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Sage: your tutor | Arbor",
-    description:
-      "Learn what you need to grow, from courses to new curiosities. Built on Arbor, so it understands the whole of you, not just your studies.",
+    description,
     images: ["https://arborapps.co/og-sage.png"],
   },
 };
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Sage",
-    "Learn what you need to grow, from courses to new curiosities. Built on Arbor, so it understands the whole of you, not just your studies.",
+    description,
     "https://arborapps.co/sage",
     "EducationalApplication"
   );

@@ -1,395 +1,194 @@
-'use client';
+"use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { Canvas } from '@react-three/fiber';
-import { ObservatoryScene } from './scene/ObservatoryScene';
-import { heroState, titleOpacity } from './scroll/heroState';
-import type { ArborApp } from './data/apps';
-import { rememberEntered, shouldSkipIntro } from '@/lib/intro';
-import { appBrand } from '@/lib/brand';
-import { CAMERA_POS, CAMERA_FOV } from './room/constants';
+import { Component, useEffect, useRef, useState, type ReactNode } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Canvas } from "@react-three/fiber";
+import { ObservatoryScene } from "./scene/ObservatoryScene";
+import { heroState } from "./scroll/heroState";
+import { arborApps, type ArborApp } from "./data/apps";
+import { APP_BRANDS } from "@/lib/brand";
+import { APP_ROADMAP } from "@/content/roadmap";
+import { CAMERA_POS, CAMERA_FOV } from "./room/constants";
 
-const NAVIGATE_AFTER_MS = 1150;
-/** How long the auto-build plays once the visitor clicks to enter. The whole
- *  sequence (light → wall → portals) finishes around progress 0.9, so we tween
- *  progress 0 → 1 across this window and then lock. */
 const ENTER_DURATION_MS = 4600;
+const NAVIGATE_AFTER_MS = 1150;
+const BUILT_SESSION_KEY = "arbor-guides-built";
 
-const smoothstep = (t: number) => {
-  const c = Math.min(Math.max(t, 0), 1);
-  return c * c * (3 - 2 * c);
-};
+function StaticArchways({ loading = false }: { loading?: boolean }) {
+  return (
+    <section className="theme-dark relative isolate overflow-hidden bg-bg pt-32 pb-14 text-fg sm:pt-40">
+      <Image src="/images/arbor-woodland.webp" alt="" fill sizes="100vw" className="-z-20 object-cover" />
+      <div className="absolute inset-0 -z-10 bg-ink/80" />
+      <div className="site-container">
+        <p className="ui-kicker">The Arbor guides</p>
+        <h1 className="type-h1 max-w-2xl">Meet the Arbor guides.</h1>
+        <p className="mt-5 max-w-xl text-fg-2">Choose the part of life you want to explore. Each doorway introduces a specialist app and its personal AI guide.</p>
+        <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4 lg:grid-cols-8">
+          {arborApps.map(app => <Link key={app.id} href={app.route} className="group relative flex min-h-56 flex-col items-center justify-end overflow-hidden rounded-t-[6rem] rounded-b-2xl border border-paper/25 bg-ink/55 px-3 pt-10 pb-6 text-center transition hover:border-paper hover:bg-ink/80"><Image src={APP_BRANDS[app.id].icon} alt="" width={48} height={48} className="mb-7 h-12 w-12 rounded-xl transition group-hover:-translate-y-1" /><span className="font-medium">{app.name}</span><span className="mt-1 text-xs text-fg-2">Your {APP_BRANDS[app.id].title}</span><span className="mt-4 text-[0.65rem] text-fg-2">{APP_ROADMAP[app.id].label}</span></Link>)}
+        </div>
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 text-sm text-fg-2"><p role={loading ? "status" : undefined}>{loading ? "Opening the archways. You can also choose a guide above." : "A quieter way to explore, with every guide just a doorway away."}</p><Link href="#guide-directory" className="inline-flex min-h-11 items-center gap-3 text-fg underline underline-offset-4">Browse every guide <span aria-hidden>↓</span></Link></div>
+      </div>
+    </section>
+  );
+}
 
-/**
- * The observatory hero. The page opens on "Arbor" in the dark; clicking to
- * enter plays an auto-build — the architecture wakes, the wall assembles, then
- * the portals light one at a time, centre-out. Hovering a lit portal raises its
- * app card; clicking dollies the camera through the veil into the app page.
- */
-export function ArborRoom({
-  statuses,
-}: {
-  statuses?: Record<string, ArborApp['status']>;
-}) {
+class RoomBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() { return this.state.failed ? <StaticArchways /> : this.props.children; }
+}
+
+export function ArborRoom() {
+  const [mode, setMode] = useState<"loading" | "interactive" | "static">("loading");
+  useEffect(() => {
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => {
+      if (motion.matches) { setMode("static"); return; }
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("webgl2");
+      context?.getExtension("WEBGL_lose_context")?.loseContext();
+      setMode(context ? "interactive" : "static");
+    };
+    update();
+    motion.addEventListener("change", update);
+    return () => motion.removeEventListener("change", update);
+  }, []);
+
+  if (mode !== "interactive") return <StaticArchways loading={mode === "loading"} />;
+  return <RoomBoundary><InteractiveRoom /></RoomBoundary>;
+}
+
+function InteractiveRoom() {
   const router = useRouter();
-  const titleRef = useRef<HTMLDivElement>(null);
-  // Latches once the auto-build finishes; from then on the room stays fully
-  // built and every portal is live.
-  const lockedRef = useRef(false);
-  // Set the moment the visitor clicks to enter; the rAF loop tweens progress
-  // from here.
-  const enteringRef = useRef(false);
-  const enterStartRef = useRef(0);
-
+  const sectionRef = useRef<HTMLElement>(null);
+  const navigationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hovered, setHovered] = useState<ArborApp | null>(null);
   const [transitionApp, setTransitionApp] = useState<ArborApp | null>(null);
-  const [locked, setLocked] = useState(false);
-  const [entering, setEntering] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [resumeBuilt] = useState(() => {
+    const built = window.sessionStorage.getItem(BUILT_SESSION_KEY) === "true";
+    heroState.progress = built ? 1 : 0;
+    return built;
+  });
+  const [locked, setLocked] = useState(resumeBuilt);
+  const [ready, setReady] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [mobile, setMobile] = useState(() => window.matchMedia("(pointer: coarse), (max-width: 768px)").matches);
 
   useEffect(() => {
-    const mq = window.matchMedia('(pointer: coarse), (max-width: 768px)');
-    const sync = () => setIsMobile(mq.matches);
-    sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
-  }, []);
+    heroState.progress = resumeBuilt ? 1 : 0;
+    heroState.hovered = null;
+    heroState.transition = null;
+    const query = window.matchMedia("(pointer: coarse), (max-width: 768px)");
+    const sync = () => setMobile(query.matches);
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, [resumeBuilt]);
 
-  // Kick off the auto-build. Ignored once it's already running or committed.
-  const startEnter = () => {
-    if (enteringRef.current || lockedRef.current) return;
-    enteringRef.current = true;
-    enterStartRef.current = 0;
-    setEntering(true);
-    navigator.vibrate?.([14, 40, 22]);
-  };
-
-  // Drive progress every frame. Before the click it holds at 0 (the dark title
-  // screen); after the click it tweens 0 → 1 across ENTER_DURATION_MS, then
-  // locks. Written straight to the mutable store (read by the scene per-frame)
-  // and to overlay styles — no React re-renders while it plays.
   useEffect(() => {
-    // Debug/testing hook: ?arbor-progress=0.7 pins the intro at that point.
-    const pinned = parseFloat(
-      new URLSearchParams(window.location.search).get('arbor-progress') ?? ''
-    );
-    if (!Number.isNaN(pinned)) heroState.progress = pinned;
-
-    // Already inside the site (Esc → ?entered=1, the logo, or an earlier
-    // visit this session): start fully built and locked, with no replay of the
-    // intro. lockedRef is picked up on the first frame below, which also syncs
-    // the React `locked` state.
-    const skip = shouldSkipIntro();
-    if (skip) lockedRef.current = true;
-
-    let syncedLock = false;
-    let raf = 0;
+    if (!ready || locked || resumeBuilt) return;
+    const start = performance.now();
+    let frame = 0;
     const tick = (now: number) => {
-      raf = requestAnimationFrame(tick);
-
-      let p: number;
-      if (lockedRef.current) {
-        // Intro committed: hold the fully-built end state. Sync the React lock
-        // once so the click surface goes inert and the intro class clears.
-        p = 1;
-        if (!syncedLock) {
-          syncedLock = true;
-          setLocked(true);
-          setEntering(false);
-        }
-      } else if (!Number.isNaN(pinned)) {
-        p = pinned;
-      } else if (enteringRef.current) {
-        if (!enterStartRef.current) enterStartRef.current = now;
-        const raw = (now - enterStartRef.current) / ENTER_DURATION_MS;
-        p = smoothstep(raw);
-        if (raw >= 1) {
-          lockedRef.current = true;
-          rememberEntered();
-          syncedLock = true;
-          setLocked(true);
-          setEntering(false);
-          p = 1;
-        }
-      } else {
-        // Waiting on the dark title screen.
-        p = 0;
-      }
-
-      heroState.progress = p;
-
-      // Dismiss any open info card if the room isn't fully awake.
-      if (p < 0.98 && heroState.hovered) heroState.setHovered?.(null);
-
-      if (titleRef.current) {
-        const o = titleOpacity(p);
-        titleRef.current.style.opacity = String(o);
-        titleRef.current.style.transform = `translateY(${-24 * (1 - o)}px)`;
-        titleRef.current.style.visibility = o === 0 ? 'hidden' : 'visible';
-      }
-      // Navbar arrives only once every portal has woken.
-      document.documentElement.classList.toggle('arbor-intro', p < 0.9);
+      const t = Math.min((now - start) / ENTER_DURATION_MS, 1);
+      const progress = t * t * (3 - 2 * t);
+      heroState.progress = progress;
+      if (t < 1) frame = requestAnimationFrame(tick);
+      else setLocked(true);
     };
-    if (!skip) document.documentElement.classList.add('arbor-intro');
-    raf = requestAnimationFrame(tick);
-    return () => {
-      cancelAnimationFrame(raf);
-      document.documentElement.classList.remove('arbor-intro');
-    };
-  }, []);
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [ready, locked, resumeBuilt]);
 
-  // Freeze page scroll from the click until the build commits, so nobody
-  // scrolls off the animation while it plays. The section is a plain single
-  // viewport, so once locked normal scrolling resumes into the content below.
-  useEffect(() => {
-    if (!entering) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.scrollTo(0, 0);
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [entering]);
-
-  useLayoutEffect(() => {
-    if (shouldSkipIntro() && titleRef.current) {
-      titleRef.current.style.opacity = '0';
-      titleRef.current.style.visibility = 'hidden';
-    }
-  }, []);
-
-  // Arriving already-completed: start at the top, unless a link asked for a
-  // section further down (e.g. /#early-access).
-  useLayoutEffect(() => {
-    if (locked && !window.location.hash) window.scrollTo(0, 0);
-  }, [locked]);
-
-  // Wire the three.js side of hover / select to React.
   useEffect(() => {
     heroState.setHovered = setHovered;
-    heroState.select = (app) => {
+    heroState.select = app => {
       if (heroState.transition) return;
+      window.sessionStorage.setItem(BUILT_SESSION_KEY, "true");
       heroState.transition = { app, startedAt: performance.now() };
       setTransitionApp(app);
       setHovered(null);
-      window.setTimeout(() => router.push(app.route), NAVIGATE_AFTER_MS);
+      navigationTimer.current = setTimeout(() => router.push(app.route), NAVIGATE_AFTER_MS);
     };
     return () => {
+      if (navigationTimer.current) clearTimeout(navigationTimer.current);
       heroState.setHovered = undefined;
       heroState.select = undefined;
       heroState.transition = null;
       heroState.hovered = null;
+      heroState.progress = 0;
     };
   }, [router]);
 
-  useEffect(() => {
-    heroState.hovered = hovered;
-  }, [hovered]);
+  const markBuilt = () => window.sessionStorage.setItem(BUILT_SESSION_KEY, "true");
 
-  // The click-to-enter surface is live only on the dark title screen — before
-  // the build starts and before it commits. Once the auto-build is running or
-  // done, it's inert so portal hover/click (via the canvas) takes over.
-  const catcherActive = !entering && !locked;
+  useEffect(() => {
+    const guideRoutes = new Set(arborApps.map((app) => app.route));
+    const rememberCompletedRoom = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const link = target.closest<HTMLAnchorElement>("a[href]");
+      if (!link) return;
+      const destination = new URL(link.href, window.location.href);
+      if (destination.origin === window.location.origin && guideRoutes.has(destination.pathname)) {
+        markBuilt();
+      }
+    };
+    document.addEventListener("click", rememberCompletedRoom);
+    return () => document.removeEventListener("click", rememberCompletedRoom);
+  }, []);
+
+  useEffect(() => { heroState.hovered = hovered; }, [hovered]);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { rootMargin: "100px" });
+    observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section style={{ height: '100vh', position: 'relative' }}>
-      <div
-        style={{
-          position: 'sticky',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '100vh',
-          overflow: 'hidden',
-          background: '#050608',
-        }}
-      >
-        <Canvas
-          shadows="percentage"
-          // Horizontal gestures are captured by the CameraRig to orbit on mobile.
-          style={{ touchAction: 'pan-y' }}
-          camera={{
-            position: CAMERA_POS,
-            fov: CAMERA_FOV,
-            near: 0.1,
-            far: 200,
-          }}
-        >
-          <ObservatoryScene statuses={statuses} />
+    <section ref={sectionRef} className="theme-dark relative min-h-[42rem] bg-bg text-fg" style={{ height: "100svh" }} aria-label="Explore Arbor through the archways">
+      <h1 className="sr-only">Explore the Arbor guides</h1>
+      <div className="absolute inset-x-0 top-20 bottom-36 overflow-hidden sm:bottom-24">
+        <Canvas shadows="percentage" dpr={[1, 1.5]} frameloop={visible ? "always" : "never"} style={{ touchAction: "pan-y" }} camera={{ position: CAMERA_POS, fov: CAMERA_FOV, near: 0.1, far: 200 }} onCreated={() => setReady(true)}>
+          <ObservatoryScene />
         </Canvas>
-
-        {/* ---- Click-to-enter surface ---- */}
-        {catcherActive && (
-          <button
-            type="button"
-            onClick={startEnter}
-            aria-label="Enter Arbor"
-            style={{
-              position: 'absolute',
-              inset: 0,
-              zIndex: 20,
-              cursor: 'pointer',
-              background: 'transparent',
-              border: 'none',
-              padding: 0,
-              margin: 0,
-            }}
-          />
-        )}
-
-        {/* ---- Title ---- */}
-        <div
-          ref={titleRef}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            pointerEvents: 'none',
-            textAlign: 'center',
-            // Solid Ink until the visitor enters: the room stays hidden
-            // behind the title, then is revealed as the title fades.
-            background: '#0A0A0A',
-            padding: '0 1.5rem',
-          }}
-        >
-          {/* The wordmark is artwork — never retyped (brand guide 5.7). */}
-          <h1 style={{ margin: 0 }}>
-            <span className="sr-only">Arbor</span>
-            <Image
-              src="/brand/arbor_logo_reverse.png"
-              alt=""
-              width={942}
-              height={227}
-              priority
-              style={{ width: 'clamp(12rem, 32vw, 26rem)', height: 'auto' }}
-            />
-          </h1>
-          <p
-            style={{
-              marginTop: '1.75rem',
-              fontSize: 'clamp(1rem, 1.6vw, 1.25rem)',
-              fontWeight: 400,
-              color: 'rgba(246,245,242,0.75)',
-            }}
-          >
-            Live more of the life you choose.
-          </p>
-          {/* Enter prompt. The whole screen is the click target (the button
-              above); this just makes it obvious. */}
-          <span
-            aria-hidden
-            style={{
-              marginTop: '2.75rem',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.625rem',
-              minHeight: 48,
-              padding: '0.75rem 1.5rem',
-              borderRadius: '0.75rem',
-              background: '#F6F5F2',
-              color: '#0A0A0A',
-              fontSize: '1rem',
-              fontWeight: 500,
-            }}
-          >
-            {isMobile ? 'Tap to enter' : 'Click to enter'}
-            <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>→</span>
-          </span>
-        </div>
-
-        {/* ---- Hover label: centred, boxless, in the app's accent colour.
-                 The hovered arch also lifts its own glow (see PortalSurface). */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: `translate(-50%, -50%) scale(${hovered ? 1 : 0.98})`,
-            opacity: hovered ? 1 : 0,
-            transition: 'opacity 240ms ease, transform 240ms ease',
-            pointerEvents: 'none',
-            textAlign: 'center',
-            width: 'min(40rem, calc(100vw - 3rem))',
-            padding: '3rem 3.5rem',
-            // A soft, edgeless bubble that fades to nothing — just enough to
-            // lift the text off the scene without reading as a boxed card.
-            background:
-              'radial-gradient(ellipse at center, rgba(6,8,11,0.62) 0%, rgba(6,8,11,0.34) 48%, rgba(6,8,11,0) 78%)',
-          }}
-        >
-          {hovered && (
-            <>
-              <div
-                style={{
-                  fontSize: 'clamp(2.6rem, 6.5vw, 4.5rem)',
-                  fontWeight: 250,
-                  letterSpacing: '0.14em',
-                  marginLeft: '0.14em',
-                  color: '#f2f0eb',
-                  textShadow: '0 2px 40px rgba(0,0,0,0.6)',
-                }}
-              >
-                {hovered.name}
-              </div>
-              <div
-                style={{
-                  height: 2,
-                  width: '4rem',
-                  margin: '1rem auto 0',
-                  background: hovered.colour,
-                  boxShadow: `0 0 16px ${hovered.colour}`,
-                }}
-              />
-              <div
-                style={{
-                  marginTop: '1rem',
-                  fontSize: 'clamp(0.8rem, 1.4vw, 1rem)',
-                  letterSpacing: '0.3em',
-                  marginLeft: '0.3em',
-                  textTransform: 'uppercase',
-                  // Dark leads (Wend, Telos, Sage) swap to their readable colour on Ink.
-                  color: appBrand(hovered.id)?.textOnInk ?? hovered.colour,
-                }}
-              >
-                {hovered.dimension}
-              </div>
-              {isMobile && (
-                <div
-                  style={{
-                    marginTop: '1.4rem',
-                    fontSize: '0.72rem',
-                    letterSpacing: '0.24em',
-                    marginLeft: '0.24em',
-                    textTransform: 'uppercase',
-                    color: 'rgba(232,230,225,0.6)',
-                  }}
-                >
-                  Tap to enter
-                </div>
-              )}
-            </>
-          )}
-        </div>
-
-        {/* ---- Portal transition fade ---- */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            pointerEvents: transitionApp ? 'auto' : 'none',
-            opacity: transitionApp ? 1 : 0,
-            transition: `opacity ${NAVIGATE_AFTER_MS - 100}ms ease-in`,
-            background: transitionApp
-              ? `radial-gradient(ellipse at center, #fdfdfb 0%, ${transitionApp.colour} 140%)`
-              : '#fff',
-          }}
-        />
       </div>
+
+      {locked && hovered && (
+        <div
+          className="pointer-events-none absolute inset-x-0 top-[44%] z-10 mx-auto w-[min(40rem,calc(100vw-3rem))] -translate-y-1/2 px-6 py-10 text-center"
+          role="status"
+          aria-live="polite"
+          style={{
+            background: "radial-gradient(ellipse at center, rgba(6,8,11,0.62) 0%, rgba(6,8,11,0.34) 48%, rgba(6,8,11,0) 78%)",
+          }}
+        >
+          <p className="text-5xl font-light tracking-[0.14em] text-fg sm:text-7xl">
+            {hovered.name}
+          </p>
+          <div
+            className="mx-auto mt-5 h-0.5 w-16"
+            style={{ backgroundColor: hovered.colour, boxShadow: `0 0 16px ${hovered.colour}` }}
+          />
+          <p
+            className="mt-5 text-xs uppercase tracking-[0.3em] sm:text-sm"
+            style={{ color: APP_BRANDS[hovered.id].textOnInk }}
+          >
+            {hovered.dimension}
+          </p>
+          {mobile && <p className="mt-5 text-xs uppercase tracking-[0.2em] text-fg-2">Tap to enter</p>}
+        </div>
+      )}
+
+      <div className="absolute inset-x-0 bottom-0 z-20 border-t border-line bg-ink/90 px-4 pt-4 pb-5 sm:px-8">
+        <div className="mx-auto max-w-6xl"><div className="flex items-center justify-between gap-4 text-xs text-fg-2"><p>{locked ? mobile ? "Swipe to look around. Tap an archway to explore." : "Hover to discover. Click an archway to step inside." : "The room is coming together."}</p><div className="flex shrink-0 items-center gap-4">{!locked && <button type="button" onClick={() => { heroState.progress = 1; setLocked(true); }} className="py-2 text-fg underline underline-offset-4">Skip animation</button>}<Link href="#guide-directory" className="py-2 text-fg underline underline-offset-4">Browse below <span aria-hidden>↓</span></Link></div></div>
+        </div>
+      </div>
+
+      {transitionApp && <div aria-hidden className="pointer-events-none absolute inset-0 z-30" style={{ background: `radial-gradient(ellipse at center, #fdfdfb 0%, ${transitionApp.colour} 140%)`, animation: "portal-arrive 1050ms ease-in both" }} />}
     </section>
   );
 }

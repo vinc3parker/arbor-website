@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { AppLanding } from "@/components/AppLanding";
 import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
+import { getAppDescription } from "@/lib/app-metadata";
+
+const description = getAppDescription("wend");
 
 export const metadata: Metadata = {
   title: "Wend: your explorer | Arbor",
-  description:
-    "Make the most of your free time, from holidays to nights in. Built on Arbor, so it understands the whole of you, not just your weekends.",
+  description,
   keywords:
     "travel app, travel planning, exploration app, travel recommendations, travel guide, travel planning app",
   alternates: {
@@ -14,8 +16,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Wend: your explorer | Arbor",
-    description:
-      "Make the most of your free time, from holidays to nights in. Built on Arbor, so it understands the whole of you, not just your weekends.",
+    description,
     url: "https://arborapps.co/wend",
     type: "website",
     images: [
@@ -30,8 +31,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Wend: your explorer | Arbor",
-    description:
-      "Make the most of your free time, from holidays to nights in. Built on Arbor, so it understands the whole of you, not just your weekends.",
+    description,
     images: ["https://arborapps.co/og-wend.png"],
   },
 };
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Wend",
-    "Make the most of your free time, from holidays to nights in. Built on Arbor, so it understands the whole of you, not just your weekends.",
+    description,
     "https://arborapps.co/wend",
     "TravelApplication"
   );

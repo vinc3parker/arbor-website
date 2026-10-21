@@ -35,13 +35,37 @@ export async function GET(request: NextRequest) {
     // Malformed or external destinations fall back to the profile page.
   }
 
-  if (!token_hash || type !== "signup") {
+  if (!token_hash) {
     return NextResponse.redirect(
       new URL(confirmationReturnPath(queryContext, "invalid"), request.url)
     );
   }
 
   const supabase = await createClient();
+  if (type === "recovery") {
+    const { error } = await supabase.auth.verifyOtp({ type, token_hash });
+    if (!error) {
+      const recoveryUrl = new URL(safeNext, request.url);
+      if (recoveryUrl.pathname === "/reset-password") {
+        return NextResponse.redirect(recoveryUrl);
+      }
+    }
+
+    const resetUrl = new URL(safeNext, request.url);
+    if (resetUrl.pathname !== "/reset-password") {
+      resetUrl.pathname = "/reset-password";
+      resetUrl.search = "";
+    }
+    resetUrl.searchParams.delete("mode");
+    resetUrl.searchParams.set("error", "invalid");
+    return NextResponse.redirect(resetUrl);
+  }
+
+  if (type !== "signup") {
+    return NextResponse.redirect(
+      new URL(confirmationReturnPath(queryContext, "invalid"), request.url)
+    );
+  }
   const pendingProfile = await readPendingSignupProfile();
   const path = await completeSignupConfirmation(
     {

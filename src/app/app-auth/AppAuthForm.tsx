@@ -9,6 +9,7 @@ import {
   type CheckState,
 } from "./actions";
 import { GENDER_OPTIONS } from "@/lib/arbor-profile-fields";
+import { ForgotPasswordForm } from "@/app/auth/PasswordRecoveryForm";
 
 const inputClass =
   "ui-field";
@@ -26,6 +27,8 @@ export function AppAuthForm({
   intent?: "signup";
 }) {
   // Step 1 — email. The answer decides sign-in vs create-account.
+  const [emailInput, setEmailInput] = useState("");
+  const [forgot, setForgot] = useState(false);
   const [check, checkFormAction, checking] = useActionState<CheckState, FormData>(
     checkEmailAction,
     {}
@@ -33,8 +36,31 @@ export function AppAuthForm({
 
   const known = check.exists !== undefined && check.email;
   const mode = check.exists ? "signin" : "signup";
+  const returnParams = new URLSearchParams({ app });
+  if (state) returnParams.set("state", state);
+  const returnTo = `/app-auth?${returnParams}`;
 
   if (!known) {
+    if (forgot) {
+      return (
+        <div className="w-full max-w-md">
+          <div className="ui-surface p-8 md:p-10">
+            <p className="ui-kicker">{appName}</p>
+            <h1 className="ui-title">Forgot your password?</h1>
+            <p className="mt-3 text-sm leading-7 text-fg-2">
+              Enter your email and we&apos;ll send you a link to reset your password.
+            </p>
+            <ForgotPasswordForm
+              email={emailInput}
+              app={app}
+              state={state ?? undefined}
+              returnTo={returnTo}
+            />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="w-full max-w-md">
         <div className="ui-surface p-8 md:p-10">
@@ -61,6 +87,8 @@ export function AppAuthForm({
                 required
                 autoFocus
                 autoComplete="email"
+                value={emailInput}
+                onChange={(event) => setEmailInput(event.target.value)}
                 placeholder="you@example.com"
                 className={inputClass}
               />
@@ -78,6 +106,13 @@ export function AppAuthForm({
               {checking ? "Please wait…" : "Continue"}
             </button>
           </form>
+          <button
+            type="button"
+            onClick={() => setForgot(true)}
+            className="mt-5 text-sm text-fg-3 underline underline-offset-4 transition hover:text-fg"
+          >
+            Forgot password?
+          </button>
         </div>
       </div>
     );
@@ -109,11 +144,11 @@ function PasswordStep({
 }) {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [forgot, setForgot] = useState(false);
   const [authState, formAction, pending] = useActionState<AuthState, FormData>(
     authenticate,
     {}
   );
-
   const [resendState, resendAction, resending] = useActionState<AuthState, FormData>(
     resendConfirmationAction,
     {}
@@ -167,7 +202,15 @@ function PasswordStep({
           </a>
         </p>
 
-        <form action={formAction} className="mt-8 flex flex-col gap-4">
+        {forgot ? (
+          <ForgotPasswordForm
+            email={email}
+            app={app}
+            state={state ?? undefined}
+            returnTo={returnTo}
+          />
+        ) : (
+          <form action={formAction} className="mt-8 flex flex-col gap-4">
           <input type="hidden" name="app" value={app} />
           <input type="hidden" name="mode" value={mode} />
           <input type="hidden" name="email" value={email} />
@@ -340,6 +383,16 @@ function PasswordStep({
             />
           </label>
 
+          {mode === "signin" && (
+            <button
+              type="button"
+              onClick={() => setForgot(true)}
+              className="self-start text-sm text-fg underline underline-offset-4 transition hover:text-fg-2"
+            >
+              Forgot password?
+            </button>
+          )}
+
           {mode === "signup" && (
             <label className="flex flex-col gap-2">
               <span className={labelClass}>Confirm password</span>
@@ -364,10 +417,6 @@ function PasswordStep({
             </label>
           )}
 
-          {authState.error && (
-            <p className="px-1 text-sm text-danger">{authState.error}</p>
-          )}
-
           <button
             type="submit"
             disabled={pending || mismatch}
@@ -379,20 +428,29 @@ function PasswordStep({
                 ? `Sign in to ${appName}`
                 : "Create account"}
           </button>
-          {authState.resendAvailable && mode === "signin" && (
-            <>
-              <button type="submit" formAction={resendAction} disabled={resending} className="text-sm underline underline-offset-4">
+          </form>
+        )}
+        {authState.error && (
+          <p className="mt-4 px-1 text-sm text-danger">{authState.error}</p>
+        )}
+        {authState.resendAvailable && mode === "signin" && (
+          <div className="mt-4 flex flex-col gap-3">
+            <form action={resendAction}>
+              <input type="hidden" name="app" value={app} />
+              <input type="hidden" name="email" value={email} />
+              {state && <input type="hidden" name="state" value={state} />}
+              <button type="submit" disabled={resending} className="text-sm underline underline-offset-4">
                 {resending ? "Sending…" : "Resend confirmation email"}
               </button>
-              {resendState.confirmationSent && (
-                <p className="text-sm text-fg-2" role="status">
-                  If this account needs confirmation, a new email is on its way.
-                </p>
-              )}
-              {resendState.error && <p className="text-sm text-danger">{resendState.error}</p>}
-            </>
-          )}
-        </form>
+            </form>
+            {resendState.confirmationSent && (
+              <p className="text-sm text-fg-2" role="status">
+                If this account needs confirmation, a new email is on its way.
+              </p>
+            )}
+            {resendState.error && <p className="text-sm text-danger">{resendState.error}</p>}
+          </div>
+        )}
       </div>
     </div>
   );

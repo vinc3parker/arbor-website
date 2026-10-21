@@ -45,6 +45,22 @@ export function blockingConsents(status: ConsentStatus[]): ConsentItem[] {
 }
 
 /**
+ * Whether this person already had an account before now: they've answered the
+ * account Terms at some point. Used to explain why a newly-added required
+ * consent (arbor_connected) is being asked for on sign-in.
+ */
+export function isExistingAccount(status: ConsentStatus[]): boolean {
+  return status.some((s) => s.key === "arbor_core" && s.decidedAt !== null);
+}
+
+/**
+ * Optional consents that are only asked in an app, at the moment they matter
+ * (e.g. arbor_rhythm_data alongside the Apple Health permission), never on
+ * this gate.
+ */
+const IN_APP_ONLY_CONSENTS = new Set(["arbor_rhythm_data"]);
+
+/**
  * Optional consents worth offering on the sign-in gate: not required, not yet
  * decided, and versioned (Core rejects recording an unversioned consent, so we
  * never surface one we couldn't save — e.g. salus_neurodivergence_data, which is
@@ -52,6 +68,12 @@ export function blockingConsents(status: ConsentStatus[]): ConsentItem[] {
  */
 export function optionalOffers(status: ConsentStatus[]): ConsentItem[] {
   return status
-    .filter((s) => !s.required && s.accepted === null && s.currentVersion !== null)
+    .filter(
+      (s) =>
+        !s.required &&
+        s.accepted === null &&
+        s.currentVersion !== null &&
+        !IN_APP_ONLY_CONSENTS.has(s.key)
+    )
     .map(toItem);
 }

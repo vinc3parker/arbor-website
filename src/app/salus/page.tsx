@@ -2,11 +2,15 @@ import type { Metadata } from "next";
 import { AppLanding } from "@/components/AppLanding";
 import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
+import { getAppDescription } from "@/lib/app-metadata";
+
+export const revalidate = 60;
+
+const description = getAppDescription("salus");
 
 export const metadata: Metadata = {
   title: "Salus: your companion | Arbor",
-  description:
-    "Understand your thoughts and handle the life you are living. Built on Arbor, so it understands the whole of you, not just your mood.",
+  description,
   keywords:
     "journaling app, mental wellness app, reflection app, mental health, personal growth, mindfulness, journaling",
   alternates: {
@@ -14,8 +18,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Salus: your companion | Arbor",
-    description:
-      "Understand your thoughts and handle the life you are living. Built on Arbor, so it understands the whole of you, not just your mood.",
+    description,
     url: "https://arborapps.co/salus",
     type: "website",
     images: [
@@ -30,8 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Salus: your companion | Arbor",
-    description:
-      "Understand your thoughts and handle the life you are living. Built on Arbor, so it understands the whole of you, not just your mood.",
+    description,
     images: ["https://arborapps.co/og-salus.png"],
   },
 };
@@ -39,7 +41,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Salus",
-    "Understand your thoughts and handle the life you are living. Built on Arbor, so it understands the whole of you, not just your mood.",
+    description,
     "https://arborapps.co/salus",
     "HealthAndFitnessApplication"
   );

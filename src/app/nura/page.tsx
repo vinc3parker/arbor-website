@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { AppLanding } from "@/components/AppLanding";
 import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
+import { getAppDescription } from "@/lib/app-metadata";
+
+const description = getAppDescription("nura");
 
 export const metadata: Metadata = {
   title: "Nura: your money manager | Arbor",
-  description:
-    "See how your money is doing and make it work for the life you want. Built on Arbor, so it understands the whole of you, not just your spending.",
+  description,
   keywords:
     "personal finance app, budgeting app, financial planning, money management, expense tracker, savings app",
   alternates: {
@@ -14,8 +16,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Nura: your money manager | Arbor",
-    description:
-      "See how your money is doing and make it work for the life you want. Built on Arbor, so it understands the whole of you, not just your spending.",
+    description,
     url: "https://arborapps.co/nura",
     type: "website",
     images: [
@@ -30,8 +31,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Nura: your money manager | Arbor",
-    description:
-      "See how your money is doing and make it work for the life you want. Built on Arbor, so it understands the whole of you, not just your spending.",
+    description,
     images: ["https://arborapps.co/og-nura.png"],
   },
 };
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Nura",
-    "See how your money is doing and make it work for the life you want. Built on Arbor, so it understands the whole of you, not just your spending.",
+    description,
     "https://arborapps.co/nura",
     "FinanceApplication"
   );

@@ -2,11 +2,16 @@ import type { Metadata } from "next";
 import { AppLanding } from "@/components/AppLanding";
 import { apps } from "@/content/apps";
 import { getProductSchema } from "@/lib/schema";
+import { getAppDescription } from "@/lib/app-metadata";
+
+// Beta access links can change independently of the public roadmap.
+export const revalidate = 60;
+
+const description = getAppDescription("aevo");
 
 export const metadata: Metadata = {
   title: "Aevo: your coach | Arbor",
-  description:
-    "Your coach for training, recovery and a body ready for anything. Built on Arbor, so it understands the whole of you, not just your workouts.",
+  description,
   keywords: [
     "personalised training app",
     "adaptive training app",
@@ -18,8 +23,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://arborapps.co/aevo" },
   openGraph: {
     title: "Aevo: your coach | Arbor",
-    description:
-      "Your coach for training, recovery and a body ready for anything. Built on Arbor, so it understands the whole of you, not just your workouts.",
+    description,
     url: "https://arborapps.co/aevo",
     type: "website",
     images: [
@@ -34,8 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Aevo: your coach | Arbor",
-    description:
-      "Your coach for training, recovery and a body ready for anything. Built on Arbor, so it understands the whole of you, not just your workouts.",
+    description,
     images: ["https://arborapps.co/og-aevo.png"],
   },
 };
@@ -43,7 +46,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const schemaData = getProductSchema(
     "Aevo",
-    "Your coach for training, recovery and a body ready for anything. Built on Arbor, so it understands the whole of you, not just your workouts.",
+    description,
     "https://arborapps.co/aevo",
     "ProductivityApplication"
   );

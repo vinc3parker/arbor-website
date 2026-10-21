@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { rememberEntered } from "@/lib/intro";
 
 type NavItem = {
   label: string;
@@ -12,6 +11,13 @@ type NavItem = {
 };
 
 const items: NavItem[] = [
+  { label: "The guides", href: "/guides" },
+  { label: "How it works", href: "/how-it-works" },
+  { label: "Our progress", href: "/progress" },
+  {
+    label: "Grove",
+    href: "/grove",
+  },
   {
     label: "Blog",
     href: "/blog",
@@ -20,28 +26,34 @@ const items: NavItem[] = [
 
 /**
  * `tone` sets the bar's surface: Paper with the full-colour logo, or Ink with
- * the Reverse logo (brand guide 5.4). Dark on the observatory and app pages.
+ * the Reverse logo (brand guide 5.4). Dark on the app pages.
  */
 export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  // Anyone on another page is already inside the site, so the logo takes
-  // them home without the observatory's click to enter.
   useEffect(() => {
-    if (pathname !== "/") rememberEntered();
-  }, [pathname]);
+    if (!open) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [open]);
 
   return (
-    <nav className={`site-navbar fixed left-0 right-0 top-0 z-50 border-b border-line bg-bg/90 text-fg backdrop-blur-xl ${
+    <nav aria-label="Main navigation" className={`site-navbar fixed left-0 right-0 top-0 z-50 border-b border-line/70 bg-bg/95 text-fg backdrop-blur-xl ${
         tone === "dark" ? "theme-dark" : "theme-light"
       }`}>
       <div className="site-container">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-20 items-center justify-between gap-6">
           <Link
             href="/"
             className="flex items-center py-2 transition hover:opacity-80"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              if (pathname === "/") window.scrollTo({ top: 0 });
+            }}
           >
             <Image
               src={
@@ -52,18 +64,19 @@ export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
               alt="Arbor"
               width={942}
               height={227}
-              priority
+              loading="eager"
               className="h-auto w-[120px]"
             />
           </Link>
 
           {/* Desktop links */}
-          <div className="hidden items-center gap-8 type-label text-fg-2 md:flex">
+          <div className="hidden items-center gap-6 text-sm text-fg-2 lg:flex">
             {items.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className="transition hover:text-fg"
+                aria-current={pathname === item.href ? "page" : undefined}
+                className={`transition hover:text-fg ${pathname === item.href ? "text-fg" : "text-fg-2"}`}
               >
                 {item.label}
               </Link>
@@ -75,6 +88,7 @@ export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
             >
               Account
             </Link>
+            <Link href="/early-access" className="ui-primary min-h-10 px-4 py-2 text-sm">Join the waitlist <span aria-hidden className="ml-3">↗</span></Link>
           </div>
 
           {/* Mobile toggle */}
@@ -83,7 +97,8 @@ export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-line text-fg transition hover:border-fg-3 md:hidden"
+            aria-controls="mobile-navigation"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-line text-fg transition hover:border-fg-3 lg:hidden"
           >
             <svg
               viewBox="0 0 24 24"
@@ -105,13 +120,14 @@ export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
 
         {/* Mobile menu panel */}
         {open && (
-          <div className="flex flex-col gap-1 border-t border-line bg-bg py-4 type-label md:hidden">
+          <div id="mobile-navigation" className="flex max-h-[calc(100dvh-5rem)] flex-col gap-1 overflow-y-auto border-t border-line bg-bg py-4 type-label lg:hidden">
             {items.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="rounded-xl px-4 py-3 text-fg-2 transition hover:bg-surface hover:text-fg"
+                aria-current={pathname === item.href ? "page" : undefined}
+                className={`rounded-xl px-4 py-3 transition hover:bg-surface hover:text-fg ${pathname === item.href ? "bg-surface text-fg" : "text-fg-2"}`}
               >
                 {item.label}
               </Link>
@@ -124,6 +140,7 @@ export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
             >
               Account
             </Link>
+            <Link href="/early-access" onClick={() => setOpen(false)} className="ui-primary mt-2">Join the waitlist</Link>
           </div>
         )}
       </div>

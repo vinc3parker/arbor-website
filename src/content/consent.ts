@@ -41,6 +41,17 @@ export const CONSENT_COPY: Record<string, ConsentCopy> = {
     title: "I'm 18 or older",
     body: "Confirm you're at least 18. Arbor accounts are for adults only.",
   },
+  arbor_connected: {
+    title: "Connect my life to Arbor",
+    body: "Let every Arbor app share what it learns with Arbor, so each guide can help with your whole life, including how you've been feeling and your health. You can see, remove or lock anything, any time, in \"What Arbor knows\".",
+  },
+  // Account-level so one yes covers every app, but asked in an app when the
+  // person turns on sleep sharing (alongside the Apple Health permission), not
+  // on this gate — see IN_APP_ONLY_CONSENTS in lib/app-consent.ts.
+  arbor_rhythm_data: {
+    title: "Share my sleep across Arbor",
+    body: "Optional. Let Arbor use when you fell asleep and woke up, from Apple Health or Garmin, so your apps can plan around how you actually slept. This is health data. You can turn it off any time in the app, and remove it in \"What Arbor knows\".",
+  },
   marketing: {
     title: "Product & occasional updates",
     body: "Optional. Get occasional emails about new features and Arbor apps. You can turn this off any time in your account.",
@@ -62,8 +73,8 @@ export const CONSENT_COPY: Record<string, ConsentCopy> = {
 
   // ── Other apps' AI processing (interaction layer) ──────────────────────────
   thrive_ai_processing: {
-    title: "AI coaching for Thrive",
-    body: "Let Thrive use AI to interpret and coach your routines and planning. Required for Thrive's AI features.",
+    title: "Your assistant uses AI",
+    body: "Thrive uses AI to turn what you tell it into tasks, plan your day and suggest routines. Only what's needed for each request leaves your device, and it's never used to train AI. Required for Thrive's assistant.",
   },
   aevo_ai_processing: {
     title: "AI coaching for Aevo",
@@ -96,6 +107,33 @@ export const CONSENT_COPY: Record<string, ConsentCopy> = {
   growth_ai_processing: {
     title: "AI for Sage",
     body: "Let Sage use AI to interpret and support your learning. Required for Sage's AI features.",
+  },
+};
+
+/** Key of the consent that gets its own "Connect your life to Arbor" screen. */
+export const CONNECT_CONSENT_KEY = "arbor_connected";
+
+// Screen 2 of the account consent flow (brand guide 8.2 / 8.3). The explanation
+// is the 8.2 wording word for word — don't paraphrase it.
+export const CONNECT_SCREEN = {
+  heading: "Arbor works best when it understands the whole of you.",
+  explanation: [
+    "Each Arbor app learns from what you share with it.",
+    "Arbor brings that together, so every guide understands the whole of you.",
+    "You can see and remove anything Arbor has learned, any time.",
+  ],
+  whatThisMeans: [
+    "What one app learns can help the others. A packed week in Thrive can mean a lighter session in Aevo.",
+    "This can include how you've been feeling and your health, so we ask for your clear yes.",
+    "Some things stay in the app where you shared them. You'll see a lock on those in \"What Arbor knows\".",
+    "Guides never act in another app without your yes.",
+    "Arbor never sells what it learns and never uses it for adverts.",
+  ],
+  button: "Connect my life to Arbor",
+  // Shown first to people who joined before arbor_connected existed.
+  reask: {
+    heading: "One thing before you carry on",
+    body: "Arbor now asks for a separate yes to connecting your apps, so it's clear what's shared between your guides.",
   },
 };
 

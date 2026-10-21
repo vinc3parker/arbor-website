@@ -91,25 +91,43 @@ export async function submitConsent(
 }
 
 /**
- * The person declined to accept the required consents. We can't hand back a
- * session (Salus's data routes would reject it anyway), so we bounce back to the
- * app's callback with an error the app can act on, and clear the pending session.
+ * The person isn't ready to give the required consents ("Not now"). They're
+ * still signed in and sent back to the app, but they can't use it yet: Core's
+ * gate refuses app calls with 403 CONSENT_REQUIRED (account consents, e.g.
+ * arbor_connected) or the app's own consent check does — the same "fix your
+ * profile" flag as any other account problem, like SUBSCRIPTION_REQUIRED. The
+ * app routes that to /account?action=consent&app=<id>, which brings them back
+ * through this gate.
+ *
+ * Nothing is recorded: the consents stay outstanding rather than being stored
+ * as declined, so they're simply asked again.
  *
  * Takes FormData (unused) so it can be wired straight to a submit button's
  * formAction alongside submitConsent.
  */
 export async function declineConsent(_formData: FormData): Promise<void> {
   const pending = await readPendingAuth();
-  await clearPendingAuth();
-
   if (!pending || !isRegisteredApp(pending.app)) {
+    await clearPendingAuth();
     redirect("/app-auth");
   }
 
-  redirect(
-    buildCallbackUrl(pending.app, {
+  let callbackUrl: string;
+  try {
+    const { code } = await authorize(pending.session);
+    callbackUrl = buildCallbackUrl(pending.app, {
+      code,
+      state: pending.state,
+    });
+  } catch {
+    // Couldn't mint a code — fall back to the old behaviour: no session, and
+    // an error the app can act on.
+    callbackUrl = buildCallbackUrl(pending.app, {
       error: "consent_required",
       state: pending.state,
-    })
-  );
+    });
+  }
+
+  await clearPendingAuth();
+  redirect(callbackUrl);
 }

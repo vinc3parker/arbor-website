@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Link from "next/link";
 import { GENDER_OPTIONS } from "@/lib/arbor-profile-fields";
 import { login, signup, type AuthState } from "./actions";
 
@@ -280,6 +281,13 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
             {mode === "login" ? "Create an account" : "Sign in"}
           </button>
         </p>
+        {mode === "login" && (
+          <p className="mt-3 text-sm">
+            <Link href="/reset-password" className="text-fg underline underline-offset-4 transition hover:text-fg-2">
+              Forgot password?
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

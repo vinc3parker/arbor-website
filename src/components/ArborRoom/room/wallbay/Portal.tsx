@@ -52,7 +52,6 @@ export function Portal({ app, revealRef }: PortalProps) {
       {/* Invisible hit surface across the opening for hover / click */}
       <mesh
         position={[0, 0, 0.1]}
-        visible={false}
         onPointerOver={(e) => {
           if (!interactive()) return;
           e.stopPropagation();
@@ -64,6 +63,12 @@ export function Portal({ app, revealRef }: PortalProps) {
           if (heroState.hovered?.id === app.id) heroState.setHovered?.(null);
           document.body.style.cursor = '';
         }}
+        onPointerMove={(e) => {
+          if (!interactive()) return;
+          e.stopPropagation();
+          heroState.setHovered?.(app);
+          document.body.style.cursor = 'pointer';
+        }}
         onClick={(e) => {
           if (!interactive()) return;
           e.stopPropagation();
@@ -72,6 +77,7 @@ export function Portal({ app, revealRef }: PortalProps) {
         }}
       >
         <planeGeometry args={[2.1, 6.1]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
       </mesh>
 
       {/* Coloured spill onto the reveal and nearby floor */}
