@@ -63,8 +63,9 @@ export function HomeHero() {
     <section className="site-container pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32" aria-labelledby="home-heading">
       <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
         <div>
-          <h1 id="home-heading" className="home-headline max-w-2xl" style={{ fontSize: "clamp(2.4rem, 4.3vw, 4.5rem)" }}>Eight specialist apps.<br /><span className="text-fg-3">One connected life.</span></h1>
-          <p className="mt-5 max-w-lg text-lg leading-relaxed text-fg-2 sm:mt-7 sm:text-xl">For health, mind, money, time and more, each app has its own AI guide. They&apos;re being built to work together as one connected system, so every guide can understand more of your life.</p>
+          <p className="ui-kicker">Self-help, made personal</p>
+          <h1 id="home-heading" className="home-headline mt-3 max-w-2xl" style={{ fontSize: "clamp(2.4rem, 4.3vw, 4.5rem)" }}>Eight personal guide apps.<br /><span className="text-fg-3">One connected life.</span></h1>
+          <p className="mt-5 max-w-lg text-lg leading-relaxed text-fg-2 sm:mt-7 sm:text-xl">For your health, mind, money, time and more. Each Arbor guide gets to know you personally, so the support across your life can work together.</p>
           <div className="mt-7 flex flex-wrap items-center gap-4 sm:mt-9"><Link href="/guides" className="ui-primary gap-6 px-6">Explore the eight apps <span aria-hidden>↗</span></Link><Link href="/how-it-works" className="inline-flex min-h-12 items-center px-2 type-label text-fg-2 underline decoration-line underline-offset-8 transition hover:text-fg">How they connect</Link></div>
         </div>
         <figure className="theme-dark relative isolate min-h-[27rem] overflow-hidden rounded-t-[12rem] rounded-b-3xl bg-bg text-fg sm:min-h-[32rem] lg:h-[clamp(26rem,calc(100svh-10rem),35rem)] lg:min-h-0">
