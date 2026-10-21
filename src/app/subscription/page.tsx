@@ -129,6 +129,7 @@ export default async function SubscriptionPage({
   let entPlan: string | null = null;
   let source: "stripe" | "trial" | "comp" | null = null;
   let periodEnd: number | null = null;
+  let cancelAtPeriodEnd = false;
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -143,6 +144,7 @@ export default async function SubscriptionPage({
     entPlan = view.entitlement.plan;
     source = view.source;
     periodEnd = view.entitlement.currentPeriodEnd;
+    cancelAtPeriodEnd = view.cancelAtPeriodEnd;
   }
   const offeredPlan = offer?.plan ?? "founder";
   const price = PLANS[offeredPlan];
@@ -183,7 +185,11 @@ export default async function SubscriptionPage({
     detail =
       "Your two-week tester access has ended. Add payment details to continue as a Founding member.";
   } else if (isStripeEntitled) {
-    if (entStatus === "past_due") {
+    if (cancelAtPeriodEnd && periodEnd) {
+      chipLabel = "Ending";
+      chipClass = "border-warning/40 bg-warning/10 text-warning";
+      detail = `Your membership ends on ${formatDate(periodEnd)}. You can use every Arbor app until then.`;
+    } else if (entStatus === "past_due") {
       chipLabel = "Payment due";
       chipClass = "border-warning/40 bg-warning/10 text-warning";
       detail = periodEnd

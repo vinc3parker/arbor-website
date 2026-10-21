@@ -276,6 +276,8 @@ export interface EntitlementView {
   entitlement: Entitlement;
   /** 'stripe' | 'trial' | 'comp' | null — lets the form show Manage vs Subscribe. */
   source: "stripe" | "trial" | "comp" | null;
+  /** Whether the paid subscription is scheduled to end after this billing period. */
+  cancelAtPeriodEnd: boolean;
   /** Whether the user has ever started their one-time trial. */
   trialUsed: boolean;
 }

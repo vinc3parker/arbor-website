@@ -31,6 +31,7 @@ export function AccountView({
     source: "stripe" | "trial" | "comp" | null;
     status: string;
     currentPeriodEnd: number | null;
+    cancelAtPeriodEnd: boolean;
   } | null;
   profile: ArborUser;
   email: string | null;
@@ -40,6 +41,7 @@ export function AccountView({
   const name = displayNameFor(profile, email);
   const memberSince = formatDay(createdAt);
   const paymentDue = subscription?.status === "past_due";
+  const endingAtPeriodEnd = subscription?.source === "stripe" && subscription.cancelAtPeriodEnd;
   const periodDate = subscription?.currentPeriodEnd
     ? new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString("en-GB", {
         day: "numeric",
@@ -109,7 +111,7 @@ export function AccountView({
                       <p className="flex items-center gap-3 text-[1.375rem] font-semibold">
                         {planName(subscription.plan)}
                         <span className="ui-status">
-                          {paymentDue ? "Payment due" : "Active"}
+                          {paymentDue ? "Payment due" : endingAtPeriodEnd ? "Ending" : "Active"}
                         </span>
                       </p>
                       <p className="mt-2 text-fg-2">
@@ -117,6 +119,8 @@ export function AccountView({
                           ? subscription.source === "comp"
                             ? "Your tester access has ended. Add payment details to continue your Founding membership."
                             : "Your last payment did not go through. Update your payment details to keep access."
+                          : endingAtPeriodEnd && periodDate
+                            ? `Your membership ends on ${periodDate}. You can use every Arbor app until then.`
                           : subscription.source === "comp" && periodDate
                             ? `Your Founding membership is included until ${periodDate}.`
                             : subscription.source === "comp"

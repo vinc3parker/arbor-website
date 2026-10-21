@@ -50,6 +50,7 @@ export default async function ProfilePage() {
               source: entitlement.source,
               status: entitlement.entitlement.status,
               currentPeriodEnd: entitlement.entitlement.currentPeriodEnd,
+              cancelAtPeriodEnd: entitlement.cancelAtPeriodEnd,
             }
           : null
       }
