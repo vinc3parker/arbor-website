@@ -152,6 +152,10 @@ export default async function SubscriptionPage({
   const isStripeEntitled = entitled && source === "stripe";
   const isTrial = entitled && source === "trial";
   const isComp = entitled && source === "comp";
+  // Core deliberately retains the source after a timed tester grant ends so
+  // this page can direct the person to add payment rather than treating them
+  // as a brand-new account.
+  const testerPaymentDue = source === "comp" && entStatus === "past_due";
 
   const sp = (await searchParams) ?? {};
   const rawApp = first(sp.app);
@@ -162,17 +166,23 @@ export default async function SubscriptionPage({
     ? `/subscription/checkout${returnSuffix}&method=code`
     : "/subscription/checkout?method=code";
 
-  const isLegacyTesterAccess = isComp && entPlan === "comp";
-  const testerIsActive = isTrial || isLegacyTesterAccess;
-  const founderIsActive = entitled && !testerIsActive && entPlan === "founder";
-  const standardIsActive = entitled && !testerIsActive && entPlan === "standard";
+  // Temporary/tester access always grants the Founding membership; it is not
+  // a membership tier in its own right.
+  const founderIsActive =
+    testerPaymentDue || isTrial || isComp || (entitled && entPlan === "founder");
+  const standardIsActive = entitled && entPlan === "standard" && !isTrial && !isComp;
 
   // ── Current membership presentation ────────────────────────────────────────
   let chipLabel = "Not subscribed";
   let chipClass = "border-line bg-bg text-fg-2";
   let detail: string = ACCOUNT_ONLY.summary;
 
-  if (isStripeEntitled) {
+  if (testerPaymentDue) {
+    chipLabel = "Payment due";
+    chipClass = "border-warning/40 bg-warning/10 text-warning";
+    detail =
+      "Your two-week tester access has ended. Add payment details to continue as a Founding member.";
+  } else if (isStripeEntitled) {
     if (entStatus === "past_due") {
       chipLabel = "Payment due";
       chipClass = "border-warning/40 bg-warning/10 text-warning";
@@ -190,15 +200,15 @@ export default async function SubscriptionPage({
     chipLabel = "Temporary access";
     chipClass = "border-info/40 bg-info/10 text-info";
     detail = periodEnd
-      ? `Your access ends on ${formatDate(periodEnd)}. Subscribe any time to keep it.`
-      : "Your temporary access is active.";
+      ? `Your Founding membership is included until ${formatDate(periodEnd)}. Add payment any time to keep it.`
+      : "Your Founding membership is temporarily included.";
   } else if (isComp) {
     chipLabel = "Active";
     chipClass = "border-success/40 bg-success/10 text-success";
     detail =
       periodEnd && periodEnd < FAR_FUTURE
-        ? `Your membership was granted with an access code and ends on ${formatDate(periodEnd)}.`
-        : "Your membership was granted with an access code and has no end date.";
+        ? `Your Founding membership was granted with an access code and ends on ${formatDate(periodEnd)}.`
+        : "Your Founding membership was granted with an access code and has no end date.";
   }
 
   const manageBilling = isStripeEntitled ? (
@@ -209,7 +219,7 @@ export default async function SubscriptionPage({
 
   const subscribeButton = (
     <Link href={`/subscription/checkout${returnSuffix}`} className="ui-primary w-full">
-      {isTrial ? "Subscribe to keep access" : `Subscribe — ${price.price}/mo`}
+      {testerPaymentDue ? "Add payment details" : isTrial ? "Subscribe to keep access" : `Subscribe — ${price.price}/mo`}
     </Link>
   );
 
@@ -249,29 +259,7 @@ export default async function SubscriptionPage({
           </p>
         )}
 
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
-          <MembershipCard
-            name="Tester access"
-            price="Included"
-            cadence="for invited testers"
-            description="Temporary access for people helping us test Arbor before launch."
-            active={testerIsActive}
-            status={
-              testerIsActive ? (
-                <span className={`shrink-0 rounded-full border px-3 py-1 text-sm ${chipClass}`}>
-                  {chipLabel}
-                </span>
-              ) : undefined
-            }
-          >
-            {testerIsActive && (
-              <>
-                <p className="mb-4 text-sm text-fg-2">{detail}</p>
-                {isTrial && subscribeButton}
-              </>
-            )}
-          </MembershipCard>
-
+        <div className="mt-8 grid gap-5 md:grid-cols-2">
           <MembershipCard
             name={PLANS.founder.name}
             price={PLANS.founder.price}
@@ -289,7 +277,7 @@ export default async function SubscriptionPage({
             {founderIsActive ? (
               <>
                 <p className="mb-4 text-sm text-fg-2">{detail}</p>
-                {manageBilling}
+                {manageBilling ?? (isTrial || testerPaymentDue ? subscribeButton : null)}
               </>
             ) : !entitled && offeredPlan === "founder" ? (
               subscribeButton

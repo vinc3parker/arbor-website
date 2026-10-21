@@ -56,6 +56,8 @@ export function hasAccess(status: string): boolean {
 export function planName(plan: string | null): string {
   if (plan === "founder") return PLANS.founder.name;
   if (plan === "standard") return PLANS.standard.name;
-  if (plan === "trial" || plan === "comp") return "Tester access";
+  // Temporary access is a way of receiving the Founding membership, not a
+  // separate membership tier.
+  if (plan === "trial" || plan === "comp") return PLANS.founder.name;
   return "Arbor subscription";
 }
