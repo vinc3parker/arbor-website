@@ -5,7 +5,7 @@ import { Suspense, useEffect, useMemo, useRef, type RefObject } from "react";
 import {
   BufferGeometry, CanvasTexture, Color, CylinderGeometry, DoubleSide, ExtrudeGeometry,
   Float32BufferAttribute, InstancedMesh, Object3D, Path, RepeatWrapping,
-  Shape, SRGBColorSpace, Vector3,
+  Shape, SRGBColorSpace,
 } from "three";
 import { CAMERA_END, CAMERA_START, JOURNEY_STOPS, roadX } from "./journeyConfig";
 
@@ -246,10 +246,9 @@ function smoothRange(value: number, start: number, end: number) {
 }
 
 function JourneyCamera({ progress, captions, stage, animated, onChapter }: JourneySceneProps) {
-  const { camera, scene, size, invalidate } = useThree();
+  const { camera, scene, invalidate } = useThree();
   const current = useRef<number | null>(null);
   const lastChapter = useRef(-1);
-  const point = useMemo(() => new Vector3(), []);
   const colours = useMemo(() => ({ forest: new Color("#aabda9"), clearing: new Color("#d8cfaf"), mixed: new Color() }), []);
   useFrame((_, delta) => {
     const target = animated ? progress.current : 0;
@@ -278,25 +277,16 @@ function JourneyCamera({ progress, captions, stage, animated, onChapter }: Journ
         if (!caption) return;
         const anchorZ = CAMERA_START + (CAMERA_END - CAMERA_START) * JOURNEY_STOPS[i] - 13;
         const distance = z - anchorZ;
-        const offsets = [0, -2.1, 2, -1.6, 0, 0];
-        point.set(roadX(anchorZ) + (size.width < 768 ? 0 : offsets[i]), 2.9, anchorZ).project(camera);
         const enter = Math.max(0, Math.min(1, (23 - distance) / 5));
         const exit = Math.max(0, Math.min(1, (distance - 5) / 4));
-        const visible = point.z > -1 && point.z < 1 && distance > 0 ? Math.min(enter, exit) : 0;
+        // Keep messages still while the camera moves, with no overlapping handoffs.
+        const start = i === 0 ? 0 : (JOURNEY_STOPS[i - 1] + JOURNEY_STOPS[i]) / 2;
+        const end = i === JOURNEY_STOPS.length - 1 ? 1 : (JOURNEY_STOPS[i] + JOURNEY_STOPS[i + 1]) / 2;
+        const fadeIn = i === 0 ? 1 : smoothRange(p, start + .005, start + .035);
+        const fadeOut = i === JOURNEY_STOPS.length - 1 ? 1 : 1 - smoothRange(p, end - .035, end - .005);
+        const visible = Math.min(enter, exit, fadeIn, fadeOut);
         const opacity = visible * (i === JOURNEY_STOPS.length - 1 ? smoothRange(p, .94, .985) : 1);
-        let scale = Math.max(.55, Math.min(size.width < 768 ? 1 : 1.25, 13 / Math.max(1, distance)));
-        // Arrive at a settled composition as the path opens into the final, plain clearing.
-        const settle = i === JOURNEY_STOPS.length - 1 ? smoothRange(p, .88, .98) : 0;
-        scale += (1 - scale) * settle;
-        const captionWidth = size.width < 768 ? size.width * .88 : size.width >= 1600 ? Math.min(size.width * .65, 1040) : Math.min(size.width * .68, 790);
-        const margin = size.width < 768 ? 14 : 28;
-        const half = captionWidth * scale / 2;
-        let screenX = Math.max(half + margin, Math.min(size.width - half - margin, (point.x + 1) * size.width / 2));
-        let screenY = (1 - point.y) * size.height / 2;
-        screenX += (size.width / 2 - screenX) * settle;
-        screenY += (size.height * .44 - screenY) * settle;
         caption.style.opacity = opacity.toFixed(4);
-        caption.style.transform = `translate3d(${screenX.toFixed(1)}px, ${screenY.toFixed(1)}px, 0) translate(-50%, -50%) scale(${scale.toFixed(4)})`;
         caption.inert = i !== closest || opacity < .15;
         caption.setAttribute("aria-hidden", String(i !== closest || opacity < .15));
       });

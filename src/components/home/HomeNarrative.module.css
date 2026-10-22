@@ -23,8 +23,8 @@
 .worldCaptions { position: relative; z-index: 2; padding: 150px 6% 300px; pointer-events: none; }
 .caption { width: min(100%, 790px); margin: auto; padding: 90px 0; text-align: center; text-shadow: 0 2px 25px #07130d88; }
 .experience[data-enhanced="true"] .worldCaptions { position: absolute; inset: 0; padding: 0; }
-.experience[data-enhanced="true"] .caption { position: absolute; top: 0; left: 0; width: min(68vw, 790px); padding: 0; opacity: 0; transform-origin: center; will-change: transform, opacity; }
-.experience[data-enhanced="true"] .caption:first-child { opacity: 1; transform: translate3d(50vw, 40svh, 0) translate(-50%, -50%); }
+.experience[data-enhanced="true"] .caption { position: absolute; top: 44%; left: 50%; width: min(68vw, 790px); padding: 0; opacity: 0; transform: translate(-50%, -50%); will-change: opacity; }
+.experience[data-enhanced="true"] .caption:first-child { opacity: 1; }
 .caption h1, .caption h2 { font-size: clamp(3.2rem, 5.6vw, 6rem); font-weight: 500; line-height: 1.045; letter-spacing: -.06em; margin: 20px 0 23px; text-wrap: balance; }
 .caption h1 span, .caption h2 span { color: #dce8c5; }
 .eyebrow { color: #e0e8ce; font-size: 11px; letter-spacing: .07em; font-weight: 500; }
