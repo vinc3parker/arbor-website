@@ -39,7 +39,8 @@
 .availability { margin: 16px auto 0; font-size: 10px; color: #e1e9d1; }
 .availability a { text-decoration: underline; text-underline-offset: 3px; }
 
-.guideRail { position: absolute; z-index: 4; left: 50%; bottom: 87px; transform: translateX(-50%); display: flex; gap: 24px; align-items: center; padding: 10px 0; }
+.guideRail { position: absolute; z-index: 4; left: 50%; bottom: 87px; transform: translateX(-50%); display: flex; gap: 24px; align-items: center; padding: 10px 0; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .65s ease, visibility 0s linear .65s; }
+.guideRail[data-visible="true"] { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
 .guideRail a { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 37px; font-size: 9px; color: #e1e7d2; }
 .guideRail img { width: 34px; height: 34px; border-radius: 10px; box-shadow: 0 3px 14px #06100844; transition: transform .2s; }
 .guideRail a:hover img { transform: translateY(-3px); }

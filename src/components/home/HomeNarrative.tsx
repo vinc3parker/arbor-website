@@ -40,13 +40,17 @@ export function HomeNarrative() {
   const invalidateRef = useRef<(() => void) | null>(null);
   const [active, setActive] = useState(0);
   const [enhanced, setEnhanced] = useState(false);
+  const [modeResolved, setModeResolved] = useState(false);
   const [available, setAvailable] = useState(true);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const short = window.matchMedia("(max-height: 560px)");
-    const sync = () => setEnhanced(!motion.matches && !short.matches && available);
+    const sync = () => {
+      setEnhanced(!motion.matches && !short.matches && available);
+      setModeResolved(true);
+    };
     sync();
     motion.addEventListener("change", sync);
     short.addEventListener("change", sync);
@@ -92,6 +96,7 @@ export function HomeNarrative() {
     invalidate();
   }, []);
   const onUnavailable = useCallback(() => { setAvailable(false); setEnhanced(false); }, []);
+  const guidesVisible = modeResolved && (!enhanced || active > 0);
 
   function goTo(index: number) {
     const root = rootRef.current;
@@ -129,7 +134,7 @@ export function HomeNarrative() {
           ))}
         </div>
 
-        <nav className={styles.guideRail} aria-label="Explore all eight Arbor guides">
+        <nav className={styles.guideRail} data-visible={guidesVisible} inert={!guidesVisible} aria-hidden={!guidesVisible} aria-label="Explore all eight Arbor guides">
           {homeCopy.apps.map(app => <Link key={app.id} href={app.href} aria-label={`${app.name}, ${app.domain}. ${app.badge}.`}><Image src={app.icon} alt="" width={64} height={64} loading="eager" unoptimized={app.id === "nura" || app.id === "wend"} /><span>{app.name}</span></Link>)}
         </nav>
 
