@@ -28,7 +28,7 @@ function StaticArchways({ loading = false }: { loading?: boolean }) {
         <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4 lg:grid-cols-8">
           {arborApps.map(app => <Link key={app.id} href={app.route} className="group relative flex min-h-56 flex-col items-center justify-end overflow-hidden rounded-t-[6rem] rounded-b-2xl border border-paper/25 bg-ink/55 px-3 pt-10 pb-6 text-center transition hover:border-paper hover:bg-ink/80"><Image src={APP_BRANDS[app.id].icon} alt="" width={48} height={48} className="mb-7 h-12 w-12 rounded-xl transition group-hover:-translate-y-1" /><span className="font-medium">{app.name}</span><span className="mt-1 text-xs text-fg-2">Your {APP_BRANDS[app.id].title}</span><span className="mt-4 text-[0.65rem] text-fg-2">{APP_ROADMAP[app.id].label}</span></Link>)}
         </div>
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 text-sm text-fg-2"><p role={loading ? "status" : undefined}>{loading ? "Opening the archways. You can also choose a guide above." : "A quieter way to explore, with every guide just a doorway away."}</p><Link href="#guide-directory" className="inline-flex min-h-11 items-center gap-3 text-fg underline underline-offset-4">Browse every guide <span aria-hidden>↓</span></Link></div>
+        {loading && <p className="mt-10 text-sm text-fg-2" role="status">Opening the archways. You can also choose a guide above.</p>}
       </div>
     </section>
   );
@@ -183,8 +183,16 @@ function InteractiveRoom() {
         </div>
       )}
 
-      <div className="absolute inset-x-0 bottom-0 z-20 border-t border-line bg-ink/90 px-4 pt-4 pb-5 sm:px-8">
-        <div className="mx-auto max-w-6xl"><div className="flex items-center justify-between gap-4 text-xs text-fg-2"><p>{locked ? mobile ? "Swipe to look around. Tap an archway to explore." : "Hover to discover. Click an archway to step inside." : "The room is coming together."}</p><div className="flex shrink-0 items-center gap-4">{!locked && <button type="button" onClick={() => { heroState.progress = 1; setLocked(true); }} className="py-2 text-fg underline underline-offset-4">Skip animation</button>}<Link href="#guide-directory" className="py-2 text-fg underline underline-offset-4">Browse below <span aria-hidden>↓</span></Link></div></div>
+      <nav aria-label="Choose an Arbor guide" className="sr-only focus-within:not-sr-only focus-within:absolute focus-within:inset-x-4 focus-within:bottom-28 focus-within:z-30 focus-within:rounded-2xl focus-within:bg-ink focus-within:p-4">
+        <ul className="flex flex-wrap justify-center gap-2">
+          {arborApps.map(app => <li key={app.id}><Link href={app.route} className="inline-flex min-h-11 items-center rounded-lg px-4 text-fg focus-visible:outline-2 focus-visible:outline-offset-2">Explore {app.name}</Link></li>)}
+        </ul>
+      </nav>
+
+      <div className="absolute inset-x-0 bottom-0 z-20 px-4 pt-4 pb-5 sm:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 text-center text-xs text-fg-2">
+          <p>{locked ? mobile ? "Swipe to look around. Tap an archway to explore." : "Hover to discover. Click an archway to step inside." : "The room is coming together."}</p>
+          {!locked && <button type="button" onClick={() => { heroState.progress = 1; setLocked(true); }} className="min-h-11 px-4 text-fg underline underline-offset-4">Skip animation</button>}
         </div>
       </div>
 

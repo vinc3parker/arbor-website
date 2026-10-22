@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useId, useState, type SyntheticEvent } from "react";
 import { supabase } from "@/lib/supabase";
 
-export function WaitlistSection() {
+export function WaitlistSection({ showSocialLinks = false }: { showSocialLinks?: boolean }) {
   const fieldId = useId();
   const [email, setEmail] = useState("");
   const [joined, setJoined] = useState(false);
@@ -43,6 +43,21 @@ export function WaitlistSection() {
           <p className="ui-kicker">Grow with us</p>
           <h2 className="type-h2 max-w-md">Be here for what comes next.</h2>
           <p className="mt-4 max-w-lg leading-relaxed text-fg-2">Hear when your guides are ready to meet you. Join the waitlist for new app access and updates from Arbor.</p>
+          {showSocialLinks && (
+            <nav aria-label="Follow Arbor" className="mt-7 border-t border-line pt-6">
+              <h3 className="ui-label">Follow Arbor</h3>
+              <div className="mt-3 flex flex-wrap gap-3">
+                <a href="https://www.instagram.com/arbor_apps/" target="_blank" rel="noopener noreferrer" className="ui-secondary min-h-11 gap-3" aria-label="Arbor on Instagram, @arbor_apps (opens in a new tab)">
+                  <span>Instagram <span className="text-fg-2">@arbor_apps</span></span>
+                  <span aria-hidden="true">↗</span>
+                </a>
+                <a href="https://www.tiktok.com/@arbor_apps" target="_blank" rel="noopener noreferrer" className="ui-secondary min-h-11 gap-3" aria-label="Arbor on TikTok, @arbor_apps (opens in a new tab)">
+                  <span>TikTok <span className="text-fg-2">@arbor_apps</span></span>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+            </nav>
+          )}
         </div>
         <div>
           {!joined ? (

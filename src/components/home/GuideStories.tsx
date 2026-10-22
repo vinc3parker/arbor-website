@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { APP_BRANDS, type AppId } from "@/lib/brand";
-import { GuideSparkles } from "@/components/GuideSparkles";
+import styles from "@/components/marketing/StoryPages.module.css";
 
 const stories: {
   label: string;
@@ -11,33 +12,33 @@ const stories: {
   guides: { id: AppId; suggestion: string }[];
 }[] = [
   {
-    label: "A busy week",
-    heading: "Life gets busy. Your plans can make room.",
-    context: "You tell Thrive your week is full. That understanding can help your other guides offer a more realistic plan.",
+    label: "Train for something bigger",
+    heading: "A race on the calendar. A life around it.",
+    context: "You want to get to the start line feeling ready. You also have deadlines, friends to see and days when your energy just isn’t there. A useful training plan needs that context.",
     guides: [
-      { id: "thrive", suggestion: "Find space for the things that matter most." },
-      { id: "aevo", suggestion: "Offer a shorter session that fits the time you have." },
-      { id: "salus", suggestion: "Make a little room to pause and check in." },
+      { id: "aevo", suggestion: "Build towards your goal with training and recovery that fit you." },
+      { id: "thrive", suggestion: "Find room for the sessions without writing off the rest of your week." },
+      { id: "salus", suggestion: "Help you make sense of the pressure you’re putting on yourself." },
     ],
   },
   {
-    label: "A new direction",
-    heading: "A new goal touches more than one part of life.",
-    context: "A change of career can mean new skills and a different routine. The idea is for your guides to help you consider those pieces together.",
+    label: "Make the trip happen",
+    heading: "Less “one day”. More getting it in the diary.",
+    context: "The trip you keep talking about needs more than a saved post. It needs a budget, time and a plan that feels worth following through on.",
     guides: [
-      { id: "telos", suggestion: "Explore the direction you want your work to take." },
-      { id: "sage", suggestion: "Break the skills you want to learn into smaller steps." },
-      { id: "thrive", suggestion: "Help you make time for those steps in your week." },
+      { id: "wend", suggestion: "Explore places and experiences that match what you actually enjoy." },
+      { id: "nura", suggestion: "See what you can set aside without losing sight of everyday spending." },
+      { id: "thrive", suggestion: "Give the planning a place in your week, not just your intentions." },
     ],
   },
   {
-    label: "Time for yourself",
-    heading: "Free time that feels like your own.",
-    context: "When you want something to look forward to, your interests, time and budget all matter. Your guides could help you find something that fits.",
+    label: "Build a life in a new city",
+    heading: "A fresh start. Not a life on hold.",
+    context: "A move can be exciting and lonely in the same week. Finding your people, your places and a routine that feels like you are all part of settling in.",
     guides: [
-      { id: "wend", suggestion: "Find an experience that speaks to your interests." },
-      { id: "nura", suggestion: "Help you see how it fits with your spending plans." },
-      { id: "kith", suggestion: "Think of someone you would love to share it with." },
+      { id: "kith", suggestion: "Think about the connections you want to make—and the ones you want to keep." },
+      { id: "wend", suggestion: "Find reasons to get out and discover what’s around you." },
+      { id: "salus", suggestion: "Give yourself space to work through the change, not just push through it." },
     ],
   },
 ];
@@ -47,33 +48,38 @@ export function GuideStories() {
   const story = stories[selected];
 
   return (
-    <div className="mt-12 overflow-hidden rounded-3xl border border-line">
-      <div className="flex flex-wrap gap-2 border-b border-line bg-surface/50 p-3 sm:p-4" aria-label="Explore an example">
+    <section id="life-in-context" className={`theme-dark ${styles.storySection}`} aria-labelledby="context-heading">
+      <div className="site-container">
+      <header className={styles.storyTop}>
+        <div><p className={styles.eyebrow}>Your life, in context</p><h2 id="context-heading" className={styles.sectionTitle}>One ambition.<br />More than one part of you.</h2></div>
+        <p>This is why the connections matter. Pick a situation and explore the kind of joined-up support we&apos;re building.</p>
+      </header>
+      <div className={styles.storyChoices} role="group" aria-label="Explore an example">
         {stories.map((item, index) => (
-          <button key={item.label} type="button" aria-pressed={selected === index} aria-controls="guide-story" onClick={() => setSelected(index)} className={`min-h-11 rounded-xl px-4 text-sm font-medium transition sm:px-5 ${selected === index ? "bg-fg text-bg" : "text-fg-2 hover:bg-raised hover:text-fg"}`}>
+          <button key={item.label} type="button" aria-pressed={selected === index} aria-controls="guide-story" onClick={() => setSelected(index)}>
             {item.label}
           </button>
         ))}
       </div>
-      <div id="guide-story" className="grid gap-10 p-6 sm:p-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16" aria-live="polite" aria-atomic="true">
+      <div id="guide-story" className={styles.storyPanel} aria-live="polite" aria-atomic="true">
         <div>
-          <p className="ui-kicker">The connected experience we&apos;re building</p>
-          <h3 className="type-h2 max-w-lg">{story.heading}</h3>
-          <p className="mt-5 max-w-lg leading-relaxed text-fg-2">{story.context}</p>
-          <p className="mt-6 type-caption text-fg-2">An illustrative example of the connected experience Arbor is building.</p>
+          <h3>{story.heading}</h3>
+          <p className={styles.storyContext}>{story.context}</p>
+          <p className={styles.storyNote}>Illustrative, not a live app response. Connected features and app access are still being developed.</p>
         </div>
-        <ol className="divide-y divide-line">
+        <ol className={styles.storyGuides} aria-label="How the guides could help together">
           {story.guides.map(({ id, suggestion }) => {
             const app = APP_BRANDS[id];
             return (
-              <li key={id} className="flex gap-4 py-5 first:pt-0 last:pb-0">
-                <span className="theme-dark grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-bg"><GuideSparkles colour={app.onInk} label={`${app.name}, your ${app.title}`} size={22} /></span>
-                <div><p className="text-sm font-semibold">{app.name} <span className="font-normal text-fg-2">/ Your {app.title}</span></p><p className="mt-1.5 text-sm leading-relaxed text-fg-2">{suggestion}</p></div>
+              <li key={id}>
+                <Image src={app.icon} alt="" width={48} height={48} unoptimized={id === "nura" || id === "wend"} />
+                <div><strong>{app.name}</strong><small>Your {app.title}</small><p>{suggestion}</p></div>
               </li>
             );
           })}
         </ol>
       </div>
-    </div>
+      </div>
+    </section>
   );
 }

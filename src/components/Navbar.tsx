@@ -12,7 +12,7 @@ type NavItem = {
 
 const items: NavItem[] = [
   { label: "The guides", href: "/guides" },
-  { label: "How it works", href: "/how-it-works" },
+  { label: "Why Arbor", href: "/how-it-works" },
   { label: "Our progress", href: "/progress" },
   {
     label: "Grove",

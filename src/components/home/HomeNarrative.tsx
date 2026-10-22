@@ -12,12 +12,12 @@ import styles from "./HomeNarrative.module.css";
 const JourneyScene = dynamic(() => import("./JourneyScene"), { ssr: false });
 
 const chapters = [
-  { label: "Meet Arbor", eyebrow: "Self-help, made personal", title: <>Eight personal<br /> guide apps.<br /><span>One connected life.</span></>, body: "For your health, mind, money, time and more. Personal AI guides being built to understand you, and how your life fits together." },
-  { label: "Start here", eyebrow: "01 — A new kind of starting point", title: <>What if this was<br />the last time<br /><span>you started over?</span></>, body: "Another plan. Another app. Your whole story, all over again. Arbor is being built to carry your understanding forward, even when life changes direction." },
-  { label: "Made for you", eyebrow: "02 — A person, not a template", title: <>Advice is everywhere.<br /><span>Understanding<br />is different.</span></>, body: "Your goals, your energy, your circumstances. Each guide is being shaped to help you in the life you actually live, at a pace that works for you." },
-  { label: "All connected", eyebrow: "03 — The bigger picture", title: <>Nothing in your<br />life happens<br /><span>in isolation.</span></>, body: "Money can affect your sleep. Sleep can affect your mood. Mood can change your whole day. Arbor’s guides are being built to make sense of those connections together." },
-  { label: "Your direction", eyebrow: "04 — Your life, on your terms", title: <>A better life.<br /><span>By your<br />definition.</span></>, body: "More support should mean more freedom to be yourself. You choose your direction, what you share, and the parts of life you want help with." },
-  { label: "Find your guide", eyebrow: "One life. A little more support.", title: <>You should not<br />have to work out<br /><span>your life alone.</span></>, body: "Start with the part of life that needs you most. Meet your guide, and discover what we’re building around you." },
+  { label: "Meet Arbor", eyebrow: "", title: <>Eight personal<br /> guide apps.<br /><span>One connected life.</span></>, body: "" },
+  { label: "For the long run", eyebrow: "01 — Support that stays", title: <>A companion<br /><span>for the long run.</span></>, body: "A new training goal. A bigger role. A move to a new city. Arbor is being built to grow with you through what you’re working towards now—and whatever you decide to take on next." },
+  { label: "Made for you", eyebrow: "02 — Understanding you", title: <>Not advice for everyone.<br /><span>Guidance that<br />understands you.</span></>, body: "Your ambitions, habits and the way you approach life aren’t interchangeable with anyone else’s. Your guides are designed to learn what drives you, recognise your patterns and give you guidance shaped around the person behind the goals." },
+  { label: "All connected", eyebrow: "03 — Joined-up support", title: <>One life.<br /><span>Not eight<br />separate plans.</span></>, body: "Training, work, nights out and your next trip all draw on the same time, energy and money. Arbor’s guides are being built to understand those connections, so pursuing one goal doesn’t mean losing sight of everything else you want from life." },
+  { label: "Your direction", eyebrow: "04 — Your priorities", title: <>Your goals.<br /><span>Not someone else’s<br />idea of success.</span></>, body: "Get stronger. Build a career you care about. See more of the world. Make time for your people. You decide what matters and how far you want to take it. Your guides help you build your version of a good life." },
+  { label: "Find your guide", eyebrow: "", title: <>You should not<br />have to work out<br /><span>your life alone.</span></>, body: "You’ve got things you want to do with your life. Start with one: your training, your money, your plans or your next adventure. Find the guide for you." },
 ];
 
 
@@ -114,17 +114,15 @@ export function HomeNarrative() {
         <div className={styles.sceneShade} aria-hidden />
         <div className={styles.openingFade} aria-hidden />
         <div className={styles.clearingFade} aria-hidden />
-        <div className={styles.location} aria-hidden><span>A path of your own.</span><span>Arbor / A connected life</span></div>
 
         <div className={styles.worldCaptions}>
           {chapters.map((chapter, index) => (
             <section key={chapter.label} id={`arbor-chapter-${index}`} ref={element => { captionRefs.current[index] = element; }} className={styles.caption} aria-labelledby={`arbor-heading-${index}`}>
-              <p className={styles.eyebrow}>{chapter.eyebrow}</p>
+              {chapter.eyebrow && <p className={styles.eyebrow}>{chapter.eyebrow}</p>}
               {index === 0 ? <h1 id={`arbor-heading-${index}`}>{chapter.title}</h1> : <h2 id={`arbor-heading-${index}`}>{chapter.title}</h2>}
-              <p className={styles.copy}>{chapter.body}</p>
-              {index === 0 && <button className={styles.begin} onClick={() => goTo(1)}>Follow your path <Arrow /></button>}
+              {chapter.body && <p className={styles.copy}>{chapter.body}</p>}
               {index === 5 && <>
-                <div className={styles.actions}><Link href="/guides" className={styles.primary}>Meet the eight guides <Arrow /></Link><Link href="/login" className={styles.secondary}>Your Arbor account <Arrow /></Link></div>
+                <div className={styles.actions}><Link href="/guides" className={styles.primary}>Find your guide <Arrow /></Link><Link href="/login" className={styles.secondary}>Your Arbor account <Arrow /></Link></div>
                 <p className={styles.availability}>Growing in stages. <Link href="/progress">See which apps are ready.</Link></p>
               </>}
             </section>
@@ -136,7 +134,7 @@ export function HomeNarrative() {
         </nav>
 
         <div className={styles.journeyControls}>
-          <button className={styles.scrollCue} onClick={() => goTo(Math.min(5, active + 1))} disabled={active === 5}><span className={styles.scrollTrack}><span /></span><span>{active === 5 ? "Your next chapter" : "Scroll to follow the path"}</span></button>
+          <button className={styles.scrollCue} aria-label={active === 5 ? "End of the journey" : "Continue to the next chapter"} onClick={() => goTo(Math.min(5, active + 1))} disabled={active === 5}><span className={styles.scrollTrack} aria-hidden><span /></span>{active > 0 && <span>{active === 5 ? "Your next chapter" : "Scroll to follow the path"}</span>}</button>
           <nav className={styles.chapterNav} aria-label="Arbor story chapters">{chapters.map((chapter, i) => <button key={chapter.label} onClick={() => goTo(i)} aria-label={`Chapter ${i + 1}: ${chapter.label}`} aria-current={active === i ? "step" : undefined}><span>0{i + 1}</span><i /></button>)}</nav>
           <span className={styles.count}>0{active + 1}<small>/ 06</small></span>
         </div>

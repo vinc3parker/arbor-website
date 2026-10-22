@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { PageIntro } from "@/components/PageIntro";
+import { GuideGrowthMap } from "@/components/guides/GuideGrowthMap";
 import { APP_ROADMAP, type DevelopmentStage } from "@/content/roadmap";
 import { APP_BRANDS, APP_ORDER } from "@/lib/brand";
+import styles from "@/components/marketing/StoryPages.module.css";
 
 export const metadata: Metadata = {
   title: "Our progress — Arbor",
@@ -13,21 +13,51 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://arborapps.co/progress" },
 };
 
-const stages: { stage: DevelopmentStage; title: string; body: string }[] = [
-  { stage: "testing", title: "In testing", body: "Refining the first experiences before a wider release." },
-  { stage: "approaching-testing", title: "Approaching testing", body: "The next guide is progressing towards its testing phase." },
-  { stage: "development", title: "In development", body: "Building the app and its personal guide." },
-  { stage: "pre-development", title: "Pre-development", body: "Shaping the direction. Product development has not started." },
+const stageNotes: { stage: DevelopmentStage; label: string; title: string; body: string }[] = [
+  { stage: "testing", label: "In testing", title: "Testing it, not calling it finished.", body: "The first experiences are being tried and refined before a wider release. Testing status doesn’t mean anyone can download the app yet; each app’s page shows any available beta links." },
+  { stage: "approaching-testing", label: "Approaching testing", title: "Getting ready for the first testers.", body: "The app is in development and progressing towards testing. Access is not open yet, and we’re not announcing a release date at this stage." },
+  { stage: "development", label: "In development", title: "Turning the idea into something useful.", body: "The app and its personal guide are being built. This is active development, not an open beta or a promise of a launch date." },
+  { stage: "pre-development", label: "Pre-development", title: "Shaping what comes next.", body: "We’re defining the direction of these guides. Product development has not started, so there is no release date or testing access yet." },
 ];
+const count = (...stages: DevelopmentStage[]) => APP_ORDER.filter(id => stages.includes(APP_ROADMAP[id].stage)).length;
 
 export default function ProgressPage() {
   return (
-    <main className="min-h-screen bg-bg text-fg"><Navbar /><PageIntro eyebrow="Our progress / October 2026" title="Growing with care."><p>Good guides take time. Here is where each app stands, with access opening as the experiences are ready.</p></PageIntro>
-      <section className="site-container py-16 sm:py-24" aria-label="App development stages">
-        {stages.map((group, index) => <div key={group.stage} className="grid gap-6 border-t border-line py-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16"><div><p className="ui-kicker">0{index + 1}</p><h2 className="type-h2">{group.title}</h2><p className="mt-3 max-w-sm text-fg-2">{group.body}</p></div><div className="divide-y divide-line">{APP_ORDER.filter(id => APP_ROADMAP[id].stage === group.stage).map(id => { const app = APP_BRANDS[id]; return <Link key={id} href={`/${id}`} className="group flex items-start gap-4 py-5 first:pt-0"><Image src={app.icon} alt="" width={48} height={48} className="h-12 w-12 rounded-xl" /><div className="flex-1"><h3 className="font-medium">{app.name} <span className="font-normal text-fg-2">/ Your {app.title}</span></h3><p className="mt-2 text-sm leading-relaxed text-fg-2">{APP_ROADMAP[id].note}</p></div><span aria-hidden className="text-fg-2 transition group-hover:translate-x-1">↗</span></Link>; })}</div></div>)}
-        <div className="mt-6 rounded-3xl border border-line bg-surface p-6 sm:p-8"><span className="ui-status mb-4 bg-transparent">A future idea</span><h2 className="type-h2">Arbor Grove</h2><p className="mt-4 max-w-2xl text-fg-2">Grove is our vision for a future web workspace. Development has not started and there is no release date.</p><Link href="/grove" className="ui-secondary mt-6">Explore the idea <span aria-hidden className="ml-3">↗</span></Link></div>
-        <p className="mt-8 max-w-3xl text-sm leading-relaxed text-fg-2">Testing does not always mean a public beta is open. Individual app pages show available beta links. <Link href="/early-access" className="underline underline-offset-4">Join the waitlist</Link> to hear when new access opens.</p>
-      </section><Footer />
+    <main className="min-h-screen bg-bg text-fg">
+      <Navbar />
+      <header className={styles.progressHero}><div className="site-container">
+        <p className={styles.eyebrow}>Our progress / October 2026</p>
+        <div className={styles.progressLead}>
+          <h1 className={styles.title}>Big picture.<br /><span className={styles.muted}>Real steps.</span></h1>
+          <p className={styles.intro}>You&apos;re building a life with more in it. We&apos;re building the guides to support it. Here&apos;s where each app stands—what&apos;s in testing, what&apos;s being built and what&apos;s still an idea.</p>
+        </div>
+        <dl className={styles.stats} aria-label="Current app development summary">
+          <div className={styles.stat}><dt><span>Apps in testing</span></dt><dd><strong>{count("testing").toString().padStart(2, "0")}</strong><p>Trying, learning, refining.</p></dd></div>
+          <div className={styles.stat}><dt><span>Apps in development</span></dt><dd><strong>{count("development", "approaching-testing").toString().padStart(2, "0")}</strong><p>Including those nearing testing.</p></dd></div>
+          <div className={styles.stat}><dt><span>Apps in pre-development</span></dt><dd><strong>{count("pre-development").toString().padStart(2, "0")}</strong><p>Direction before development.</p></dd></div>
+        </dl>
+      </div></header>
+      <GuideGrowthMap />
+      <section className={`site-container ${styles.progressDetails}`} aria-labelledby="stages-heading">
+        <div><p className={styles.eyebrow}>No guesswork</p><h2 id="stages-heading" className={styles.sectionTitle}>What does<br /><span className={styles.muted}>“in testing” mean?</span></h2><p className={styles.body}>A useful guide has to earn its place in your day. These stages show where the work is—not how long you&apos;ll have to wait.</p></div>
+        <div className={styles.detailsList}>
+          {stageNotes.map(({ stage, label, title, body }, index) => <details key={stage} open={index === 0}>
+            <summary>{label}</summary>
+            <p><strong className="font-medium text-fg">{title}</strong><br />{body}<br /><span className="mt-3 inline-block">{APP_ORDER.filter(id => APP_ROADMAP[id].stage === stage).map((id, appIndex) => <span key={id}>{appIndex > 0 && " · "}<Link href={`/${id}`} className="underline underline-offset-4">{APP_BRANDS[id].name}</Link></span>)}</span></p>
+          </details>)}
+        </div>
+      </section>
+
+      <section className={styles.closing} aria-labelledby="progress-closing-heading"><div className={`site-container ${styles.closingInner}`}>
+        <div><p className={styles.eyebrow}>Be here early</p><h2 id="progress-closing-heading" className={styles.sectionTitle}>Help shape something<br />you&apos;ll actually use.</h2><p>Training before work. A week that keeps changing. Plans you want to make happen. That&apos;s the kind of real life Arbor is for. Join the waitlist to hear when new app access opens.</p></div>
+        <Link href="/early-access" className="ui-primary gap-5">Keep me in the loop <span aria-hidden>↗</span></Link>
+      </div></section>
+
+      <section className={`site-container ${styles.future}`} aria-labelledby="grove-future-heading">
+        <div><p className={styles.eyebrow}>Further down the path / An idea, not a release</p><h2 id="grove-future-heading">A place for the bigger picture.</h2></div>
+        <div><p className={styles.body}>Arbor Grove is our idea for a future web workspace. Our focus now is the guide apps; Grove&apos;s development has not started and there&apos;s no release date.</p><Link href="/grove" className={styles.textLink}>Explore the Grove idea <span aria-hidden>↗</span></Link></div>
+      </section>
+      <Footer />
     </main>
   );
 }

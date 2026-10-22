@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default function EarlyAccessPage() {
-  return <main className="min-h-screen bg-bg text-fg"><Navbar tone="dark" /><PageIntro eyebrow="Early access" title="Be part of the beginning." image="/images/arbor-coastal-path.webp"><p>Aevo, Salus and Thrive are in testing. Access opens in stages as we build and refine the apps. <Link href="/progress" className="text-fg underline underline-offset-4">See where things stand.</Link></p></PageIntro><WaitlistSection /><Footer /></main>;
+  return <main className="min-h-screen bg-bg text-fg"><Navbar tone="dark" /><PageIntro eyebrow="Early access" title="Be part of the beginning." image="/images/arbor-coastal-path.webp"><p>Aevo, Salus and Thrive are in testing. Access opens in stages as we build and refine the apps. <Link href="/progress" className="text-fg underline underline-offset-4">See where things stand.</Link></p></PageIntro><WaitlistSection showSocialLinks /><Footer /></main>;
 }
