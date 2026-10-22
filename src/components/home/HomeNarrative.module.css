@@ -49,11 +49,12 @@
 .scrollCue:disabled { cursor: default; opacity: .6; }
 .scrollTrack { width: 14px; height: 22px; border: 1px solid #d0dfb980; border-radius: 10px; position: relative; }
 .scrollTrack span { position: absolute; width: 1px; height: 5px; top: 5px; left: 5.5px; background: #e4e9d5; }
-.chapterNav { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); display: flex; gap: 18px; }
-.chapterNav button { min-width: 37px; min-height: 43px; display: flex; flex-direction: column; justify-content: center; gap: 8px; font-size: 9px; color: #c7d1b2aa; cursor: pointer; }
-.chapterNav i { display: block; width: 37px; height: 1px; background: #e1e7d04d; }
+.chapterNav { position: absolute; z-index: 4; right: 3%; top: 44%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 2px; }
+.chapterNav button { min-width: 56px; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 9px; color: #c7d1b2aa; cursor: pointer; border-radius: 8px; }
+.chapterNav button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.chapterNav i { display: block; width: 2px; height: 14px; border-radius: 2px; background: #e1e7d04d; transition: height .2s ease; }
 .chapterNav button[aria-current] { color: #f1f1df; }
-.chapterNav button[aria-current] i { background: #eff1d7; }
+.chapterNav button[aria-current] i { height: 28px; background: #eff1d7; }
 .count { font-size: 11px; color: #f0f1e4; letter-spacing: .06em; margin-bottom: 8px; }
 .count small { margin-left: 9px; font-size: 9px; color: #c7d1b2; }
 .legal { position: absolute; z-index: 4; bottom: 5px; left: 5%; right: 5%; display: flex; gap: 18px; font-size: 8px; color: #cfdbc0; }
@@ -75,7 +76,7 @@
 .experience[data-enhanced="false"] .stage { min-height: 100svh; }
 .experience[data-enhanced="false"] .openingFade, .experience[data-enhanced="false"] .clearingFade { display: none; }
 .experience[data-enhanced="false"] .world, .experience[data-enhanced="false"] .forestBackdrop, .experience[data-enhanced="false"] .sceneShade { position: fixed; }
-.experience[data-enhanced="false"] .journeyControls { display: none; }
+.experience[data-enhanced="false"] .journeyControls, .experience[data-enhanced="false"] .chapterNav { display: none; }
 .experience[data-enhanced="false"] .guideRail { bottom: 65px; }
 .experience[data-enhanced="false"] .caption { min-height: 70vh; }
 
@@ -89,7 +90,7 @@
   .copy { font-size: 14px; }
 }
 @media (max-width: 767px) {
-  .experience[data-enhanced="true"] .caption { width: 88vw; }
+  .experience[data-enhanced="true"] .caption { width: calc(100% - 104px); }
   .caption h1, .caption h2 { font-size: clamp(2rem, 8.5vw, 3.6rem); margin: 15px 0 17px; line-height: 1.06; }
   .caption h1 br:first-child { display: none; }
   .eyebrow { font-size: 9px; letter-spacing: .035em; }
@@ -101,10 +102,9 @@
   .scrollCue { font-size: 8px; gap: 7px; max-width: 110px; text-align: left; }
   .scrollTrack { flex-shrink: 0; width: 12px; height: 19px; }
   .scrollTrack span { left: 4.5px; top: 4px; height: 4px; }
-  .chapterNav { gap: 8px; }
-  .chapterNav button { min-width: 15px; min-height: 33px; }
+  .chapterNav { right: 4px; }
+  .chapterNav button { min-width: 44px; min-height: 44px; }
   .chapterNav button span { display: none; }
-  .chapterNav i { width: 15px; height: 2px; }
   .count { font-size: 9px; margin: 0; }
   .count small { font-size: 8px; margin-left: 4px; }
   .legal { bottom: 5px; left: 6%; right: 6%; font-size: 7px; gap: 12px; }

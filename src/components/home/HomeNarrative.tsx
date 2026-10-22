@@ -138,9 +138,10 @@ export function HomeNarrative() {
           {homeCopy.apps.map(app => <Link key={app.id} href={app.href} aria-label={`${app.name}, ${app.domain}. ${app.badge}.`}><Image src={app.icon} alt="" width={64} height={64} loading="eager" unoptimized={app.id === "nura" || app.id === "wend"} /><span>{app.name}</span></Link>)}
         </nav>
 
+        <nav className={styles.chapterNav} aria-label="Arbor story chapters">{chapters.map((chapter, i) => <button key={chapter.label} type="button" onClick={() => goTo(i)} aria-controls={`arbor-chapter-${i}`} aria-label={`Chapter ${i + 1}: ${chapter.label}`} aria-current={active === i ? "step" : undefined}><span aria-hidden>0{i + 1}</span><i aria-hidden /></button>)}</nav>
+
         <div className={styles.journeyControls}>
           <button className={styles.scrollCue} aria-label={active === 5 ? "End of the journey" : "Continue to the next chapter"} onClick={() => goTo(Math.min(5, active + 1))} disabled={active === 5}><span className={styles.scrollTrack} aria-hidden><span /></span>{active > 0 && <span>{active === 5 ? "Your next chapter" : "Scroll to follow the path"}</span>}</button>
-          <nav className={styles.chapterNav} aria-label="Arbor story chapters">{chapters.map((chapter, i) => <button key={chapter.label} onClick={() => goTo(i)} aria-label={`Chapter ${i + 1}: ${chapter.label}`} aria-current={active === i ? "step" : undefined}><span>0{i + 1}</span><i /></button>)}</nav>
           <span className={styles.count}>0{active + 1}<small>/ 06</small></span>
         </div>
         <div className={styles.legal}><span>© 2026 Arbor</span><Link href="/early-access">Join the waitlist</Link><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></div>
