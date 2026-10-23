@@ -5,11 +5,16 @@ import { Footer } from "@/components/Footer";
 import { GuideStories } from "@/components/home/GuideStories";
 import { LifeOrbit } from "@/components/marketing/LifeOrbit";
 import styles from "@/components/marketing/StoryPages.module.css";
+import { getPageSocialMetadata } from "@/lib/seo";
+
+const title = "How Arbor works | Personal self-help guidance";
+const description = "Learn how Arbor’s personal guide apps are designed to understand your goals, tailor guidance to you and connect the different parts of life.";
 
 export const metadata: Metadata = {
-  title: "Why Arbor — Personal guidance for a connected life",
-  description: "Training, work, money, friends and your next adventure. Discover why Arbor is building personal guide apps that understand how your life fits together.",
+  title,
+  description,
   alternates: { canonical: "https://arborapps.co/how-it-works" },
+  ...getPageSocialMetadata(title, description, "/how-it-works"),
 };
 
 export default function HowItWorksPage() {

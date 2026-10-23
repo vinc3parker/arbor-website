@@ -7,34 +7,28 @@ const BASE = "https://arborapps.co";
 export const revalidate = 60;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
-
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: BASE, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
+    { url: BASE, changeFrequency: "weekly", priority: 1.0 },
     ...["guides", "how-it-works", "progress", "early-access"].map((path) => ({
-      url: `${BASE}/${path}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.8,
+      url: `${BASE}/${path}`, changeFrequency: "monthly" as const, priority: 0.8,
     })),
     {
       url: `${BASE}/blog`,
-      lastModified: now,
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: `${BASE}/grove`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${BASE}/terms`,
-      lastModified: now,
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
       url: `${BASE}/privacy`,
-      lastModified: now,
       changeFrequency: "yearly",
       priority: 0.3,
     },
@@ -42,7 +36,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const appRoutes: MetadataRoute.Sitemap = Object.keys(apps).map((slug) => ({
     url: `${BASE}/${slug}`,
-    lastModified: now,
     changeFrequency: "monthly",
     // Aevo is the first testing release.
     priority: slug === "aevo" ? 0.9 : 0.8,
@@ -50,7 +43,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const blogRoutes: MetadataRoute.Sitemap = (await getAllPosts()).map((post) => ({
     url: `${BASE}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
     changeFrequency: "monthly",
     priority: 0.7,
   }));

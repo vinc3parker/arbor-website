@@ -6,11 +6,16 @@ import { GuideGrowthMap } from "@/components/guides/GuideGrowthMap";
 import { APP_ROADMAP, type DevelopmentStage } from "@/content/roadmap";
 import { APP_BRANDS, APP_ORDER } from "@/lib/brand";
 import styles from "@/components/marketing/StoryPages.module.css";
+import { getPageSocialMetadata } from "@/lib/seo";
+
+const title = "Arbor app development progress | Testing and roadmap";
+const description = "See which Arbor guide apps are in testing, development or early planning, and what each stage means for access and release.";
 
 export const metadata: Metadata = {
-  title: "Our progress — Arbor",
-  description: "The current Arbor roadmap: Aevo, Salus and Thrive in testing, Nura approaching testing, Wend in development, and Sage, Telos and Kith in pre-development.",
+  title,
+  description,
   alternates: { canonical: "https://arborapps.co/progress" },
+  ...getPageSocialMetadata(title, description, "/progress"),
 };
 
 const stageNotes: { stage: DevelopmentStage; label: string; title: string; body: string }[] = [

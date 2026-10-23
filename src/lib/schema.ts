@@ -9,6 +9,10 @@ export function getOrganizationSchema() {
     url: "https://arborapps.co",
     logo: "https://arborapps.co/icon.png",
     description: "Arbor is building eight specialist apps, each with its own AI guide, designed to work together across the different parts of life.",
+    sameAs: [
+      "https://www.instagram.com/arbor_apps/",
+      "https://www.tiktok.com/@arbor_apps",
+    ],
   };
 }
 

@@ -1,9 +1,15 @@
 import { HomeNarrative } from "@/components/home/HomeNarrative";
+import { getPageSocialMetadata } from "@/lib/seo";
+
+const title = "Personal self-help apps for a connected life — Arbor";
+const description =
+  "Meet eight personal guide apps being built for your health, mindset, money, work and more. Arbor brings self-help guidance together around the life you want to build.";
 
 export const metadata = {
-  title: "Arbor — Eight personal guide apps. One connected life.",
-  description:
-    "Self-help, made personal. Discover eight personal guide apps being built around your health, mind, money, time and more, all connected around you.",
+  title,
+  description,
+  alternates: { canonical: "https://arborapps.co/" },
+  ...getPageSocialMetadata(title, description, "/"),
 };
 
 export default function Home() {

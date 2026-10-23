@@ -21,7 +21,6 @@ export const metadata: Metadata = {
   title: "Arbor — Eight specialist apps for one connected life",
   description:
     "Arbor is building eight specialist apps, each with its own AI guide, for different parts of life. Designed to work together as one connected system with a fuller understanding of your life.",
-  keywords: "arbor, arbor apps, personal life guidance, life guide app, aevo, salus, thrive, nura, wend, kith, telos, sage",
   alternates: {
     canonical: "https://arborapps.co",
   },

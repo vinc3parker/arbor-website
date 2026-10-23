@@ -4,11 +4,16 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { PageIntro } from "@/components/PageIntro";
 import { WaitlistSection } from "@/components/WaitlistSection";
+import { getPageSocialMetadata } from "@/lib/seo";
+
+const title = "Arbor app early access | Join the waitlist";
+const description = "Join the Arbor waitlist for updates and invitations as personal guide apps become ready for testing and early access.";
 
 export const metadata: Metadata = {
-  title: "Early access — Arbor",
-  description: "Join the Arbor waitlist for new app access and updates as the personal guides take shape.",
+  title,
+  description,
   alternates: { canonical: "https://arborapps.co/early-access" },
+  ...getPageSocialMetadata(title, description, "/early-access"),
 };
 
 export default function EarlyAccessPage() {
