@@ -22,7 +22,7 @@
 .worldCaptions { position: relative; z-index: 2; padding: 150px 6% 300px; pointer-events: none; }
 .caption { width: min(100%, 790px); margin: auto; padding: 90px 0; text-align: center; text-shadow: 0 2px 25px #07130d88; }
 .experience[data-enhanced="true"] .worldCaptions { position: absolute; inset: 0; padding: 0; }
-.experience[data-enhanced="true"] .caption { position: absolute; top: 44%; left: 50%; width: min(68vw, 790px); padding: 0; opacity: 0; transform: translate(-50%, -50%); will-change: opacity; }
+.experience[data-enhanced="true"] .caption { position: absolute; top: 50%; left: 50%; width: min(68vw, 790px); padding: 0; opacity: 0; transform: translate(-50%, -50%); will-change: opacity; }
 .experience[data-enhanced="true"] .caption:first-child { opacity: 1; }
 .caption:first-child h1 { margin: 0; }
 .caption h1, .caption h2 { font-size: clamp(3.2rem, 5.6vw, 6rem); font-weight: 500; line-height: 1.045; letter-spacing: -.06em; margin: 20px 0 23px; text-wrap: balance; }
@@ -41,7 +41,7 @@
 .scrollCue:disabled { cursor: default; opacity: .6; }
 .scrollTrack { width: 14px; height: 22px; border: 1px solid #d0dfb980; border-radius: 10px; position: relative; }
 .scrollTrack span { position: absolute; width: 1px; height: 5px; top: 5px; left: 5.5px; background: #e4e9d5; }
-.chapterNav { position: absolute; z-index: 4; right: 3%; top: 44%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 2px; }
+.chapterNav { position: absolute; z-index: 4; right: 3%; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 2px; }
 .chapterNav button { min-width: 56px; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 9px; color: #c7d1b2aa; cursor: pointer; border-radius: 8px; }
 .chapterNav button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .chapterNav i { display: block; width: 2px; height: 14px; border-radius: 2px; background: #e1e7d04d; transition: height .2s ease; }
