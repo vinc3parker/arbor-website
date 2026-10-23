@@ -2,6 +2,7 @@
 .heroGrid { display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: 64px; }
 .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: .13em; text-transform: uppercase; color: var(--fg-2); margin-bottom: 24px; }
 .title { font-size: clamp(3.3rem, 6.4vw, 6rem); font-weight: 500; letter-spacing: -.065em; line-height: 1.04; text-wrap: balance; }
+.hero .title { line-height: 1.12; }
 .muted { color: #67705b; }
 .intro { max-width: 530px; margin-top: 28px; font-size: 17px; line-height: 1.85; color: var(--fg-2); }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; margin-top: 32px; }
