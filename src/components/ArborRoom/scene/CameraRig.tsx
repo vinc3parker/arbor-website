@@ -9,7 +9,7 @@ import { WALL_APOTHEM, BAY_ORIGIN_Y } from '../room/constants';
 
 const DRAG_SENSITIVITY = 0.0016;
 const YAW_LIMIT = 0.3;
-const ORBIT_SENSITIVITY = 0.0042;
+const ORBIT_SENSITIVITY = 0.0030;
 const ORBIT_LIMIT = (56 * Math.PI) / 180;
 const SETTLE_RATE = 2.4;
 const TRANSITION_SECONDS = 1.15;
@@ -145,7 +145,7 @@ export function CameraRig() {
     if (isMobile.current) {
       orbit.current +=
         (targetOrbit.current - orbit.current) *
-        (1 - Math.exp(-dt * SETTLE_RATE));
+        (1 - Math.exp(-dt * SETTLE_RATE*2));
       // Stay put and TURN THE HEAD to face each archway (rather than orbiting
       // the whole body around the room). The camera holds its viewing spot; the
       // look direction sweeps across the wall, clamped so the outermost portal
