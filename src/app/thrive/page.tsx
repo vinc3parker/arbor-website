@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import { AppLanding } from "@/components/AppLanding";
-import { apps } from "@/content/apps";
+import { ThriveLanding } from "@/components/apps/ThriveLanding";
 import { getProductSchema } from "@/lib/schema";
-import { getAppDescription } from "@/lib/app-metadata";
 
 export const revalidate = 60;
 
-const description = getAppDescription("thrive");
+const description = "Thrive brings tasks, projects, routines and scheduled commitments into one realistic plan, with AI-assisted capture, focus and daily review.";
 
 export const metadata: Metadata = {
   title: "Thrive: your assistant | Arbor",
@@ -54,7 +52,7 @@ export default function Page() {
           __html: JSON.stringify(schemaData),
         }}
       />
-      <AppLanding app={apps.thrive} />
+      <ThriveLanding />
     </>
   );
 }

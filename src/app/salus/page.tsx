@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
-import { AppLanding } from "@/components/AppLanding";
-import { apps } from "@/content/apps";
+import { SalusLanding } from "@/components/apps/SalusLanding";
 import { getProductSchema } from "@/lib/schema";
-import { getAppDescription } from "@/lib/app-metadata";
 
 export const revalidate = 60;
 
-const description = getAppDescription("salus");
+const description = "Salus is a private reflection companion for check-ins, journaling, guided reflection, conversations and source-linked personal insights.";
 
 export const metadata: Metadata = {
   title: "Salus: your companion | Arbor",
   description,
-  keywords:
-    "journaling app, mental wellness app, reflection app, mental health, personal growth, mindfulness, journaling",
+  keywords: [
+    "journaling app",
+    "reflection app",
+    "guided journaling",
+    "mood check-in",
+    "AI reflection companion",
+    "personal insights",
+  ],
   alternates: {
     canonical: "https://arborapps.co/salus",
   },
@@ -54,7 +58,7 @@ export default function Page() {
           __html: JSON.stringify(schemaData),
         }}
       />
-      <AppLanding app={apps.salus} />
+      <SalusLanding />
     </>
   );
 }

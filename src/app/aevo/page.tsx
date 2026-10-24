@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { AppLanding } from "@/components/AppLanding";
-import { apps } from "@/content/apps";
+import { AevoLanding } from "@/components/apps/AevoLanding";
 import { getProductSchema } from "@/lib/schema";
-import { getAppDescription } from "@/lib/app-metadata";
 
 // Beta access links can change independently of the public roadmap.
 export const revalidate = 60;
 
-const description = getAppDescription("aevo");
+const description = "Aevo brings strength, running, conditioning and sport into one adaptive training plan, with AI coaching, session detail and evidence-led progress.";
 
 export const metadata: Metadata = {
   title: "Aevo: your coach | Arbor",
@@ -18,6 +16,7 @@ export const metadata: Metadata = {
     "training plan app",
     "hybrid athlete app",
     "running and strength training",
+    "AI training coach",
     "workout planner",
   ],
   alternates: { canonical: "https://arborapps.co/aevo" },
@@ -48,7 +47,7 @@ export default function Page() {
     "Aevo",
     description,
     "https://arborapps.co/aevo",
-    "ProductivityApplication"
+    "HealthAndFitnessApplication"
   );
 
   return (
@@ -59,7 +58,7 @@ export default function Page() {
           __html: JSON.stringify(schemaData),
         }}
       />
-      <AppLanding app={apps.aevo} />
+      <AevoLanding />
     </>
   );
 }
