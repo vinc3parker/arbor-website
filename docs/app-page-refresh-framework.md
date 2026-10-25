@@ -151,3 +151,24 @@ Publishable practical claims are limited to confirmed product behaviour: Salus i
 
 Publishable practical claims are limited to confirmed product behaviour: Thrive is in testing on iPhone; public beta access has not been announced unless supplied by remote app state; an 18+ Arbor account is required; tasks, routines and notes stay on the phone; AI assistance turns raw input into structure; and calendar, reminder and cross-app context strengthen realistic planning.
 
+## Nura review record
+
+- **Reviewed experience:** representative seeded personal and self-employed money data in the iPhone development build, October 2026.
+- **Primary story:** understand the current position → assign money to budgets, pots and goals → make ordered payday moves → respond to changes and new plans.
+- **Strongest differentiator:** Nura turns accounts, income, budgets, goals and costs arriving from the other Arbor guides into explicit decisions instead of stopping at transaction charts.
+- **Important product behaviours:** the home screen leads with a decision that needs attention; income combines expected pay and unpaid work; payday moves protect a buffer and fund priorities in order; goals carry targets, dates and funding pace; insights distinguish cash, pots, business money and investments; costs from Aevo, Wend and Sage appear alongside bills and goals; price ranges can help other guides suggest plans that fit.
+- **Current-page correction:** the old generic page described a future concept and understated the shipped development experience, including payday planning, irregular income, ordered priorities, connected future costs, decision cards and wealth insights.
+
+| File | Product proof | Page use |
+| --- | --- | --- |
+| `home-overview.png` | Current attention item, monthly spending pace, money left, payday timing, pot total and goal progress | Hero and orientation |
+| `budget-decision.png` | Practical responses to a category that is over budget | Decision support |
+| `income-payday-plan.png` | Expected income, unpaid work and ordered moves for the next payday | Income and payday workflow |
+| `guide-connected-plan.png` | Cost from Wend, payday status and ordered plan beginning with a buffer | Guide and prioritisation |
+| `saving-goals-progress.png` | Suggested pots and visible progress for travel and emergency targets | Goal planning and progress |
+| `insights-wealth-spending.png` | Wealth composition and movement over time | Progress and financial picture |
+| `money-accounts-pots.png` | Accounts, pots and the dedicated Arbor-app context area | Money structure and ecosystem |
+| `wend-cost-decision.png` | A Wend plan compared with money already set aside, with a clear next action | Connected Arbor benefit |
+
+Publishable practical claims are limited to confirmed product behaviour: Nura is in development and approaching testing on iPhone; access is not open; an 18+ Arbor account is required; the development build shows connected-account and manual-account flows but supported banking providers and territories are not yet confirmed; Nura covers balances, transactions, income, budgets, pots, goals and investments; and it does not provide regulated financial advice or personal investment recommendations.
+

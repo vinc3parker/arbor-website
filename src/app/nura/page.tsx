@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { AppLanding } from "@/components/AppLanding";
-import { apps } from "@/content/apps";
+import { NuraLanding } from "@/components/apps/NuraLanding";
 import { getProductSchema } from "@/lib/schema";
-import { getAppDescription } from "@/lib/app-metadata";
 
-const description = getAppDescription("nura");
+const description =
+  "Nura turns income, spending, budgets, savings goals and plans from across Arbor into clear money decisions and useful next steps.";
 
 export const metadata: Metadata = {
   title: "Nura: your money manager | Arbor",
@@ -52,7 +51,7 @@ export default function Page() {
           __html: JSON.stringify(schemaData),
         }}
       />
-      <AppLanding app={apps.nura} />
+      <NuraLanding />
     </>
   );
 }
