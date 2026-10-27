@@ -13,13 +13,13 @@ import {
 
 export const metadata = {
   title: "Arbor for businesses",
-  description: "Put your gym, studio or club on the Arbor map, and keep your details and timetable up to date.",
+  description: "Put your business, club or team on the Arbor map, and keep your details, opening hours and timetable up to date.",
 };
 
 const STEPS = [
-  ["Find or add your business", "Search the Arbor map for your gym, studio or club, or add it if it isn't there yet."],
+  ["Find or add your business", "Search the Arbor map for your pub, café, gym, studio, workshop, club or team, or add it if it isn't there yet."],
   ["Confirm it's yours", "Sign up with an email on your business website's domain and it's yours straight away. Otherwise we check with you first."],
-  ["Keep it up to date", "Edit your details, what you offer and your weekly timetable, and bring in your team."],
+  ["Keep it up to date", "Edit your details, opening hours, everything people can find there and your weekly timetable, and bring in your team."],
 ];
 
 export default async function BusinessPage({
@@ -36,10 +36,10 @@ export default async function BusinessPage({
         <Navbar />
         <div className="site-container pt-32 pb-24 sm:pt-36">
           <p className="ui-kicker">Arbor for businesses</p>
-          <h1 className="type-h1 max-w-3xl">Put your gym, studio or club on the Arbor map</h1>
+          <h1 className="type-h1 max-w-3xl">Put your business, club or team on the Arbor map</h1>
           <p className="ui-copy mt-4 max-w-2xl text-lg">
-            People use Aevo to find places to train, classes to join and clubs to be part of. Claim your listing to
-            keep it accurate and show everything you offer. It&apos;s free, and you don&apos;t need an Arbor
+            People use Arbor&apos;s apps to find places to train, things to do, places to eat and drink, classes to join
+            and clubs to be part of. Claim your listing to keep it accurate and show everything you offer. It&apos;s free, and you don&apos;t need an Arbor
             subscription: it&apos;s the same Arbor account you&apos;d use for the apps.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">

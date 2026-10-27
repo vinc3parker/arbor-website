@@ -103,6 +103,11 @@ export interface PlaceRow {
   tags: string[];
   activities: string[];
   managed_at: string | null;
+  /** OpenStreetMap opening_hours format, e.g. "Mo-Fr 06:00-22:00; Sa,Su 08:00-20:00". */
+  opening_hours: string | null;
+  instagram: string | null;
+  /** Feature slugs: food.meals, amenity.beer_garden, activity.darts… */
+  features: string[];
 }
 
 export interface SessionRow {
@@ -167,6 +172,26 @@ export interface TimetableSessionInput {
   bookingUrl: string | null;
 }
 
+/** A club, team or class provider on the map, which may have no venue of its own. */
+export interface MapOrganisation {
+  id: string;
+  name: string;
+  kind: string;
+  location: string | null;
+  website: string | null;
+  claimedAt: string | null;
+}
+
+export interface PlaceTypeGroup {
+  label: string;
+  types: Array<{ slug: string; label: string }>;
+}
+
+export interface FeatureGroup {
+  kind: string;
+  features: Array<{ slug: string; label: string }>;
+}
+
 // ── Calls ────────────────────────────────────────────────────────────────────
 
 export async function listBusinesses(token: string): Promise<Business[]> {
@@ -220,6 +245,30 @@ export function removeMember(token: string, organisationId: string, memberId: st
   return request(`/api/world/business/organisations/${encodeURIComponent(organisationId)}/members/${encodeURIComponent(memberId)}`, {
     token, method: "DELETE",
   });
+}
+
+/** Clubs, teams and class providers matching a name, for claiming. */
+export async function searchOrganisations(query: string, limit = 10): Promise<MapOrganisation[]> {
+  const params = new URLSearchParams({ q: query, limit: String(limit) });
+  const rows = (await request<{ organisations: Array<Record<string, unknown>> }>(`/api/world/organisations?${params.toString()}`)).organisations;
+  return rows.map((row) => ({
+    id: String(row.id),
+    name: String(row.name),
+    kind: String(row.kind ?? "club"),
+    location: (row.location as string | null) ?? null,
+    website: (row.website as string | null) ?? null,
+    claimedAt: ((row.claimedAt ?? row.claimed_at) as string | null) ?? null,
+  }));
+}
+
+/** The place types owners choose from (pub, gym, pottery studio…), grouped. */
+export async function placeTypeGroups(): Promise<PlaceTypeGroup[]> {
+  return (await request<{ groups: PlaceTypeGroup[] }>("/api/world/place-types")).groups;
+}
+
+/** The features owners tick (beer garden, sauna, darts…), grouped by kind. */
+export async function featureGroups(): Promise<FeatureGroup[]> {
+  return (await request<{ kinds: FeatureGroup[] }>("/api/world/features")).kinds;
 }
 
 /** Public map search, so people can find and claim their listing. */

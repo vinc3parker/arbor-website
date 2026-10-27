@@ -8,10 +8,14 @@ import { TeamPanel } from "@/components/business/TeamPanel";
 import { TimetableEditor } from "@/components/business/TimetableEditor";
 import { kindLabel } from "@/components/business/options";
 import {
+  featureGroups,
   listBusinesses,
   listMembers,
+  placeTypeGroups,
   requireBusinessSession,
+  type FeatureGroup,
   type Membership,
+  type PlaceTypeGroup,
 } from "@/lib/arbor-business";
 
 export const metadata = {
@@ -38,6 +42,11 @@ export default async function ManageBusinessPage({ params }: { params: Promise<{
     ? await listMembers(session.token, id).catch((): Membership[] | null => null)
     : null;
   const editablePlaces = places.filter((place) => membership.placeIds == null || membership.placeIds.includes(place.id));
+  // The lists owners choose from; the form still works (with fewer choices) if they can't be loaded.
+  const [placeTypes, features] = await Promise.all([
+    placeTypeGroups().catch((): PlaceTypeGroup[] => []),
+    featureGroups().catch((): FeatureGroup[] => []),
+  ]);
 
   return (
     <main className="min-h-screen bg-bg text-fg">
@@ -77,12 +86,12 @@ export default async function ManageBusinessPage({ params }: { params: Promise<{
             <section id="locations" aria-labelledby="locations-heading" className="scroll-mt-28">
               <h2 id="locations-heading" className="type-h2">Locations</h2>
               <p className="ui-copy mt-1">
-                Where you are on the map and everything people can do there. Someone searching for squash or yoga finds
-                you if it&apos;s listed here.
+                Where you are on the map, when you&apos;re open and everything people can do there. Someone searching for
+                yoga, a beer garden or a pottery class finds you if it&apos;s listed here.
               </p>
               <div className="mt-6 space-y-4">
                 {editablePlaces.map((place) => (
-                  <LocationForm key={place.id} place={place} organisationId={organisation.id} />
+                  <LocationForm key={place.id} place={place} organisationId={organisation.id} placeTypes={placeTypes} features={features} />
                 ))}
                 {!editablePlaces.length && (
                   <p className="ui-copy">

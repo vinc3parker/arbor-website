@@ -5,10 +5,20 @@ import { claimListing, type FormState } from "@/app/business/actions";
 
 const initialState: FormState = {};
 
-const ROLES = ["Owner", "Manager", "Instructor or coach", "Club committee member", "Staff member"];
+const ROLES = ["Owner", "Manager", "Instructor or coach", "Club committee member", "Team captain or organiser", "Staff member"];
 
-/** "This is mine": a short claim form under a search result. */
-export function ClaimForm({ placeId, placeName, managed }: { placeId: string; placeName: string; managed: boolean }) {
+/** "This is mine": a short claim form under a search result (a place, or a club or team with no venue). */
+export function ClaimForm({
+  placeId,
+  organisationId,
+  placeName,
+  managed,
+}: {
+  placeId?: string;
+  organisationId?: string;
+  placeName: string;
+  managed: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [state, formAction, pending] = useActionState(claimListing, initialState);
 
@@ -25,7 +35,7 @@ export function ClaimForm({ placeId, placeName, managed }: { placeId: string; pl
 
   return (
     <form action={formAction} className="mt-5 grid gap-4 border-t border-line pt-5 sm:grid-cols-2">
-      <input type="hidden" name="placeId" value={placeId} />
+      {placeId ? <input type="hidden" name="placeId" value={placeId} /> : <input type="hidden" name="organisationId" value={organisationId} />}
       <p className="ui-copy sm:col-span-2">
         Tell us how you&apos;re connected to {placeName}.
         {managed ? " Someone already manages this listing, so we'll check with you before adding you." : ""}

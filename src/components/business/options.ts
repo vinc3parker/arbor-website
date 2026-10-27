@@ -2,11 +2,15 @@
 // (activity taxonomy plus `classes`; organisation kinds).
 
 export const BUSINESS_KINDS: Array<[string, string]> = [
-  ["gym", "Gym"],
+  ["venue", "Pub, bar, café, restaurant or venue"],
+  ["gym", "Gym or health club"],
   ["studio", "Studio"],
   ["club", "Club"],
   ["team", "Team"],
   ["class_provider", "Instructor or class provider"],
+  ["learning_provider", "Workshops or courses (pottery, painting, glass…)"],
+  ["hobby_group", "Hobby or social group"],
+  ["event_host", "Events organiser"],
 ];
 
 export const OFFERINGS: Array<[string, string]> = [

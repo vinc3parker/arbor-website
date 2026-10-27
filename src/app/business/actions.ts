@@ -33,16 +33,17 @@ function failure(error: unknown, fallback: string): FormState {
   return { error: error instanceof BusinessApiError ? error.message : fallback };
 }
 
-/** Claim a listing that is already on the Arbor map. */
+/** Claim a listing that is already on the Arbor map: a place, or a club or team with no venue. */
 export async function claimListing(_prev: FormState, formData: FormData): Promise<FormState> {
   const session = await getBusinessSession();
   if (!session) return { error: SIGNED_OUT };
   const placeId = field(formData, "placeId");
-  if (!placeId) return { error: "Choose the listing you run." };
+  const organisationId = field(formData, "organisationId");
+  if (!placeId && !organisationId) return { error: "Choose the listing you run." };
   let approved = false;
   try {
     const claim = await submitClaim(session.token, {
-      placeId,
+      ...(placeId ? { placeId } : { organisationId }),
       role: field(formData, "role") || undefined,
       contactPhone: field(formData, "contactPhone") || undefined,
       evidence: field(formData, "evidence") || undefined,
@@ -54,7 +55,7 @@ export async function claimListing(_prev: FormState, formData: FormData): Promis
   revalidatePath("/business");
   return {
     message: approved
-      ? "Your email matches this venue's website, so it's yours to manage now."
+      ? "Your email matches this listing's website, so it's yours to manage now."
       : "Thanks. We'll check your claim; you'll see the decision on your business page.",
   };
 }
@@ -175,6 +176,15 @@ export async function saveLocation(_prev: FormState, formData: FormData): Promis
     website: field(formData, "website") || null,
     phone: field(formData, "phone") || null,
     activities: formData.getAll("activities").map(String),
+    tags: formData.getAll("tags").map(String),
+    openingHours: field(formData, "openingHours") || null,
+    instagram: field(formData, "instagram") || null,
+    // Ticked features, the price level, and anything the owner typed in.
+    features: [
+      ...formData.getAll("features").map(String),
+      ...(field(formData, "price") ? [field(formData, "price")] : []),
+      ...field(formData, "customFeatures").split(",").map((item) => item.trim()).filter(Boolean),
+    ],
   };
   // Move the map pin when the address changes.
   if (location && location !== previousLocation) {
