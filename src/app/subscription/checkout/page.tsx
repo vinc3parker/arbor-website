@@ -27,6 +27,8 @@ function query(params: Record<string, string | undefined>): string {
 // Messages for Core's redeem error codes.
 const CODE_ERRORS: Record<string, string> = {
   CODE_EXHAUSTED: "That code has already been used as many times as it allows.",
+  CODE_ALREADY_REDEEMED:
+    "You’ve already used that code. Your original tester access can’t be restarted.",
   CODE_EXPIRED: "That code has expired.",
   INVALID_CODE: "That code isn’t valid. Check it and try again.",
   empty: "Enter your code to continue.",
@@ -46,9 +48,10 @@ export default async function CheckoutPage({
   const app = appRaw && isRegisteredApp(appRaw) ? appRaw : undefined;
   const state = sanitizeState(typeof sp.state === "string" ? sp.state : undefined) ?? undefined;
   const method = sp.method === "code" ? "code" : "card";
+  const promo = sp.promo === "BETA" ? "BETA" : undefined;
   const codeError = typeof sp.code_error === "string" ? sp.code_error : undefined;
 
-  const here = `/subscription/checkout${query({ app, state, method: method === "code" ? "code" : undefined })}`;
+  const here = `/subscription/checkout${query({ app, state, method: method === "code" ? "code" : undefined, promo })}`;
   const back = `/subscription${query({ app, state })}`;
 
   if (!user) redirect(`/login?redirect=${encodeURIComponent(here)}`);
@@ -121,7 +124,7 @@ export default async function CheckoutPage({
             Pay by card
           </Link>
           <Link
-            href={`/subscription/checkout${query({ app, state, method: "code" })}`}
+            href={`/subscription/checkout${query({ app, state, method: "code", promo })}`}
             aria-current={method === "code" ? "page" : undefined}
             className={tabClass(method === "code")}
           >
@@ -163,9 +166,13 @@ export default async function CheckoutPage({
           </>
         ) : (
           <div className="ui-surface mt-6 p-6 sm:p-8">
-            <h2 className="text-xl font-semibold">Use a code</h2>
+            <h2 className="text-xl font-semibold">
+              {promo ? "Start your 14-day beta access" : "Use a code"}
+            </h2>
             <p className="mt-2 text-fg-2">
-              If you&apos;ve been given an Arbor code, enter it here instead of paying.
+              {promo
+                ? "Use BETA for full tester access. No card is required and nothing renews automatically."
+                : "If you’ve been given an Arbor code, enter it here instead of paying."}
             </p>
             <form action={redeemCodeAction} className="mt-6 flex flex-col gap-3 sm:flex-row">
               {app && <input type="hidden" name="app" value={app} />}
@@ -180,6 +187,7 @@ export default async function CheckoutPage({
                 autoComplete="off"
                 autoCapitalize="characters"
                 spellCheck={false}
+                defaultValue={promo}
                 placeholder="Enter your code"
                 aria-invalid={codeError ? true : undefined}
                 aria-describedby={codeError ? "code-error" : undefined}

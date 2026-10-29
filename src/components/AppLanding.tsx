@@ -196,6 +196,21 @@ export async function AppLanding({ app }: { app: AppContent }) {
         </div>
       </section>
 
+      <section className="site-container py-10">
+        <div className="flex flex-col justify-between gap-5 rounded-2xl border border-line bg-surface p-6 sm:flex-row sm:items-center">
+          <div>
+            <p className="type-label">Data and use</p>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-fg-2">
+              See the information {app.name} uses or plans to use, why it needs it,
+              optional connections and the controls available to you.
+            </p>
+          </div>
+          <Link href={`/legal/${brand.id}`} className="ui-secondary shrink-0">
+            Read {app.name}&apos;s notice
+          </Link>
+        </div>
+      </section>
+
       <WaitlistSection />
       <Footer />
     </main>

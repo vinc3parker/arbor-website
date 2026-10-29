@@ -98,16 +98,8 @@ export const PRIVACY_POLICY: LegalDoc = {
     {
       heading: "5. Health, wellbeing, and other sensitive information",
       body: [
-        "Some Arbor guides may work with health, training, financial, or wellbeing information. The app will identify the information involved and ask for any separate consent required before processing it. For example, sleep sharing from Apple Health or Garmin is optional, uses sleep and wake times, and can be turned off in the app; you can also remove information Arbor holds in “What Arbor knows”.",
+        "Some Arbor guides may work with health, training, financial, or wellbeing information. The app-specific notice identifies the information involved, and the app asks for any separate consent required before processing it. Optional connected information can be turned off in the relevant app or service; you can also remove shared information Arbor holds in “What Arbor knows”.",
         "We do not treat agreeing to the account Terms and Privacy Policy as consent to every sensitive-data feature. Each app explains its own data choices. You can withdraw a consent in the app where it was given; this may make the feature that depends on it unavailable.",
-      ],
-    },
-    {
-      heading: "Garmin Connect data and AI transparency",
-      body: [
-        "If you choose to connect Garmin Connect, Arbor Core receives account-linked activity and health data that you allow in Garmin, including workout detail, sleep and recovery summaries. Aevo uses activity data for training history and can send a structured workout that you select to Garmin Connect. With your separate Garmin data consent, relevant sleep and recovery summaries can help your guides in Aevo, Thrive and Salus. These uses are tied to your Arbor account; we do not sell Garmin data or use it for advertising.",
-        "Before Garmin connection, Arbor asks for a separate, explicit consent covering this data and AI-assisted coaching. Relevant Garmin-derived summaries may be sent to Anthropic to generate a guide response. Supabase stores the data, Railway hosts Arbor Core, and Anthropic processes only the context needed for that response. Neither Arbor nor its providers use Garmin data or anything derived from it to train, evaluate or improve AI models.",
-        "You can withdraw this consent by disconnecting Garmin in app settings. That stops new Garmin data and removes Garmin-sourced sleep from Arbor Core. You can view and export server-held Garmin data in your Arbor account, remove the training category or delete your account to delete it, and contact us to correct Arbor's copy of source data. You can also manage Garmin permissions in Garmin Connect.",
       ],
     },
     {

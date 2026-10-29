@@ -56,7 +56,7 @@ export default function GroveConceptPage() {
     <main className="theme-grove min-h-screen bg-bg text-fg">
       <GroveHeader />
 
-      <section className="site-container pb-16 pt-8 sm:pb-24 sm:pt-6">
+      <section className="site-container pb-16 pt-32 sm:pb-24 sm:pt-36">
         <div className="mb-10 flex flex-wrap items-center justify-between gap-5 border-b border-line pb-6">
           <p className="text-base font-medium">A future Arbor workspace</p>
           <span className="ui-status bg-transparent">Concept stage · Development not started</span>

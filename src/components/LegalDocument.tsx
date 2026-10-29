@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { AppNoticeGrid } from "@/components/legal/AppNoticeGrid";
 import type { LegalDoc } from "@/content/legal";
 
 // Renders a legal document (Privacy Policy or Terms of Service) as calm,
@@ -58,7 +59,23 @@ export function LegalDocument({ doc }: { doc: LegalDoc }) {
           ))}
         </div>
 
+        <section className="mt-16 border-t border-line pt-12" aria-labelledby="app-notices-title">
+          <p className="ui-kicker">App-specific notices</p>
+          <h2 id="app-notices-title" className="mt-2 text-2xl font-semibold text-fg">
+            How each guide uses its own kind of data
+          </h2>
+          <p className="mt-3 mb-7 max-w-2xl leading-7 text-fg-2">
+            These notices supplement the Arbor-wide Privacy Policy and Terms. They
+            explain the information, permissions and important limits particular to
+            each guide.
+          </p>
+          <AppNoticeGrid />
+        </section>
+
         <div className="mt-16 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-8 text-sm text-fg-3">
+          <Link href="/legal" className="transition hover:text-fg">
+            Legal centre
+          </Link>
           <Link href="/terms" className="transition hover:text-fg">
             Terms of Service
           </Link>

@@ -328,7 +328,8 @@ export function NuraLanding() {
             <div><dt>Important limit</dt><dd>Nura is for explanation, organisation and planning. It does not provide regulated financial advice or personal investment recommendations.</dd></div>
           </dl>
           <div className={styles.policyLinks}>
-            <Link href="/privacy">Privacy</Link>
+            <Link href="/legal/nura">Nura data &amp; use</Link>
+            <Link href="/privacy">Arbor privacy</Link>
             <Link href="/terms">Terms</Link>
             <Link href="/account">Your Arbor account</Link>
           </div>

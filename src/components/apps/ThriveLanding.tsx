@@ -343,7 +343,8 @@ export async function ThriveLanding() {
             <div><dt>Connected planning</dt><dd>Calendar, reminders and context from across Arbor help Thrive build plans around the reality of your life.</dd></div>
           </dl>
           <div className={styles.policyLinks}>
-            <Link href="/privacy">Privacy</Link>
+            <Link href="/legal/thrive">Thrive data &amp; use</Link>
+            <Link href="/privacy">Arbor privacy</Link>
             <Link href="/terms">Terms</Link>
             <Link href="/account">Your Arbor account</Link>
           </div>

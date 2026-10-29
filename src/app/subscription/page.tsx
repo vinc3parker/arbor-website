@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { createClient } from "@/lib/supabase-server";
@@ -9,14 +8,22 @@ import {
   PLANS,
   SUBSCRIPTION_INCLUDES,
   hasAccess,
-  planName,
 } from "@/lib/subscription";
 import { fetchEntitlement, fetchOffer } from "@/lib/arbor-core";
 import { isRegisteredApp, sanitizeState } from "@/lib/app-auth";
+import { APP_ORDER } from "@/lib/brand";
+import { apps } from "@/content/apps";
+import { getPageSocialMetadata } from "@/lib/seo";
+
+const title = "Arbor membership | One subscription, every Arbor app";
+const description =
+  "Explore Arbor membership options and the personal guide services included across training, wellbeing, planning, money, relationships, work, learning and adventure.";
 
 export const metadata = {
-  title: "Subscription — Arbor",
-  robots: { index: false, follow: false },
+  title,
+  description,
+  alternates: { canonical: "https://arborapps.co/subscription" },
+  ...getPageSocialMetadata(title, description, "/subscription"),
 };
 
 function Check() {
@@ -120,19 +127,15 @@ export default async function SubscriptionPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login?redirect=/subscription");
-  }
-
   // Entitlement comes from Core (owns billing); so does the current price.
   let entStatus = "none";
   let entPlan: string | null = null;
   let source: "stripe" | "trial" | "comp" | null = null;
   let periodEnd: number | null = null;
   let cancelAtPeriodEnd = false;
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const session = user
+    ? (await supabase.auth.getSession()).data.session
+    : null;
   const [view, offer] = await Promise.all([
     session?.access_token
       ? fetchEntitlement(session.access_token).catch(() => null)
@@ -164,9 +167,25 @@ export default async function SubscriptionPage({
   const app = rawApp && isRegisteredApp(rawApp) ? rawApp : null;
   const state = sanitizeState(first(sp.state));
   const returnSuffix = appSuffix(app, state);
+  const checkoutHref = `/subscription/checkout${returnSuffix}`;
+  const subscribeHref = user
+    ? checkoutHref
+    : `/login?redirect=${encodeURIComponent(checkoutHref)}`;
   const codeHref = returnSuffix
     ? `/subscription/checkout${returnSuffix}&method=code`
     : "/subscription/checkout?method=code";
+  const publicCodeHref = user
+    ? codeHref
+    : `/login?redirect=${encodeURIComponent(codeHref)}`;
+  const betaParams = new URLSearchParams();
+  if (app) betaParams.set("app", app);
+  if (state) betaParams.set("state", state);
+  betaParams.set("method", "code");
+  betaParams.set("promo", "BETA");
+  const betaCheckoutHref = `/subscription/checkout?${betaParams.toString()}`;
+  const betaHref = user
+    ? betaCheckoutHref
+    : `/login?redirect=${encodeURIComponent(betaCheckoutHref)}`;
 
   // Temporary/tester access always grants the Founding membership; it is not
   // a membership tier in its own right.
@@ -224,8 +243,10 @@ export default async function SubscriptionPage({
   ) : null;
 
   const subscribeButton = (
-    <Link href={`/subscription/checkout${returnSuffix}`} className="ui-primary w-full">
-      {testerPaymentDue
+    <Link href={subscribeHref} className="ui-primary w-full">
+      {!user
+        ? `Create an account — ${price.price}/mo`
+        : testerPaymentDue
         ? "Add payment details"
         : isTrial
           ? "Subscribe to keep access"
@@ -254,8 +275,10 @@ export default async function SubscriptionPage({
         <p className="ui-kicker">Subscription</p>
         <h1 className="ui-title">Choose your membership</h1>
         <p className="mt-3 max-w-2xl text-lg text-fg-2">
-          One Arbor membership gives you access across every Arbor app. Your current
-          membership is highlighted below.
+          One Arbor membership gives you access across every Arbor app.
+          {user
+            ? " Your current membership is highlighted below."
+            : " Explore the options and services below—an account is only needed when you’re ready to join."}
         </p>
 
         {notice && (
@@ -269,6 +292,40 @@ export default async function SubscriptionPage({
           >
             {notice.text}
           </p>
+        )}
+
+        {!entitled && source !== "comp" && (
+          <aside className="mt-8 overflow-hidden rounded-3xl border border-fg bg-fg text-bg">
+            <div className="grid gap-6 p-6 sm:p-8 md:grid-cols-[1fr_auto] md:items-center">
+              <div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="text-sm font-semibold uppercase tracking-[0.14em] text-bg/65">
+                    Beta tester access
+                  </p>
+                  <span className="rounded-full border border-bg/25 px-3 py-1 text-xs font-medium">
+                    14 days free
+                  </span>
+                </div>
+                <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Try the whole of Arbor. Help shape what comes next.
+                </h2>
+                <p className="mt-3 max-w-2xl leading-7 text-bg/75">
+                  Get every Arbor guide currently in testing for 14 days. No card,
+                  no automatic renewal—just explore the experience and tell us what
+                  feels genuinely useful.
+                </p>
+                <p className="mt-4 text-sm text-bg/70">
+                  Use code <code className="rounded-md bg-bg/10 px-2 py-1 font-mono font-semibold text-bg">BETA</code>
+                </p>
+              </div>
+              <Link
+                href={betaHref}
+                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-bg px-5 py-3 font-semibold text-fg transition hover:opacity-90"
+              >
+                Start 14 days free
+              </Link>
+            </div>
+          </aside>
         )}
 
         <div className="mt-8 grid gap-5 md:grid-cols-2">
@@ -331,16 +388,49 @@ export default async function SubscriptionPage({
         {!entitled && (
           <p className="mt-6 text-center type-caption text-fg-2">
             Have an access code?{" "}
-            <Link href={codeHref} className="font-medium text-fg underline underline-offset-4">
+            <Link href={publicCodeHref} className="font-medium text-fg underline underline-offset-4">
               Use it instead
             </Link>
           </p>
         )}
 
+        <section className="mt-20 border-t border-line pt-16" aria-labelledby="included-services">
+          <p className="ui-kicker">What membership includes</p>
+          <h2 id="included-services" className="type-h1 mt-2 max-w-3xl">
+            Eight guides for the different parts of life.
+          </h2>
+          <p className="mt-4 max-w-2xl text-lg text-fg-2">
+            Your membership covers every Arbor guide as it becomes available. Each has
+            its own focus, while Arbor helps them work from one shared understanding of you.
+          </p>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            {APP_ORDER.map((id) => {
+              const service = apps[id];
+              return (
+                <Link
+                  key={id}
+                  href={`/${id}`}
+                  className="group rounded-2xl border border-line bg-surface p-5 transition hover:border-fg-3 hover:bg-raised"
+                >
+                  <p className="text-lg font-semibold">{service.name}</p>
+                  <p className="mt-1 text-sm font-medium text-fg-2">{service.guide.role}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-fg-2">
+                    {service.overviewTitle}
+                  </p>
+                  <span className="mt-4 inline-block text-sm font-medium text-fg transition group-hover:translate-x-0.5">
+                    Explore {service.name} →
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
         <p className="mt-6 type-caption text-fg-2">
-          <a href="/account" className="transition hover:text-fg">
-            ← Back to your account
-          </a>
+          <Link href={user ? "/account" : "/"} className="transition hover:text-fg">
+            ← {user ? "Back to your account" : "Back to Arbor"}
+          </Link>
         </p>
       </section>
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { ArborRoom } from "@/components/ArborRoom/ArborRoom";
 import { getPageSocialMetadata } from "@/lib/seo";
@@ -18,6 +19,7 @@ export default function GuidesPage() {
     <main className="min-h-screen bg-bg text-fg">
       <Navbar tone="dark" />
       <ArborRoom />
+      <Footer />
     </main>
   );
 }

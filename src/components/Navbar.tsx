@@ -28,7 +28,13 @@ const items: NavItem[] = [
  * `tone` sets the bar's surface: Paper with the full-colour logo, or Ink with
  * the Reverse logo (brand guide 5.4). Dark on the app pages.
  */
-export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
+export function Navbar({
+  tone = "light",
+  context,
+}: {
+  tone?: "light" | "dark";
+  context?: { label: string; href: string };
+}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -47,27 +53,39 @@ export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
       }`}>
       <div className="site-container">
         <div className="flex h-20 items-center justify-between gap-6">
-          <Link
-            href="/"
-            className="flex items-center py-2 transition hover:opacity-80"
-            onClick={() => {
-              setOpen(false);
-              if (pathname === "/") window.scrollTo({ top: 0 });
-            }}
-          >
-            <Image
-              src={
-                tone === "dark"
-                  ? "/brand/arbor_logo_reverse.png"
-                  : "/brand/arbor_logo_full.png"
-              }
-              alt="Arbor"
-              width={942}
-              height={227}
-              loading="eager"
-              className="h-auto w-[120px]"
-            />
-          </Link>
+          <div className="flex min-w-0 items-center gap-4">
+            <Link
+              href="/"
+              className="flex items-center py-2 transition hover:opacity-80"
+              onClick={() => {
+                setOpen(false);
+                if (pathname === "/") window.scrollTo({ top: 0 });
+              }}
+            >
+              <Image
+                src={
+                  tone === "dark"
+                    ? "/brand/arbor_logo_reverse.png"
+                    : "/brand/arbor_logo_full.png"
+                }
+                alt="Arbor"
+                width={942}
+                height={227}
+                loading="eager"
+                className="h-auto w-[120px]"
+              />
+            </Link>
+
+            {context && (
+              <Link
+                href={context.href}
+                aria-current={pathname === context.href ? "page" : undefined}
+                className="hidden border-l border-line pl-4 text-sm font-semibold tracking-[-0.01em] text-fg transition hover:text-fg-2 sm:block"
+              >
+                {context.label}
+              </Link>
+            )}
+          </div>
 
           {/* Desktop links */}
           <div className="hidden items-center gap-6 text-sm text-fg-2 lg:flex">
@@ -81,6 +99,16 @@ export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
                 {item.label}
               </Link>
             ))}
+
+            <span aria-hidden className="h-6 w-px bg-line" />
+
+            <Link
+              href="/subscription"
+              aria-current={pathname === "/subscription" ? "page" : undefined}
+              className={`transition hover:text-fg ${pathname === "/subscription" ? "text-fg" : "text-fg-2"}`}
+            >
+              Prices
+            </Link>
 
             <Link
               href="/login"
@@ -131,6 +159,17 @@ export function Navbar({ tone = "light" }: { tone?: "light" | "dark" }) {
                 {item.label}
               </Link>
             ))}
+
+            <div className="mt-2 border-t border-line pt-2">
+              <Link
+                href="/subscription"
+                onClick={() => setOpen(false)}
+                aria-current={pathname === "/subscription" ? "page" : undefined}
+                className={`block rounded-xl px-4 py-3 transition hover:bg-surface hover:text-fg ${pathname === "/subscription" ? "bg-surface text-fg" : "text-fg-2"}`}
+              >
+                Prices
+              </Link>
+            </div>
 
             <Link
               href="/login"

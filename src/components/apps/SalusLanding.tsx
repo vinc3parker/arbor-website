@@ -344,7 +344,8 @@ export async function SalusLanding() {
             <div><dt>Important limit</dt><dd>Salus uses therapy-informed principles, but it is not a therapist, treatment, diagnosis or crisis service.</dd></div>
           </dl>
           <div className={styles.policyLinks}>
-            <Link href="/privacy">Privacy</Link>
+            <Link href="/legal/salus">Salus data &amp; use</Link>
+            <Link href="/privacy">Arbor privacy</Link>
             <Link href="/terms">Terms</Link>
             <Link href="/account">Your Arbor account</Link>
           </div>

@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // Next.js 16 renamed the `middleware` convention to `proxy`.
 // This keeps the Supabase auth session fresh on every request and
 // protects authenticated-only routes.
-const PROTECTED_PREFIXES = ["/account", "/profile", "/subscription"];
+const PROTECTED_PREFIXES = ["/account", "/profile", "/subscription/checkout"];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });

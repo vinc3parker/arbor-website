@@ -321,7 +321,8 @@ export async function AevoLanding() {
             <div><dt>Important limit</dt><dd>Aevo supports training decisions. It does not diagnose or treat injuries or replace care from a qualified health professional.</dd></div>
           </dl>
           <div className={styles.policyLinks}>
-            <Link href="/privacy">Privacy</Link>
+            <Link href="/legal/aevo">Aevo data &amp; use</Link>
+            <Link href="/privacy">Arbor privacy</Link>
             <Link href="/terms">Terms</Link>
             <Link href="/account">Your Arbor account</Link>
           </div>

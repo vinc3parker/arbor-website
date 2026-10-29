@@ -183,6 +183,16 @@ function InteractiveRoom() {
         </div>
       )}
 
+      {locked && mobile && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-1/4 z-10 flex justify-center px-4">
+          <div className="flex max-w-[12rem] items-center gap-3 rounded-2xl border border-paper/25 bg-ink/60 px-4 py-2.5 text-xs uppercase leading-relaxed text-fg">
+            <span aria-hidden>←</span>
+            <span className="flex-1 text-center tracking-[0.2em]">Swipe left or right to look around</span>
+            <span aria-hidden>→</span>
+          </div>
+        </div>
+      )}
+
       <nav aria-label="Choose an Arbor guide" className="sr-only focus-within:not-sr-only focus-within:absolute focus-within:inset-x-4 focus-within:bottom-28 focus-within:z-30 focus-within:rounded-2xl focus-within:bg-ink focus-within:p-4">
         <ul className="flex flex-wrap justify-center gap-2">
           {arborApps.map(app => <li key={app.id}><Link href={app.route} className="inline-flex min-h-11 items-center rounded-lg px-4 text-fg focus-visible:outline-2 focus-visible:outline-offset-2">Explore {app.name}</Link></li>)}
@@ -191,7 +201,7 @@ function InteractiveRoom() {
 
       <div className="absolute inset-x-0 bottom-0 z-20 px-4 pt-4 pb-5 sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 text-center text-xs text-fg-2">
-          <p>{locked ? mobile ? "Swipe to look around. Tap an archway to explore." : "Hover to discover. Click an archway to step inside." : "The room is coming together."}</p>
+          {(!locked || !mobile) && <p>{locked ? "Hover to discover. Click an archway to step inside." : "The room is coming together."}</p>}
           {!locked && <button type="button" onClick={() => { heroState.progress = 1; setLocked(true); }} className="min-h-11 px-4 text-fg underline underline-offset-4">Skip animation</button>}
         </div>
       </div>

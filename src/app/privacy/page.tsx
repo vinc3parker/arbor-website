@@ -5,14 +5,14 @@ import { PRIVACY_POLICY } from "@/content/legal";
 export const metadata: Metadata = {
   title: "Privacy Policy — Arbor",
   description:
-    "How Arbor collects, uses, and protects your information across your Arbor account and the Arbor family of apps, including Thrive and Nura.",
+    "The Arbor-wide privacy policy for your account, membership and shared services, with supplementary data notices for each Arbor guide.",
   alternates: {
     canonical: "https://arborapps.co/privacy",
   },
   openGraph: {
     title: "Privacy Policy — Arbor",
     description:
-      "How Arbor collects, uses, and protects your information across the Arbor family of apps.",
+      "How Arbor handles account and shared-service information, with supplementary data notices for each guide.",
     url: "https://arborapps.co/privacy",
     type: "website",
   },

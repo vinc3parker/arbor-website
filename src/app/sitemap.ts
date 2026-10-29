@@ -23,6 +23,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: `${BASE}/legal`,
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
       url: `${BASE}/terms`,
       changeFrequency: "yearly",
       priority: 0.3,
@@ -41,11 +46,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: slug === "aevo" ? 0.9 : 0.8,
   }));
 
+  const appLegalRoutes: MetadataRoute.Sitemap = Object.keys(apps).map((slug) => ({
+    url: `${BASE}/legal/${slug}`,
+    changeFrequency: "yearly",
+    priority: 0.3,
+  }));
+
   const blogRoutes: MetadataRoute.Sitemap = (await getAllPosts()).map((post) => ({
     url: `${BASE}/blog/${post.slug}`,
     changeFrequency: "monthly",
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...appRoutes, ...blogRoutes];
+  return [...staticRoutes, ...appRoutes, ...appLegalRoutes, ...blogRoutes];
 }
