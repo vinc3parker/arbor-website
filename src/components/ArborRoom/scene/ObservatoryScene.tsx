@@ -1,7 +1,7 @@
 'use client';
 
 import * as THREE from 'three';
-import { useRef } from 'react';
+import { Suspense, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Floor } from '../room/Floor';
 import { WallBay } from '../room/wallbay/WallBay';
@@ -127,10 +127,11 @@ export function ObservatoryScene({
 
   return (
     <>
-      <color attach="background" args={["#050608"]} />
+      {/* Forest night, the same deep green the home journey opens on. */}
+      <color attach="background" args={["#0d1712"]} />
       {/* Lets the top of the walls dissolve into darkness overhead; the
           portal shaders ignore fog so the veils stay clear. */}
-      <fog attach="fog" args={["#070810", 24, 50]} />
+      <fog attach="fog" args={["#0f1a14", 24, 50]} />
 
       <RevealDriver />
       <ObservatoryLights />
@@ -146,7 +147,10 @@ export function ObservatoryScene({
         <RootRun key={app.id} app={withStatus(app)} revealRef={revealRefs.get(app.id)!} />
       ))}
 
-      <Floor />
+      {/* The trail's ground texture loads async; the room builds without waiting. */}
+      <Suspense fallback={null}>
+        <Floor />
+      </Suspense>
 
       <CompletionPulse />
 

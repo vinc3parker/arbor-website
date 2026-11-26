@@ -6,7 +6,8 @@ import { useFrame } from '@react-three/fiber';
 import { heroState, lightRamp } from '../scroll/heroState';
 
 /**
- * The night sky arching over the observatory. A large inverted sphere carries
+ * The night sky arching over the room, tinted to the woodland of the home
+ * journey (gold motes over a green-gold dusk haze) so the two read as one world. A large inverted sphere carries
  * a procedural starfield: stars gather in a dense band just above the wall
  * line and thin to nothing higher up, so the dome reads as fading into pure
  * black overhead. A faint cool haze sits on the horizon behind the arches.
@@ -77,11 +78,12 @@ const fragmentShader = /* glsl */ `
       + starLayer(uv, 120.0, 0.86, 0.07) * 0.5;
     s *= band;
 
-    // A cool, extremely faint haze hugging the horizon.
-    vec3 haze = vec3(0.03, 0.05, 0.09) * band * 0.5;
+    // A faint green-gold haze hugging the horizon: the woodland at dusk.
+    vec3 haze = vec3(0.07, 0.09, 0.05) * band * 0.6;
 
-    // Star tint: mostly cool white, a few warm.
-    vec3 starCol = mix(vec3(0.75, 0.83, 1.0), vec3(1.0, 0.92, 0.78),
+    // Tint matches the home journey's drifting motes: mostly warm gold,
+    // a few pale fern.
+    vec3 starCol = mix(vec3(1.0, 0.91, 0.69), vec3(0.86, 0.91, 0.77),
                        smoothstep(0.6, 1.0, fract(s * 3.0)));
 
     vec3 col = haze + starCol * s * 1.6;

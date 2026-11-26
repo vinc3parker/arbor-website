@@ -18,17 +18,17 @@ const BUILT_SESSION_KEY = "arbor-guides-built";
 
 function StaticArchways({ loading = false }: { loading?: boolean }) {
   return (
-    <section className="theme-dark relative isolate overflow-hidden bg-bg pt-32 pb-14 text-fg sm:pt-40">
+    <section className="theme-dark relative isolate overflow-hidden bg-forest pt-32 pb-14 text-fg sm:pt-40">
       <Image src="/images/arbor-woodland.webp" alt="" fill sizes="100vw" className="-z-20 object-cover" />
-      <div className="absolute inset-0 -z-10 bg-ink/80" />
+      <div className="absolute inset-0 -z-10 bg-forest/85" />
       <div className="site-container">
-        <p className="ui-kicker">The Arbor guides</p>
-        <h1 className="type-h1 max-w-2xl">Meet the Arbor guides.</h1>
-        <p className="mt-5 max-w-xl text-fg-2">Choose the part of life you want to explore. Each doorway introduces a specialist app and its personal AI guide.</p>
+        <p className="story-eyebrow text-lichen">The Arbor guides</p>
+        <h1 className="story-headline mt-5 max-w-2xl text-[clamp(2.5rem,6vw,4.5rem)]">Eight guides.<br /><span className="text-fern">Choose where to begin.</span></h1>
+        <p className="mt-6 max-w-xl text-[15px] leading-[1.85] text-lichen">Choose the part of life you want to explore. Each doorway introduces a specialist app and its personal AI guide.</p>
         <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4 lg:grid-cols-8">
-          {arborApps.map(app => <Link key={app.id} href={app.route} className="group relative flex min-h-56 flex-col items-center justify-end overflow-hidden rounded-t-[6rem] rounded-b-2xl border border-paper/25 bg-ink/55 px-3 pt-10 pb-6 text-center transition hover:border-paper hover:bg-ink/80"><Image src={APP_BRANDS[app.id].icon} alt="" width={48} height={48} className="mb-7 h-12 w-12 rounded-xl transition group-hover:-translate-y-1" /><span className="font-medium">{app.name}</span><span className="mt-1 text-xs text-fg-2">Your {APP_BRANDS[app.id].title}</span><span className="mt-4 text-[0.65rem] text-fg-2">{APP_ROADMAP[app.id].label}</span></Link>)}
+          {arborApps.map(app => <Link key={app.id} href={app.route} className="group relative flex min-h-56 flex-col items-center justify-end overflow-hidden rounded-t-[6rem] rounded-b-2xl border border-paper/25 bg-forest/60 px-3 pt-10 pb-6 text-center transition hover:border-paper hover:bg-forest-deep/85"><Image src={APP_BRANDS[app.id].icon} alt="" width={48} height={48} className="mb-7 h-12 w-12 rounded-xl transition group-hover:-translate-y-1" /><span className="font-medium">{app.name}</span><span className="mt-1 text-sm text-lichen">Your {APP_BRANDS[app.id].title}</span><span className="story-eyebrow mt-4 text-[10px] text-lichen">{APP_ROADMAP[app.id].label}</span></Link>)}
         </div>
-        {loading && <p className="mt-10 text-sm text-fg-2" role="status">Opening the archways. You can also choose a guide above.</p>}
+        {loading && <p className="mt-10 text-sm text-lichen" role="status">Opening the archways. You can also choose a guide above.</p>}
       </div>
     </section>
   );
@@ -149,12 +149,22 @@ function InteractiveRoom() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="theme-dark relative min-h-[42rem] bg-bg text-fg" style={{ height: "100svh" }} aria-label="Explore Arbor through the archways">
-      <h1 className="sr-only">Explore the Arbor guides</h1>
+    <section ref={sectionRef} className="theme-dark relative min-h-[42rem] bg-forest text-fg" style={{ height: "100svh" }} aria-label="Explore Arbor through the archways">
+      {/* Opens like the home journey: the headline over the dark room, then
+          it gives way to the archways once the room has come together. */}
+      <div
+        className={`pointer-events-none absolute inset-x-0 top-[44%] z-10 mx-auto w-[min(48rem,calc(100vw-3rem))] -translate-y-1/2 text-center transition-opacity duration-700 ${locked ? "opacity-0" : "opacity-100"}`}
+        style={{ textShadow: "0 2px 25px rgba(7,19,13,0.55)" }}
+      >
+        <p className="story-eyebrow text-lichen">The Arbor guides</p>
+        <h1 className="story-headline mt-5 text-[clamp(2.5rem,5.6vw,5rem)]">Eight guides.<br /><span className="text-fern">Choose where to begin.</span></h1>
+      </div>
       <div className="absolute inset-x-0 top-20 bottom-36 overflow-hidden sm:bottom-24">
         <Canvas shadows="percentage" dpr={[1, 1.5]} frameloop={visible ? "always" : "never"} style={{ touchAction: "pan-y" }} camera={{ position: CAMERA_POS, fov: CAMERA_FOV, near: 0.1, far: 200 }} onCreated={() => setReady(true)}>
           <ObservatoryScene />
         </Canvas>
+        {/* Melt the scene's vignette into the forest band rather than ending on a hard dark edge. */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-b from-transparent to-forest" />
       </div>
 
       {locked && hovered && (
@@ -163,44 +173,42 @@ function InteractiveRoom() {
           role="status"
           aria-live="polite"
           style={{
-            background: "radial-gradient(ellipse at center, rgba(6,8,11,0.62) 0%, rgba(6,8,11,0.34) 48%, rgba(6,8,11,0) 78%)",
+            background: "radial-gradient(ellipse at center, rgba(13,23,18,0.66) 0%, rgba(13,23,18,0.36) 48%, rgba(13,23,18,0) 78%)",
           }}
         >
-          <p className="text-5xl font-light tracking-[0.14em] text-fg sm:text-7xl">
+          <p className="story-eyebrow" style={{ color: APP_BRANDS[hovered.id].textOnInk }}>
+            {hovered.dimension}
+          </p>
+          <p className="story-headline mt-4 text-6xl text-fg sm:text-8xl">
             {hovered.name}
           </p>
           <div
             className="mx-auto mt-5 h-0.5 w-16"
             style={{ backgroundColor: hovered.colour, boxShadow: `0 0 16px ${hovered.colour}` }}
           />
-          <p
-            className="mt-5 text-xs uppercase tracking-[0.3em] sm:text-sm"
-            style={{ color: APP_BRANDS[hovered.id].textOnInk }}
-          >
-            {hovered.dimension}
-          </p>
-          {mobile && <p className="mt-5 text-xs uppercase tracking-[0.2em] text-fg-2">Tap to enter</p>}
+          <p className="mt-5 text-[15px] text-lichen">Your {APP_BRANDS[hovered.id].title}</p>
+          {mobile && <p className="story-eyebrow mt-5 text-lichen">Tap to enter</p>}
         </div>
       )}
 
       {locked && mobile && (
         <div className="pointer-events-none absolute inset-x-0 bottom-1/4 z-10 flex justify-center px-4">
-          <div className="flex max-w-[12rem] items-center gap-3 rounded-2xl border border-paper/25 bg-ink/60 px-4 py-2.5 text-xs uppercase leading-relaxed text-fg">
+          <div className="flex max-w-[15rem] items-center gap-3 rounded-xl border border-paper/25 bg-forest/70 px-4 py-2.5 text-sm leading-snug text-fg">
             <span aria-hidden>←</span>
-            <span className="flex-1 text-center tracking-[0.2em]">Swipe left or right to look around</span>
+            <span className="flex-1 text-center">Swipe to look around</span>
             <span aria-hidden>→</span>
           </div>
         </div>
       )}
 
-      <nav aria-label="Choose an Arbor guide" className="sr-only focus-within:not-sr-only focus-within:absolute focus-within:inset-x-4 focus-within:bottom-28 focus-within:z-30 focus-within:rounded-2xl focus-within:bg-ink focus-within:p-4">
+      <nav aria-label="Choose an Arbor guide" className="sr-only focus-within:not-sr-only focus-within:absolute focus-within:inset-x-4 focus-within:bottom-28 focus-within:z-30 focus-within:rounded-2xl focus-within:bg-forest focus-within:p-4">
         <ul className="flex flex-wrap justify-center gap-2">
           {arborApps.map(app => <li key={app.id}><Link href={app.route} className="inline-flex min-h-11 items-center rounded-lg px-4 text-fg focus-visible:outline-2 focus-visible:outline-offset-2">Explore {app.name}</Link></li>)}
         </ul>
       </nav>
 
       <div className="absolute inset-x-0 bottom-0 z-20 px-4 pt-4 pb-5 sm:px-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 text-center text-xs text-fg-2">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 text-center text-sm text-lichen">
           {(!locked || !mobile) && <p>{locked ? "Hover to discover. Click an archway to step inside." : "The room is coming together."}</p>}
           {!locked && <button type="button" onClick={() => { heroState.progress = 1; setLocked(true); }} className="min-h-11 px-4 text-fg underline underline-offset-4">Skip animation</button>}
         </div>

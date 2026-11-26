@@ -245,7 +245,7 @@ function BrickBacking() {
     () =>
       makeBuildableSmooth(
         new THREE.MeshStandardMaterial({
-          color: '#0c0e14',
+          color: '#0e120d',
           roughness: 1,
           metalness: 0,
           side: THREE.DoubleSide,

@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+import { applyStoneTexture } from '../stoneTexture';
 import {
   frameGeometry,
   innerBeadGeometry,
@@ -21,6 +23,11 @@ const FOOT_X = 1.28;
 const FRONT = 0.2;
 
 export function StoneFrame() {
+  // Weathered stone surface on the shared archway materials (once, client side).
+  useEffect(() => {
+    applyStoneTexture([stoneMaterial, stoneLightMaterial, stoneDarkMaterial], 0.55, 3.2);
+  }, []);
+
   return (
     <>
       {/* Outer archway stone — the chunky band the foliage grows over */}

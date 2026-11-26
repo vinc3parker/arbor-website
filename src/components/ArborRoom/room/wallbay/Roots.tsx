@@ -6,8 +6,12 @@ import { useFrame } from '@react-three/fiber';
 import { buildArchRoots } from './rootGeometry';
 import type { RevealRef } from '../../scroll/reveals';
 import { STATUS_GLOW } from '../constants';
+import { useBarkTexture } from '../barkTexture';
+import { addRootGlow, updateRootGlow, pulseFor, floorPulseEnd } from '../rootGlow';
 
 interface RootsProps {
+  /** Which app this arch belongs to (its pulse rhythm continues the floor's). */
+  appId: string;
   /** App accent colour the roots glow in, e.g. '#D4FF00'. */
   color: string;
   status: 'development' | 'beta' | 'live';
@@ -23,7 +27,7 @@ interface RootsProps {
  * strands follow, the crown closes late and wrapping tendrils come last.
  * Live apps complete the whole system; apps in development have only begun.
  */
-export function Roots({ color, status, seed, revealRef }: RootsProps) {
+export function Roots({ appId, color, status, seed, revealRef }: RootsProps) {
   // Maturity shapes the SYSTEM (dev: rising from the feet, beta: thin to the
   // crown, live: full coverage) — the scroll then grows it from the ground up.
   const strands = useMemo(() => buildArchRoots(seed, status), [seed, status]);
@@ -32,25 +36,38 @@ export function Roots({ color, status, seed, revealRef }: RootsProps) {
     return () => strands.forEach((s) => s.geometry.dispose());
   }, [strands]);
 
-  const material = useMemo(() => {
-    // Real, LIT bark — form comes from the scene lights hitting the tube, not
-    // from flooding it with emissive (that read as a flat block of colour).
-    // A restrained accent emissive keeps a hint of inner glow that still rises
-    // with maturity; the bright accent now lives in the flowers.
-    return new THREE.MeshStandardMaterial({
-      color: '#33281e',
-      roughness: 0.92,
-      metalness: 0,
-      emissive: new THREE.Color(color),
-      // Lower emissive so the bark takes its form from the scene lights (below)
-      // rather than a flat inner glow; flat shading facets the tubes so they
-      // read with real light-and-shade instead of a smooth, flat noodle.
-      emissiveIntensity: STATUS_GLOW[status] * 0.12,
-      flatShading: true,
-    });
-  }, [color, status]);
+  // Same bark as the home journey's trees, so these read as living wood.
+  const bark = useBarkTexture(1, 1);
 
-  useFrame(() => {
+  const material = useMemo(() => {
+    // Real, LIT bark: form comes from the scene lights on the knotted tube
+    // and the bark photo's relief. A restrained accent emissive keeps a hint
+    // of inner glow that still rises with maturity; the bright accent lives
+    // in the flowers and runes.
+    return new THREE.MeshStandardMaterial({
+      color: bark ? '#c4b093' : '#4a3a2a',
+      map: bark,
+      bumpMap: bark,
+      bumpScale: 1.4,
+      roughness: 0.95,
+      metalness: 0,
+    });
+  }, [bark]);
+
+  // Rim glow and travelling pulses in the app's colour (see rootGlow).
+  const glow = useMemo(
+    () => addRootGlow(material, color, STATUS_GLOW[status] * 0.4, pulseFor(appId)),
+    [material, color, status, appId]
+  );
+  const rhythm = useMemo(() => pulseFor(appId), [appId]);
+
+  useEffect(() => () => material.dispose(), [material]);
+
+  useFrame(({ clock }) => {
+    // Start where the floor root's pulse arrives at the feet: same rhythm,
+    // phase carried on, so the light flows from the centre up the arch.
+    const carried = rhythm.offset + (floorPulseEnd.get(appId) ?? 0) * rhythm.freq;
+    updateRootGlow(glow, material, THREE.MathUtils.clamp(revealRef.value, 0, 1), clock.getElapsedTime(), carried);
     // The floor runner (see RootRun) crosses the room first; the arch system
     // then plays bottom-to-top, each strand growing inside its own window.
     // The reveal alone drives growth — maturity is baked into the system.

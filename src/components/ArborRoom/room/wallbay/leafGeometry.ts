@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { makeLeafShape, makeParabolicArchOutlineSpacedPoints } from './archShape';
+import { makeParabolicArchOutlineSpacedPoints } from './archShape';
 
 /**
  * Seeded foliage generator for one archway. Small leaves sprout along the same
@@ -22,12 +22,80 @@ const LAST = OUTLINE.length - 1;
 const Y_BOTTOM = -3.09;
 const Y_TOP = 3.26;
 
-/** Base leaf silhouette, grown once and reused (transformed per instance). */
-const LEAF = new THREE.ShapeGeometry(makeLeafShape(0.34, 0.15), 6);
-const LEAF_POS = LEAF.getAttribute('position').array as Float32Array;
-const LEAF_NRM = LEAF.getAttribute('normal').array as Float32Array;
-const LEAF_IDX = LEAF.index!.array as Uint16Array | Uint32Array;
-const LEAF_VERTS = LEAF_POS.length / 3;
+/**
+ * A real leaf surface rather than a flat cut-out: a grid along the length and
+ * across the blade, with a rounded base and pointed tip, the two halves folded
+ * up from the midrib and the blade curling back toward the tip. Three curl
+ * variants keep neighbouring leaves from looking stamped.
+ */
+const LEAF_LENGTH = 0.34;
+const LEAF_HALF_WIDTH = 0.085;
+const ROWS = 9;
+const COLS = 6; // across the blade, midrib in the middle
+
+interface LeafTemplate {
+  pos: Float32Array;
+  nrm: Float32Array;
+  /** 0 at the midrib, 1 at the edge (for colouring). */
+  across: Float32Array;
+  /** 0 at the base, 1 at the tip. */
+  along: Float32Array;
+  idx: number[];
+  verts: number;
+}
+
+function makeLeafTemplate(curl: number, fold: number): LeafTemplate {
+  const position: number[] = [];
+  const across: number[] = [];
+  const along: number[] = [];
+  const index: number[] = [];
+  for (let r = 0; r <= ROWS; r++) {
+    const t = r / ROWS;
+    // Rounded base, widest a third of the way up, drawn to a point.
+    const hw = LEAF_HALF_WIDTH * Math.sin(Math.PI * Math.pow(t, 0.72)) * (1 - 0.15 * t);
+    for (let c = 0; c <= COLS; c++) {
+      const u = (c / COLS) * 2 - 1;
+      const x = u * hw;
+      const y = t * LEAF_LENGTH;
+      const z = fold * Math.abs(u) * hw + curl * t * t * LEAF_LENGTH;
+      position.push(x, y, z);
+      across.push(Math.abs(u));
+      along.push(t);
+    }
+  }
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const a = r * (COLS + 1) + c;
+      const b = a + COLS + 1;
+      index.push(a, b, a + 1, b, b + 1, a + 1);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(position, 3));
+  geo.setIndex(index);
+  geo.computeVertexNormals();
+  const out: LeafTemplate = {
+    pos: new Float32Array(position),
+    nrm: (geo.getAttribute('normal').array as Float32Array).slice(),
+    across: new Float32Array(across),
+    along: new Float32Array(along),
+    idx: index,
+    verts: position.length / 3,
+  };
+  geo.dispose();
+  return out;
+}
+
+const LEAF_TEMPLATES = [
+  makeLeafTemplate(0.12, 0.45),
+  makeLeafTemplate(0.28, 0.6),
+  makeLeafTemplate(0.42, 0.35),
+];
+
+/** Living greens with the odd yellowing leaf, picked per leaf. */
+const LEAF_GREENS = ['#3c5e22', '#4a6b28', '#335020', '#56722c', '#2c4a1c', '#45662a', '#6f7a30', '#7f7434'].map(
+  (hex) => new THREE.Color(hex)
+);
 
 function mulberry32(seed: number) {
   let a = (seed * 2654435761) >>> 0 || 1;
@@ -59,6 +127,8 @@ interface Leaf {
   tiltY: number;
   scale: number;
   y: number; // sort key (attach height)
+  template: number;
+  colour: number;
 }
 
 /** One leaf rooted at outline index `i`, fanning outward and up. */
@@ -84,8 +154,11 @@ function makeLeaf(i: number, rng: () => number, sizeMul: number): Leaf {
     angle,
     tiltX: 0.15 + rng() * 0.5, // gentle lift toward the viewer
     tiltY: (rng() - 0.5) * 0.5,
-    scale: (0.7 + rng() * 0.7) * sizeMul,
+    scale: (0.6 + rng() * 0.9) * sizeMul,
     y: p.y,
+    template: Math.floor(rng() * LEAF_TEMPLATES.length),
+    // Mostly the deeper greens; the last two (yellowing) only occasionally.
+    colour: rng() < 0.12 ? 6 + Math.floor(rng() * 2) : Math.floor(rng() * 6),
   };
 }
 
@@ -127,7 +200,9 @@ export function buildArchLeaves(seed: number, status: LeafStatus): THREE.BufferG
 
   const position: number[] = [];
   const normal: number[] = [];
+  const colour: number[] = [];
   const index: number[] = [];
+  const tint = new THREE.Color();
 
   const m = new THREE.Matrix4();
   const q = new THREE.Quaternion();
@@ -142,21 +217,29 @@ export function buildArchLeaves(seed: number, status: LeafStatus): THREE.BufferG
     m.compose(leaf.pos, q, new THREE.Vector3(leaf.scale, leaf.scale, leaf.scale));
     nrmMat.getNormalMatrix(m);
 
+    const tpl = LEAF_TEMPLATES[leaf.template];
+    const green = LEAF_GREENS[leaf.colour];
     const base = position.length / 3;
-    for (let v = 0; v < LEAF_VERTS; v++) {
-      vp.set(LEAF_POS[v * 3], LEAF_POS[v * 3 + 1], LEAF_POS[v * 3 + 2]).applyMatrix4(m);
-      vn.set(LEAF_NRM[v * 3], LEAF_NRM[v * 3 + 1], LEAF_NRM[v * 3 + 2])
+    for (let v = 0; v < tpl.verts; v++) {
+      vp.set(tpl.pos[v * 3], tpl.pos[v * 3 + 1], tpl.pos[v * 3 + 2]).applyMatrix4(m);
+      vn.set(tpl.nrm[v * 3], tpl.nrm[v * 3 + 1], tpl.nrm[v * 3 + 2])
         .applyMatrix3(nrmMat)
         .normalize();
       position.push(vp.x, vp.y, vp.z);
       normal.push(vn.x, vn.y, vn.z);
+      // Paler along the midrib, deeper at the edges, a touch lighter at the tip.
+      const midrib = tpl.across[v] < 0.2 ? 1.35 : 1;
+      const shade = (0.82 + 0.18 * (1 - tpl.across[v])) * (0.92 + 0.16 * tpl.along[v]) * midrib;
+      tint.copy(green).multiplyScalar(shade);
+      colour.push(tint.r, tint.g, tint.b);
     }
-    for (let t = 0; t < LEAF_IDX.length; t++) index.push(base + LEAF_IDX[t]);
+    for (let t = 0; t < tpl.idx.length; t++) index.push(base + tpl.idx[t]);
   }
 
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(position, 3));
   geo.setAttribute('normal', new THREE.Float32BufferAttribute(normal, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colour, 3));
   geo.setIndex(index);
   return geo;
 }
