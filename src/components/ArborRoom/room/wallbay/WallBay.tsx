@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { ArborApp } from '../../data/apps';
+import { APP_BRANDS } from '@/lib/brand';
 import { StoneFrame } from './StoneFrame/StoneFrame';
 import { Portal } from './Portal';
 import { Roots } from './Roots';
@@ -82,15 +83,18 @@ export function WallBay({ app }: WallBayProps) {
 
       <StoneFrame />
 
+      {/* Runes use the brand's on-dark colour: Wend, Telos and Sage have
+          dark leads that would barely light up against the stone. */}
       <Glyphs
-        color={app.colour}
+        color={APP_BRANDS[app.id].onInk}
         status={app.status}
         seed={app.angle + 211}
         revealRef={revealRef}
       />
 
       <Roots
-        color={app.colour}
+        appId={app.id}
+        color={APP_BRANDS[app.id].onInk}
         status={app.status}
         seed={app.angle + 137}
         revealRef={revealRef}

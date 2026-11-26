@@ -17,7 +17,9 @@ interface GlyphsProps {
 /**
  * The runes and constellation glyphs inlaid in the archway stone. They carry
  * no light of their own until the portal wakes; then they kindle in the app's
- * accent colour, brighter the more advanced the app is (STATUS_GLOW). The
+ * on-dark colour, a little brighter the more advanced the app is. Every
+ * colour is lifted to a similar brightness so all eight archways read as lit
+ * (a deep red otherwise looks dark next to lime at the same strength). The
  * marks are unlit/emissive (MeshBasic + Line) with tone-mapping off so their
  * cores cross the bloom threshold and breathe.
  */
@@ -33,6 +35,11 @@ export function Glyphs({ color, status, seed, revealRef }: GlyphsProps) {
 
   const base = useMemo(() => new THREE.Color(color), [color]);
   const glow = STATUS_GLOW[status] / 2; // 0.5 dev · 0.75 beta · 1.0 live
+  // Brightness lift for darker hues, so perceived glow is roughly even.
+  const lift = useMemo(() => {
+    const luminance = 0.2126 * base.r + 0.7152 * base.g + 0.0722 * base.b;
+    return THREE.MathUtils.clamp(0.55 / Math.max(luminance, 0.01), 1, 3);
+  }, [base]);
 
   const dotMat = useMemo(
     () => new THREE.MeshBasicMaterial({ color: base.clone(), toneMapped: false }),
@@ -63,8 +70,9 @@ export function Glyphs({ color, status, seed, revealRef }: GlyphsProps) {
   useFrame(({ clock }) => {
     const wake = THREE.MathUtils.clamp(revealRef.value, 0, 1);
     const breathe = 0.9 + 0.1 * Math.sin(clock.getElapsedTime() * 0.8 + seed);
-    // Off when unlit; kindles with the portal, strongest on mature apps.
-    const intensity = wake * wake * (0.5 + 1.3 * glow) * breathe;
+    // Off when unlit; kindles with the portal. Every app glows clearly, with
+    // only a slight lift for more mature ones.
+    const intensity = wake * wake * (1.3 + 0.4 * glow) * lift * breathe;
     dotMatRef.current?.color.copy(base).multiplyScalar(intensity * 1.25);
     lineMatRef.current?.color.copy(base).multiplyScalar(intensity);
     if (lineMatRef.current) {

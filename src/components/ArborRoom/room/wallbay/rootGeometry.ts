@@ -136,37 +136,67 @@ function surfacePoint(idx: number, w: number, r: number): THREE.Vector3 {
 }
 
 /** Build a tapered tube through the control points. Branch-like: the radius
- *  holds heavy for most of the length and only tapers near the tip. */
-function taperedTube(
+ *  holds heavy for most of the length and only tapers near the tip.
+ *
+ *  To read as real wood rather than a smooth pipe, the radius swells and
+ *  pinches along the length (knots and growth bulges, seeded from the start
+ *  point so every strand differs), the section is slightly oval, bark
+ *  furrows are carved into the surface (twisting gently along it), and UVs run
+ *  around (u) and along (v, in world units) so a bark texture wraps it. */
+export function taperedTube(
   controlPts: THREE.Vector3[],
   rStart: number,
   rEnd: number,
   segs = 54,
-  radial = 8,
-  taperPow = 2.2
+  radial = 12,
+  taperPow = 2.2,
+  barkScale = 1.6,
+  /** Length already travelled before this tube starts (a branch continuing
+   *  its parent), so bark and glow pulses run on without a seam. */
+  startLength = 0
 ): THREE.BufferGeometry {
   const curve = new THREE.CatmullRomCurve3(controlPts, false, 'catmullrom', 0.5);
   const frames = curve.computeFrenetFrames(segs, false);
   const pts = curve.getSpacedPoints(segs);
+  const length = curve.getLength();
+  const phase = controlPts[0].x * 13.1 + controlPts[0].y * 7.3 + controlPts[0].z * 3.7;
 
   const position: number[] = [];
-  const normal: number[] = [];
+  const uv: number[] = [];
   const index: number[] = [];
   const v = new THREE.Vector3();
+  // Bark furrows: a few narrow grooves around the section.
+  const furrows = Math.max(3, Math.round(radial / 3));
 
   for (let i = 0; i <= segs; i++) {
     const t = i / segs;
-    const r = THREE.MathUtils.lerp(rStart, rEnd, Math.pow(t, taperPow));
+    const along = t * length;
+    const base = THREE.MathUtils.lerp(rStart, rEnd, Math.pow(t, taperPow));
+    // Knots and swellings, strongest on thick wood, calmer toward the tip.
+    const knot =
+      0.16 * Math.sin(along * 6.3 + phase) * Math.sin(along * 2.1 + phase * 0.7) +
+      0.1 * Math.max(0, Math.sin(along * 11.7 + phase * 1.9)) ** 6;
+    // Flare where the strand leaves the ground or its parent.
+    const flare = 1 + 0.35 * Math.pow(1 - Math.min(t / 0.08, 1), 2);
+    const r = base * (1 + knot * (1 - t * 0.5)) * flare;
     const N = frames.normals[i];
     const B = frames.binormals[i];
     const P = pts[i];
     for (let j = 0; j <= radial; j++) {
       const a = (j / radial) * Math.PI * 2;
+      // Oval section, gently twisting along the length.
+      const oval = 1 + 0.14 * Math.cos(2 * (a + along * 0.8 + phase));
+      const groove = Math.pow(
+        0.5 + 0.5 * Math.cos(furrows * a + 1.4 * Math.sin(along * 1.3 + phase) + along * 0.5),
+        5
+      );
+      const bark = 1 - 0.13 * groove;
       const cx = Math.cos(a);
       const sy = Math.sin(a);
       v.set(N.x * cx + B.x * sy, N.y * cx + B.y * sy, N.z * cx + B.z * sy);
-      position.push(P.x + v.x * r, P.y + v.y * r, P.z + v.z * r);
-      normal.push(v.x, v.y, v.z);
+      const rr = r * oval * bark;
+      position.push(P.x + v.x * rr, P.y + v.y * rr, P.z + v.z * rr);
+      uv.push(j / radial, (startLength + along) * barkScale);
     }
   }
 
@@ -180,8 +210,21 @@ function taperedTube(
 
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(position, 3));
-  geo.setAttribute('normal', new THREE.Float32BufferAttribute(normal, 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
   geo.setIndex(index);
+  // Real normals so the furrows and knots catch the light; then weld the
+  // seam (first and last column share a position) so it doesn't show.
+  geo.computeVertexNormals();
+  const nrm = geo.getAttribute('normal') as THREE.BufferAttribute;
+  const n = new THREE.Vector3();
+  for (let i = 0; i <= segs; i++) {
+    const a = i * (radial + 1);
+    const b = a + radial;
+    n.set(nrm.getX(a) + nrm.getX(b), nrm.getY(a) + nrm.getY(b), nrm.getZ(a) + nrm.getZ(b)).normalize();
+    nrm.setXYZ(a, n.x, n.y, n.z);
+    nrm.setXYZ(b, n.x, n.y, n.z);
+  }
+  nrm.needsUpdate = true;
   return geo;
 }
 

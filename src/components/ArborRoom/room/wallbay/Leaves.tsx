@@ -28,22 +28,20 @@ export function Leaves({ color, status, seed, revealRef }: LeavesProps) {
   }, [geometry]);
 
   const material = useMemo(() => {
-    // LIT forest-green leaves: form comes from the scene lights on each leaf's
-    // real normal (double-sided), with only a faint accent emissive so mature
-    // arches read a touch warmer. The bright accent glow lives in the flowers,
-    // which stops the canopy from flattening into one block of colour.
+    // LIT leaves coloured per leaf and per vein (vertex colours), smooth
+    // shaded over their curled, folded blades, with a faint accent emissive
+    // so mature arches read a touch warmer. The bright accent glow lives in
+    // the flowers and runes.
     const green = new THREE.Color('#33531f');
     const emissive = green.clone().lerp(new THREE.Color(color), 0.4);
     return new THREE.MeshStandardMaterial({
-      color: '#32501f',
-      roughness: 0.78,
+      color: '#ffffff',
+      vertexColors: true,
+      roughness: 0.62,
       metalness: 0,
       emissive,
-      // Less inner glow, more matte — the canopy now takes its depth from the
-      // lights hitting each faceted leaf rather than washing out flat.
-      emissiveIntensity: STATUS_GLOW[status] * 0.09,
+      emissiveIntensity: STATUS_GLOW[status] * 0.07,
       side: THREE.DoubleSide,
-      flatShading: true,
     });
   }, [color, status]);
 
